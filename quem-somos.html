@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quem somos — O Farol</title>
+  <meta name="description" content="Quem faz o Farol, como garantimos independência e quem revisa as nossas decisões.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <p class="faixa-teste">Versão de testes: as notícias da página inicial são reais e ainda não passaram pelo painel. Os casos analisados no painel são fictícios.</p>
+
+  <div class="faixa-topo">
+    <div class="container faixa-topo__linha">
+      <span id="data-hoje">Edição digital</span>
+      <span><span data-local>Sua cidade</span> · atualizado agora</span>
+    </div>
+  </div>
+
+  <header class="cabecalho">
+    <div class="container">
+      <a class="marca" href="index.html" aria-label="O Farol, página inicial">O Farol</a>
+      <p class="marca__lema">Notícias confiáveis, perto de você</p>
+      <div class="cabecalho__regua"></div>
+      <nav class="nav" aria-label="Principal">
+        <button class="nav__alternar" type="button" aria-expanded="false" aria-controls="nav-lista">Menu</button>
+        <ul class="nav__lista" id="nav-lista">
+          <li><a href="index.html#como-funciona">Como funciona</a></li>
+          <li><a href="metodologia.html">Metodologia</a></li>
+          <li><a href="painel.html">Painel de verificação</a></li>
+          <li><a href="quem-somos.html" aria-current="page">Quem somos</a></li>
+        </ul>
+        <a class="botao botao--contorno nav__acao" href="index.html#comecar">Participar dos testes</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="pagina-topo">
+      <div class="container">
+        <p class="sobretitulo">Quem somos</p>
+        <h1>Um farol, não um juiz.</h1>
+        <p class="pagina-topo__intro">O Farol reúne as notícias da sua cidade, do seu estado, do seu país e do mundo, e mostra de onde cada uma vem e quem a confirma. Não dizemos em quem acreditar: mostramos as provas.</p>
+      </div>
+    </section>
+
+    <div class="container texto-longo">
+      <section id="missao">
+        <h2>Nossa missão</h2>
+        <p>Ajudar qualquer pessoa, em qualquer lugar, a entender o que acontece perto e longe dela, com informação clara e verificável. Acreditamos que confiança se conquista mostrando o caminho de cada notícia, não pedindo fé.</p>
+      </section>
+
+      <section id="o-que-fazemos">
+        <h2>O que fazemos</h2>
+        <ul class="cartoes-simples">
+          <li>
+            <h3>Reunimos</h3>
+            <p>Notícias de agências, veículos nacionais, regionais e locais, organizadas pela sua localização.</p>
+          </li>
+          <li>
+            <h3>Verificamos</h3>
+            <p>Cada notícia recebe um rótulo, com motivos, segundo uma <a href="metodologia.html">metodologia pública</a>.</p>
+          </li>
+          <li>
+            <h3>Comparamos</h3>
+            <p>Mostramos como diferentes veículos cobrem o mesmo fato, lado a lado.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section id="revisao">
+        <h2>Quem revisa as decisões</h2>
+        <p>As decisões passam por duas instâncias, e a palavra final é sempre de pessoas.</p>
+        <div class="instancias">
+          <article>
+            <p class="instancias__nivel">Primeira instância</p>
+            <h3>Painel de verificação</h3>
+            <p>Quatro agentes — Acusação e Auditor de fontes (Claude, da Anthropic), Defesa (GPT, da OpenAI) e Auditor de regras (o código da metodologia) — analisam cada notícia e cada contestação. Quando concordam, o rótulo é aplicado e a resposta sai na hora; uma amostra é conferida por pessoas.</p>
+            <p><a class="link-seta" href="painel.html">Ver o painel</a></p>
+          </article>
+          <article>
+            <p class="instancias__nivel">Instância final</p>
+            <h3>Conselho de revisão</h3>
+            <p>Pessoas com formações e visões diferentes decidem os casos em que os agentes divergem, os temas de alto impacto e as contestações que a IA não resolve. A decisão final sai em até 3 dias úteis. Também aprovam qualquer mudança na metodologia ou nos agentes.</p>
+          </article>
+        </div>
+
+        <h3 class="subtitulo">Composição do conselho</h3>
+        <div class="tabela-rolagem">
+          <table class="tabela">
+            <thead><tr><th scope="col">Perfil</th><th scope="col">Situação</th></tr></thead>
+            <tbody>
+              <tr><td>Jornalista com experiência de redação</td><td>Vaga aberta</td></tr>
+              <tr><td>Checador(a) de fatos</td><td>Vaga aberta</td></tr>
+              <tr><td>Pesquisador(a) de comunicação ou dados</td><td>Vaga aberta</td></tr>
+              <tr><td>Advogado(a) de direito de imprensa</td><td>Vaga aberta</td></tr>
+              <tr><td>Jornalista de veículo local ou regional</td><td>Vaga aberta</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>O conselho está em formação. Cada membro terá nome, mandato e afiliações publicados aqui, e se declarará impedido nos casos de veículos onde trabalha ou trabalhou. Quer indicar alguém ou se candidatar? Escreva para <a href="mailto:ofarolnws@gmail.com?subject=%5BConselho%5D%20Candidatura">ofarolnws@gmail.com</a>.</p>
+      </section>
+
+      <section id="independencia">
+        <h2>Independência</h2>
+        <ul class="lista-marcada">
+          <li><strong>Mandatos fixos de 2 anos</strong>, com troca de metade do conselho a cada ano.</li>
+          <li><strong>Ninguém é afastado por discordar.</strong> A remoção só ocorre por motivo previsto no regimento, decidida pelo próprio conselho.</li>
+          <li><strong>Remuneração fixa</strong>, sem ligação com o resultado das decisões.</li>
+          <li><strong>Votos divergentes são publicados</strong> junto com cada decisão.</li>
+          <li><strong>Nenhum anunciante ou financiador</strong> influencia rótulos ou notas.</li>
+        </ul>
+      </section>
+
+      <section id="financiamento">
+        <h2>Como nos financiamos</h2>
+        <p>O Farol está em fase de testes e ainda não tem receita nem financiadores. Antes do lançamento, publicaremos aqui todas as fontes de receita e a lista de quem nos financia.</p>
+      </section>
+
+      <section id="contato">
+        <h2>Fale com a gente</h2>
+        <p>Por enquanto, todos os contatos chegam no mesmo endereço: <a href="mailto:ofarolnws@gmail.com">ofarolnws@gmail.com</a>.</p>
+        <ul class="lista-marcada">
+          <li><strong>Contestar uma avaliação:</strong> <a href="contestar.html">use o formulário</a></li>
+          <li><strong>Participar dos testes:</strong> <a href="mailto:ofarolnws@gmail.com?subject=%5BTestes%5D%20Quero%20participar">peça para entrar na lista</a></li>
+          <li><strong>Imprensa:</strong> <a href="mailto:ofarolnws@gmail.com?subject=%5BImprensa%5D">escreva com “Imprensa” no assunto</a></li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__grade">
+      <div>
+        <p class="marca marca--rodape">O Farol</p>
+        <p class="rodape__lema">Um farol para a verdade, onde quer que você esteja.</p>
+      </div>
+      <nav aria-label="Produto">
+        <h2>Produto</h2>
+        <ul><li><a href="index.html#como-funciona">Como funciona</a></li><li><a href="painel.html">Painel de verificação</a></li><li><a href="index.html#comecar">Participar dos testes</a></li></ul>
+      </nav>
+      <nav aria-label="Empresa">
+        <h2>Empresa</h2>
+        <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="mailto:ofarolnws@gmail.com?subject=%5BImprensa%5D">Imprensa</a></li><li><a href="mailto:ofarolnws@gmail.com">Contato</a></li></ul>
+      </nav>
+      <nav aria-label="Confiança">
+        <h2>Confiança</h2>
+        <ul><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
+      </nav>
+    </div>
+    <div class="container rodape__base">
+      <span>© <span id="ano"></span> O Farol. Todos os direitos reservados.</span>
+      <span>Feito para quem quer entender o mundo, não só se informar sobre ele.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

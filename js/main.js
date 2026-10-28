@@ -1,0 +1,117 @@
+// O Farol — comportamento comum a todas as páginas (e os extras da página inicial)
+
+window.Farol = window.Farol || {};
+
+// Copia um texto. Se o navegador recusar, seleciona o campo para a pessoa copiar à mão.
+Farol.copiar = function (texto, campo, status) {
+  function manual() {
+    if (campo) { campo.focus(); campo.select(); }
+    if (status) status.textContent = 'Não foi possível copiar sozinho. O texto está selecionado: use Ctrl+C (ou Copiar, no celular).';
+  }
+  try {
+    navigator.clipboard.writeText(texto).then(function () {
+      if (status) status.textContent = 'Mensagem copiada. Cole no seu e-mail e envie para ofarolnws@gmail.com.';
+    }, manual);
+  } catch (e) { manual(); }
+};
+
+(function () {
+  // Data da edição e ano do rodapé
+  var hoje = new Date();
+  var data = hoje.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var campoData = document.getElementById('data-hoje');
+  var campoAno = document.getElementById('ano');
+  if (campoData) campoData.textContent = data + ' · edição digital';
+  if (campoAno) campoAno.textContent = hoje.getFullYear();
+
+  // Localização lembrada entre as páginas (só neste navegador)
+  function lerLocal() {
+    try { return localStorage.getItem('farol-local'); } catch (e) { return null; }
+  }
+  function guardarLocal(nome) {
+    try { localStorage.setItem('farol-local', nome); } catch (e) { /* sem armazenamento: segue sem lembrar */ }
+  }
+  function aplicarLocal(nome) {
+    document.querySelectorAll('[data-local]').forEach(function (el) { el.textContent = nome; });
+  }
+  var lembrado = lerLocal();
+  if (lembrado) aplicarLocal(lembrado);
+
+  // Menu no celular
+  var alternar = document.querySelector('.nav__alternar');
+  var lista = document.getElementById('nav-lista');
+  if (alternar && lista) {
+    alternar.addEventListener('click', function () {
+      var aberto = lista.classList.toggle('aberta');
+      alternar.setAttribute('aria-expanded', String(aberto));
+    });
+    lista.addEventListener('click', function (e) {
+      if (e.target.closest('a')) {
+        lista.classList.remove('aberta');
+        alternar.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // Abas do painel de notícias (setas do teclado navegam entre elas)
+  var abas = Array.prototype.slice.call(document.querySelectorAll('.abas [role="tab"]'));
+  function selecionar(aba) {
+    abas.forEach(function (a) {
+      var ativa = a === aba;
+      a.setAttribute('aria-selected', String(ativa));
+      a.tabIndex = ativa ? 0 : -1;
+      document.getElementById(a.getAttribute('aria-controls')).hidden = !ativa;
+    });
+  }
+  abas.forEach(function (aba, i) {
+    aba.addEventListener('click', function () { selecionar(aba); });
+    aba.addEventListener('keydown', function (e) {
+      var passo = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!passo) return;
+      var proxima = abas[(i + passo + abas.length) % abas.length];
+      selecionar(proxima);
+      proxima.focus();
+    });
+  });
+
+  // Localização do leitor (página inicial)
+  var form = document.getElementById('form-local');
+  if (!form) return;
+  var campo = document.getElementById('campo-local');
+  var status = document.getElementById('status-local');
+
+  function avisar(texto, erro) {
+    status.textContent = texto;
+    status.classList.toggle('erro', !!erro);
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var nome = campo.value.trim();
+    if (!nome) return;
+    aplicarLocal(nome);
+    guardarLocal(nome);
+    if (abas.length) selecionar(abas[0]);
+    avisar('Cidade salva: ' + nome + '. Nesta versão de testes, a cobertura local é de Aracaju (SE).');
+  });
+
+  document.getElementById('usar-localizacao').addEventListener('click', function () {
+    if (!('geolocation' in navigator)) {
+      avisar('Seu navegador não permite detectar a localização. Digite sua cidade.', true);
+      return;
+    }
+    avisar('Detectando sua localização…');
+    navigator.geolocation.getCurrentPosition(
+      function () {
+        // TODO: converter as coordenadas no nome da cidade (geocodificação reversa no servidor)
+        aplicarLocal('Sua localização');
+        if (abas.length) selecionar(abas[0]);
+        avisar('Localização detectada. Nesta versão de testes, a cobertura local é de Aracaju (SE).');
+      },
+      function () {
+        avisar('Não foi possível detectar sua localização. Digite sua cidade.', true);
+      },
+      { timeout: 10000 }
+    );
+  });
+})();

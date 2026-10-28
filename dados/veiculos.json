@@ -1,0 +1,431 @@
+{
+  "versao": 1,
+  "veiculos": [
+    {
+      "id": "a8se",
+      "nome": "A8SE",
+      "site": "https://www.a8se.com",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.a8se.com/rss.xml"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": ""
+    },
+    {
+      "id": "agencia-brasil",
+      "nome": "Agência Brasil",
+      "site": "https://agenciabrasil.ebc.com.br",
+      "tipo": "agencia",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "EBC (Empresa Brasil de Comunicação)",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml"
+        },
+        {
+          "url": "https://agenciabrasil.ebc.com.br/rss/internacional/feed.xml",
+          "escala": "mundo"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Dados de transparência ainda não verificados."
+    },
+    {
+      "id": "aos-fatos",
+      "nome": "Aos Fatos",
+      "site": "https://www.aosfatos.org",
+      "tipo": "checador",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Aos Fatos",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.aosfatos.org/noticias/feed/",
+          "uso": "checagens"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Checador. Confirmar na lista oficial se é signatário da IFCN."
+    },
+    {
+      "id": "bbc-brasil",
+      "nome": "BBC News Brasil",
+      "site": "https://www.bbc.com/portuguese",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "BBC",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://feeds.bbci.co.uk/portuguese/rss.xml"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Edição brasileira de veículo internacional. Dados de transparência ainda não verificados."
+    },
+    {
+      "id": "cnn-brasil",
+      "nome": "CNN Brasil",
+      "site": "https://www.cnnbrasil.com.br",
+      "tipo": "tv",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "CNN Brasil",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.cnnbrasil.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Dados de transparência ainda não verificados."
+    },
+    {
+      "id": "destaque-noticias",
+      "nome": "Destaque Notícias",
+      "site": "https://www.destaquenoticias.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.destaquenoticias.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": ""
+    },
+    {
+      "id": "fan-f1",
+      "nome": "FAN F1",
+      "site": "https://www.fanf1.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.fanf1.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": ""
+    },
+    {
+      "id": "faxaju",
+      "nome": "Faxaju",
+      "site": "https://www.faxaju.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.faxaju.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": ""
+    },
+    {
+      "id": "folha",
+      "nome": "Folha de S.Paulo",
+      "site": "https://www.folha.uol.com.br",
+      "tipo": "jornal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Grupo Folha",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://feeds.folha.uol.com.br/emcimadahora/rss091.xml"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Dados de transparência ainda não verificados."
+    },
+    {
+      "id": "g1",
+      "nome": "g1",
+      "site": "https://g1.globo.com",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Grupo Globo",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://g1.globo.com/rss/g1/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Dados de transparência ainda não verificados."
+    },
+    {
+      "id": "infonet",
+      "nome": "Infonet",
+      "site": "https://www.infonet.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.infonet.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": ""
+    },
+    {
+      "id": "lupa",
+      "nome": "Agência Lupa",
+      "site": "https://lupa.uol.com.br",
+      "tipo": "checador",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Agência Lupa",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://lupa.uol.com.br/feed",
+          "uso": "checagens"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Checador. Confirmar na lista oficial se é signatário da IFCN."
+    },
+    {
+      "id": "ne-noticias",
+      "nome": "NE Notícias",
+      "site": "https://www.nenoticias.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.nenoticias.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": ""
+    },
+    {
+      "id": "poder360",
+      "nome": "Poder360",
+      "site": "https://www.poder360.com.br",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Poder360",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.poder360.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Dados de transparência ainda não verificados."
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+"""Baixa e lê feeds RSS e Atom usando só a biblioteca padrão do Python.
+
+Guardamos título, link, um resumo curto e a data. O texto completo das notícias
+não é copiado: o leitor sempre vai ao site do veículo para ler a matéria.
+"""
+
+import email.utils
+import html
+import re
+import ssl
+import urllib.error
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass
+from datetime import datetime, timezone
+
+ATOM = "{http://www.w3.org/2005/Atom}"
+CONTENT = "{http://purl.org/rss/1.0/modules/content/}"
+DC = "{http://purl.org/dc/elements/1.1/}"
+
+AGENTE = "OFarolColetor/0.1 (agregador de noticias em teste)"
+LIMITE_BYTES = 5_000_000
+TAMANHO_RESUMO = 280
+TAGS = re.compile(r"<[^>]+>")
+REDIRECIONAMENTO = re.compile(r"\*(https?://.+)$")
+
+
+class ErroFeed(Exception):
+    pass
+
+
+@dataclass
+class Resposta:
+    status: int
+    conteudo: bytes
+    etag: str | None
+    modificado: str | None
+
+
+def _contexto_tls():
+    contexto = ssl.create_default_context()
+    # Antivírus que inspecionam HTTPS (como o AVG) usam um certificado que o modo estrito
+    # do Python 3.13+ recusa. A cadeia de certificados continua sendo verificada.
+    contexto.verify_flags &= ~ssl.VERIFY_X509_STRICT
+    return contexto
+
+
+_TLS = _contexto_tls()
+
+
+def baixar(url, etag=None, modificado=None, tempo_limite=20):
+    """Baixa o feed. Com etag/modificado, o site pode responder 304 (nada mudou), o que poupa banda."""
+    cabecalhos = {
+        "User-Agent": AGENTE,
+        "Accept": "application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.5",
+    }
+    if etag:
+        cabecalhos["If-None-Match"] = etag
+    if modificado:
+        cabecalhos["If-Modified-Since"] = modificado
+    pedido = urllib.request.Request(url, headers=cabecalhos)
+    try:
+        with urllib.request.urlopen(pedido, timeout=tempo_limite, context=_TLS) as r:
+            conteudo = r.read(LIMITE_BYTES + 1)
+            if len(conteudo) > LIMITE_BYTES:
+                raise ErroFeed("o feed passa de 5 MB")
+            return Resposta(r.status, conteudo, r.headers.get("ETag"), r.headers.get("Last-Modified"))
+    except urllib.error.HTTPError as e:
+        if e.code == 304:
+            return Resposta(304, b"", etag, modificado)
+        raise ErroFeed(f"o site respondeu {e.code}") from e
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        raise ErroFeed(f"falha de conexão: {getattr(e, 'reason', e)}") from e
+
+
+def ler(conteudo):
+    """Transforma o XML do feed em uma lista de notícias."""
+    try:
+        raiz = ET.fromstring(conteudo)
+    except ET.ParseError as e:
+        raise ErroFeed(f"o feed não é um XML válido ({e})") from e
+    if raiz.tag == ATOM + "feed":
+        itens = (_item_atom(e) for e in raiz.iter(ATOM + "entry"))
+    else:
+        itens = (_item_rss(e) for e in raiz.iter("item"))
+    return [i for i in itens if i]
+
+
+def _item_rss(e):
+    titulo = limpar(e.findtext("title"))
+    link = normalizar_link(e.findtext("link"))
+    if not titulo or not link:
+        return None
+    return {
+        "titulo": titulo,
+        "link": link,
+        "guid": (e.findtext("guid") or link).strip(),
+        "resumo": resumir(e.findtext("description") or e.findtext(CONTENT + "encoded")),
+        "autor": limpar(e.findtext(DC + "creator") or e.findtext("author")) or None,
+        "publicado_em": data_iso(e.findtext("pubDate") or e.findtext(DC + "date")),
+    }
+
+
+def _item_atom(e):
+    titulo = limpar(e.findtext(ATOM + "title"))
+    link = ""
+    for elo in e.findall(ATOM + "link"):
+        if elo.get("rel", "alternate") == "alternate" and elo.get("href"):
+            link = normalizar_link(elo.get("href"))
+            break
+    if not titulo or not link:
+        return None
+    return {
+        "titulo": titulo,
+        "link": link,
+        "guid": (e.findtext(ATOM + "id") or link).strip(),
+        "resumo": resumir(e.findtext(ATOM + "summary") or e.findtext(ATOM + "content")),
+        "autor": limpar(e.findtext(f"{ATOM}author/{ATOM}name")) or None,
+        "publicado_em": data_iso(e.findtext(ATOM + "published") or e.findtext(ATOM + "updated")),
+    }
+
+
+def normalizar_link(link):
+    """Tira redirecionadores (ex.: redir.folha.com.br/...*https://...) e parâmetros de rastreamento utm_."""
+    link = (link or "").strip()
+    achado = REDIRECIONAMENTO.search(link)
+    if achado:
+        link = achado.group(1)
+    partes = urllib.parse.urlsplit(link)
+    if partes.query:
+        consulta = [(k, v) for k, v in urllib.parse.parse_qsl(partes.query, keep_blank_values=True) if not k.startswith("utm_")]
+        link = urllib.parse.urlunsplit(partes._replace(query=urllib.parse.urlencode(consulta)))
+    return link
+
+
+def limpar(texto):
+    """Tira marcação HTML (inclusive a que vem escapada, como &lt;p&gt;) e espaços sobrando."""
+    if not texto:
+        return ""
+    texto = html.unescape(TAGS.sub(" ", html.unescape(texto)))
+    texto = " ".join(texto.split())
+    return re.sub(r"\s+([),.;:!?])", r"\1", re.sub(r"\(\s+", "(", texto))
+
+
+def resumir(texto, limite=TAMANHO_RESUMO):
+    texto = limpar(texto)
+    if len(texto) <= limite:
+        return texto
+    corte = texto[:limite].rsplit(" ", 1)[0]
+    return corte.rstrip(".,;:–- ") + "…"
+
+
+def data_iso(texto):
+    """Converte datas de RSS (RFC 822) ou Atom (ISO 8601) para ISO em UTC."""
+    if not texto:
+        return None
+    texto = texto.strip()
+    try:
+        data = email.utils.parsedate_to_datetime(texto)
+    except (TypeError, ValueError, IndexError):
+        try:
+            data = datetime.fromisoformat(texto.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+    if data.tzinfo is None:
+        data = data.replace(tzinfo=timezone.utc)
+    return data.astimezone(timezone.utc).isoformat(timespec="seconds")

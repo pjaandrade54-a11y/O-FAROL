@@ -1,0 +1,14 @@
+# Banco local do coletor (as notícias exportadas ficam em dados/noticias.json)
+dados/farol.db
+dados/*.tmp
+__pycache__/
+
+# Site montado pelo GitHub Actions
+_site/
+
+# Material de referência e configurações locais, que não precisam ir para o repositório público
+referencia/
+.claude/
+
+# Cópia antiga do repositório criada pelo GitHub Desktop; pode ser apagada
+O FAROL/

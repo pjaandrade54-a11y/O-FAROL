@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>O Farol — Notícias confiáveis, perto de você</title>
+  <meta name="description" content="O Farol reúne as principais fontes de notícia do mundo e da sua região, com transparência total sobre cada fonte.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <p class="faixa-teste">Versão de testes: as notícias da página inicial são reais e ainda não passaram pelo painel. Os casos analisados no painel são fictícios.</p>
+
+  <div class="faixa-topo">
+    <div class="container faixa-topo__linha">
+      <span id="data-hoje">Edição digital</span>
+      <span><span data-local>Sua cidade</span> · atualizado agora</span>
+    </div>
+  </div>
+
+  <header class="cabecalho">
+    <div class="container">
+      <a class="marca" href="index.html" aria-label="O Farol, página inicial">O Farol</a>
+      <p class="marca__lema">Notícias confiáveis, perto de você</p>
+      <div class="cabecalho__regua"></div>
+      <nav class="nav" aria-label="Principal">
+        <button class="nav__alternar" type="button" aria-expanded="false" aria-controls="nav-lista">Menu</button>
+        <ul class="nav__lista" id="nav-lista">
+          <li><a href="index.html#como-funciona">Como funciona</a></li>
+          <li><a href="metodologia.html">Metodologia</a></li>
+          <li><a href="painel.html">Painel de verificação</a></li>
+          <li><a href="quem-somos.html">Quem somos</a></li>
+        </ul>
+        <a class="botao botao--contorno nav__acao" href="index.html#comecar">Participar dos testes</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <!-- Destaque principal -->
+    <section class="destaque">
+      <div class="container destaque__grade">
+        <div class="destaque__texto">
+          <p class="sobretitulo">Seu jornal, sem ruído</p>
+          <h1>Informação clara em um mundo de ruído.</h1>
+          <p class="lide"><span class="capitular">O</span> Farol reúne as principais fontes de notícia do mundo e da sua região — cidade, estado e país — em um só lugar, com transparência total sobre cada fonte.</p>
+
+          <form class="local" id="form-local" autocomplete="off">
+            <label class="local__rotulo" for="campo-local">Onde você está?</label>
+            <div class="local__campo">
+              <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+              <input id="campo-local" name="local" type="text" placeholder="Sua cidade, estado ou país" required>
+              <button class="botao botao--azul" type="submit">Ver notícias</button>
+            </div>
+            <div class="local__extras">
+              <button class="link-botao" type="button" id="usar-localizacao">Usar minha localização</button>
+              <span aria-hidden="true">·</span>
+              <a class="link-botao" href="#como-funciona">Ver como funciona</a>
+            </div>
+            <p class="local__status" id="status-local" role="status" aria-live="polite"></p>
+          </form>
+
+          <p class="garantia">
+            <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>
+            Sem viés escondido. Só fatos, com fonte e contexto.
+          </p>
+        </div>
+
+        <aside class="painel" aria-labelledby="painel-titulo">
+          <div class="painel__topo">
+            <h2 id="painel-titulo">Últimas notícias</h2>
+            <span class="painel__ao-vivo">Edição ao vivo</span>
+          </div>
+          <div class="abas" role="tablist" aria-label="Escala das notícias">
+            <button role="tab" id="aba-cidade" aria-controls="lista-cidade" aria-selected="true">Cidade</button>
+            <button role="tab" id="aba-estado" aria-controls="lista-estado" aria-selected="false" tabindex="-1">Estado</button>
+            <button role="tab" id="aba-pais" aria-controls="lista-pais" aria-selected="false" tabindex="-1">País</button>
+            <button role="tab" id="aba-mundo" aria-controls="lista-mundo" aria-selected="false" tabindex="-1">Mundo</button>
+          </div>
+          <ul class="painel__lista" role="tabpanel" id="lista-cidade" aria-labelledby="aba-cidade"></ul>
+          <ul class="painel__lista" role="tabpanel" id="lista-estado" aria-labelledby="aba-estado" hidden></ul>
+          <ul class="painel__lista" role="tabpanel" id="lista-pais" aria-labelledby="aba-pais" hidden></ul>
+          <ul class="painel__lista" role="tabpanel" id="lista-mundo" aria-labelledby="aba-mundo" hidden></ul>
+          <p class="painel__legenda" id="painel-legenda">Carregando notícias… <a href="metodologia.html#rotulos">Entenda os rótulos</a></p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Fontes agregadas -->
+    <section class="fontes" id="fontes" aria-labelledby="fontes-titulo">
+      <div class="container fontes__linha">
+        <h2 class="fontes__titulo" id="fontes-titulo">Veículos de exemplo nos testes</h2>
+        <ul class="fontes__lista" id="lista-veiculos">
+          <li>Agência Prisma</li>
+          <li>Gazeta Aurora</li>
+          <li>Jornal Vértice</li>
+          <li>Portal Maré</li>
+          <li>Diário Candeia</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Como funciona -->
+    <section class="secao" id="como-funciona" aria-labelledby="como-titulo">
+      <div class="container">
+        <div class="secao__cabeca">
+          <p class="sobretitulo">Como funciona</p>
+          <h2 id="como-titulo">Cada notícia, com contexto e procedência.</h2>
+        </div>
+        <ul class="cartoes">
+          <li class="cartao">
+            <span class="cartao__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+            <h3>Localização inteligente</h3>
+            <p>Notícias priorizadas pela sua cidade, estado, país e pelo mundo, nessa ordem de proximidade.</p>
+          </li>
+          <li class="cartao">
+            <span class="cartao__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5.5c0 4.4 3 8.2 7 9.5 4-1.3 7-5.1 7-9.5V6l-7-3z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <h3>Transparência de fontes</h3>
+            <p>Veja de onde vem cada notícia, o posicionamento editorial declarado e o histórico de precisão da fonte.</p>
+          </li>
+          <li class="cartao">
+            <span class="cartao__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg></span>
+            <h3>Múltiplos ângulos</h3>
+            <p>Compare como diferentes veículos cobrem o mesmo fato, lado a lado, sem precisar sair do Farol.</p>
+          </li>
+          <li class="cartao">
+            <span class="cartao__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg></span>
+            <h3>Verificação cruzada</h3>
+            <p>Quatro agentes analisam cada notícia, e pessoas decidem os casos difíceis. <a href="painel.html">Veja o painel</a>.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Múltiplos ângulos: demonstração -->
+    <section class="secao secao--clara" id="angulos" aria-labelledby="angulos-titulo">
+      <div class="container">
+        <div class="secao__cabeca">
+          <p class="sobretitulo">Múltiplos ângulos</p>
+          <h2 id="angulos-titulo">O mesmo fato, visto de vários lados.</h2>
+          <p class="secao__intro">Em vez de escolher uma versão por você, o Farol mostra o que as fontes têm em comum e onde cada uma coloca o foco.</p>
+        </div>
+
+        <article class="comparacao">
+          <header class="comparacao__fato">
+            <p class="noticia__escala">Fato · exemplo fictício</p>
+            <h3>Inflação de outubro fica em 0,31%</h3>
+            <p class="noticia__meta"><span class="rotulo rotulo--confirmada">Confirmada</span> 4 fontes independentes · dado oficial</p>
+            <p class="comparacao__consenso"><strong>O que todas confirmam:</strong> o índice oficial de preços subiu 0,31% em outubro, abaixo dos 0,44% de setembro.</p>
+          </header>
+          <div class="comparacao__colunas">
+            <div class="angulo">
+              <p class="angulo__veiculo">Gazeta Aurora</p>
+              <p class="angulo__linha">Linha editorial declarada: centro</p>
+              <h4>Inflação desacelera e fica em 0,31% em outubro</h4>
+              <p>Foco no alívio dos preços dos alimentos.</p>
+              <p class="angulo__precisao">Nota do veículo: 84 de 100</p>
+              <a class="angulo__link" href="painel.html#caso-inflacao">Ver a análise no painel</a>
+            </div>
+            <div class="angulo">
+              <p class="angulo__veiculo">Jornal Vértice</p>
+              <p class="angulo__linha">Linha editorial declarada: centro-esquerda</p>
+              <h4>Mesmo com inflação de 0,31%, aluguel segue pesando no orçamento</h4>
+              <p>Foco no impacto sobre as famílias de baixa renda.</p>
+              <p class="angulo__precisao">Nota do veículo: 78 de 100</p>
+              <a class="angulo__link" href="painel.html#caso-inflacao">Ver a análise no painel</a>
+            </div>
+            <div class="angulo">
+              <p class="angulo__veiculo">Portal Maré</p>
+              <p class="angulo__linha">Linha editorial declarada: centro-direita</p>
+              <h4>Inflação de 0,31% abre espaço para corte de juros, avaliam analistas</h4>
+              <p>Foco no efeito sobre os juros e o mercado.</p>
+              <p class="angulo__precisao">Nota do veículo: 71 de 100</p>
+              <a class="angulo__link" href="painel.html#caso-inflacao">Ver a análise no painel</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Confiança -->
+    <section class="confianca" id="confianca" aria-labelledby="confianca-titulo">
+      <div class="container">
+        <div class="secao__cabeca">
+          <p class="sobretitulo">Confiança, mensurável</p>
+          <h2 id="confianca-titulo">Não pedimos para você confiar — mostramos por quê.</h2>
+        </div>
+        <ul class="compromissos">
+          <li>
+            <span class="compromissos__num">01</span>
+            <h3>Fonte original em toda notícia</h3>
+            <p>Cada item leva ao texto do veículo que o publicou.</p>
+          </li>
+          <li>
+            <span class="compromissos__num">02</span>
+            <h3>Linha editorial declarada</h3>
+            <p>Mostramos como cada veículo se posiciona, ao lado do que ele publica.</p>
+          </li>
+          <li>
+            <span class="compromissos__num">03</span>
+            <h3>Correções públicas</h3>
+            <p>Quando algo muda ou estava errado, a correção fica visível, com data.</p>
+          </li>
+        </ul>
+        <div class="confianca__links">
+          <a class="botao botao--claro" href="metodologia.html">Ler a metodologia</a>
+          <a class="link-seta link-seta--claro" href="painel.html">Ver o painel de verificação</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chamada final -->
+    <section class="chamada" id="comecar" aria-labelledby="chamada-titulo">
+      <div class="container chamada__conteudo">
+        <h2 id="chamada-titulo">Veja o mundo com clareza.</h2>
+        <p>O Farol está em fase de testes. Experimente o painel e mande sua opinião, ou entre na lista para testar as próximas versões primeiro.</p>
+        <div class="chamada__botoes">
+          <a class="botao botao--escuro" href="mailto:ofarolnws@gmail.com?subject=%5BTestes%5D%20Quero%20participar">Participar dos testes</a>
+          <a class="botao botao--contorno" href="painel.html">Testar o painel agora</a>
+        </div>
+        <p class="chamada__email">Ou escreva para <strong>ofarolnws@gmail.com</strong> com “Testes” no assunto.</p>
+        <div class="chamada__lojas">
+          <span class="loja">App para iOS: em breve</span>
+          <span class="loja">App para Android: em breve</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__grade">
+      <div>
+        <p class="marca marca--rodape">O Farol</p>
+        <p class="rodape__lema">Um farol para a verdade, onde quer que você esteja.</p>
+      </div>
+      <nav aria-label="Produto">
+        <h2>Produto</h2>
+        <ul><li><a href="index.html#como-funciona">Como funciona</a></li><li><a href="painel.html">Painel de verificação</a></li><li><a href="index.html#comecar">Participar dos testes</a></li></ul>
+      </nav>
+      <nav aria-label="Empresa">
+        <h2>Empresa</h2>
+        <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="mailto:ofarolnws@gmail.com?subject=%5BImprensa%5D">Imprensa</a></li><li><a href="mailto:ofarolnws@gmail.com">Contato</a></li></ul>
+      </nav>
+      <nav aria-label="Confiança">
+        <h2>Confiança</h2>
+        <ul><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
+      </nav>
+    </div>
+    <div class="container rodape__base">
+      <span>© <span id="ano"></span> O Farol. Todos os direitos reservados.</span>
+      <span>Feito para quem quer entender o mundo, não só se informar sobre ele.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/painel/config.js"></script>
+  <script src="js/painel/metodologia.js"></script>
+  <script src="js/painel/agentes.js"></script>
+  <script src="js/painel/casos.js"></script>
+  <script src="js/noticias.js"></script>
+</body>
+</html>

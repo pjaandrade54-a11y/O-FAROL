@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contestar uma avaliação — O Farol</title>
+  <meta name="description" content="Conteste um rótulo ou uma nota do Farol. A decisão final chega por e-mail em até 3 dias úteis.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <p class="faixa-teste">Versão de testes: as notícias da página inicial são reais e ainda não passaram pelo painel. Os casos analisados no painel são fictícios.</p>
+
+  <div class="faixa-topo">
+    <div class="container faixa-topo__linha">
+      <span id="data-hoje">Edição digital</span>
+      <span><span data-local>Sua cidade</span> · atualizado agora</span>
+    </div>
+  </div>
+
+  <header class="cabecalho">
+    <div class="container">
+      <a class="marca" href="index.html" aria-label="O Farol, página inicial">O Farol</a>
+      <p class="marca__lema">Notícias confiáveis, perto de você</p>
+      <div class="cabecalho__regua"></div>
+      <nav class="nav" aria-label="Principal">
+        <button class="nav__alternar" type="button" aria-expanded="false" aria-controls="nav-lista">Menu</button>
+        <ul class="nav__lista" id="nav-lista">
+          <li><a href="index.html#como-funciona">Como funciona</a></li>
+          <li><a href="metodologia.html">Metodologia</a></li>
+          <li><a href="painel.html">Painel de verificação</a></li>
+          <li><a href="quem-somos.html">Quem somos</a></li>
+        </ul>
+        <a class="botao botao--contorno nav__acao" href="index.html#comecar">Participar dos testes</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="pagina-topo">
+      <div class="container">
+        <p class="sobretitulo">Contestação</p>
+        <h1>Contestar uma avaliação</h1>
+        <p class="pagina-topo__intro">Discorda de um rótulo ou da nota de um veículo? Mande as suas provas. Toda contestação recebe resposta, e a decisão final do conselho humano chega por e-mail em até 3 dias úteis.</p>
+        <p class="aviso"><strong>Nesta versão de testes,</strong> a contestação vai direto ao conselho por e-mail. A resposta imediata da IA vai funcionar quando o servidor de modelos estiver ligado.</p>
+      </div>
+    </section>
+
+    <div class="container texto-longo">
+      <form class="formulario" id="form-contestacao" novalidate>
+        <div class="campo">
+          <label for="c-noticia">Notícia contestada</label>
+          <select id="c-noticia" name="noticia" required>
+            <option value="">Escolha uma notícia</option>
+          </select>
+        </div>
+
+        <div class="campo" id="campo-outra" hidden>
+          <label for="c-outra">Título ou link da notícia</label>
+          <input id="c-outra" name="outra" type="text">
+        </div>
+
+        <p class="formulario__atual" id="rotulo-atual" aria-live="polite"></p>
+
+        <div class="campo">
+          <label for="c-alvo">O que você contesta</label>
+          <select id="c-alvo" name="alvo">
+            <option>O rótulo da notícia</option>
+            <option>A nota do veículo</option>
+            <option>Outro ponto da avaliação</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="c-explicacao">Por que a avaliação está errada?</label>
+          <textarea id="c-explicacao" name="explicacao" rows="5" required></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="c-provas">Provas <span class="campo__opcional">(links ou documentos, um por linha)</span></label>
+          <textarea id="c-provas" name="provas" rows="4"></textarea>
+        </div>
+
+        <div class="campo campo--duplo">
+          <div>
+            <label for="c-quem">Você é</label>
+            <select id="c-quem" name="quem">
+              <option>Leitor ou leitora</option>
+              <option>Representante do veículo avaliado</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div>
+            <label for="c-email">Seu e-mail, para a resposta</label>
+            <input id="c-email" name="email" type="email" autocomplete="email" required>
+          </div>
+        </div>
+
+        <p class="formulario__erro" id="erro-contestacao" role="alert"></p>
+        <button class="botao botao--escuro" type="submit">Preparar e-mail da contestação</button>
+        <p class="formulario__nota">O site monta a mensagem para o conselho (<strong>ofarolnws@gmail.com</strong>); quem envia é você, pelo seu e-mail. Veja a <a href="privacidade.html">política de privacidade</a>.</p>
+      </form>
+
+      <section class="confirmacao" id="confirmacao" hidden tabindex="-1" aria-labelledby="confirmacao-titulo">
+        <h2 id="confirmacao-titulo">Contestação pronta para envio</h2>
+        <p>Envie a mensagem abaixo para <strong>ofarolnws@gmail.com</strong>. Ela só chega ao conselho depois que você enviar.</p>
+        <div class="confirmacao__acoes">
+          <button class="botao botao--escuro" type="button" id="copiar-mensagem">Copiar mensagem</button>
+          <a class="botao botao--contorno" id="link-email" href="mailto:ofarolnws@gmail.com">Abrir no meu e-mail</a>
+        </div>
+        <p class="formulario__nota" id="copia-status" role="status"></p>
+        <div class="campo">
+          <label for="mensagem-pronta">Mensagem</label>
+          <textarea id="mensagem-pronta" rows="12" readonly></textarea>
+        </div>
+        <ul class="lista-marcada">
+          <li>A decisão final chega no seu e-mail em até <strong>3 dias úteis</strong> depois do envio.</li>
+          <li>Toda decisão é publicada com os motivos, seja ela qual for.</li>
+        </ul>
+        <p><button class="link-botao" type="button" id="nova-contestacao">Fazer outra contestação</button></p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__grade">
+      <div>
+        <p class="marca marca--rodape">O Farol</p>
+        <p class="rodape__lema">Um farol para a verdade, onde quer que você esteja.</p>
+      </div>
+      <nav aria-label="Produto">
+        <h2>Produto</h2>
+        <ul><li><a href="index.html#como-funciona">Como funciona</a></li><li><a href="painel.html">Painel de verificação</a></li><li><a href="index.html#comecar">Participar dos testes</a></li></ul>
+      </nav>
+      <nav aria-label="Empresa">
+        <h2>Empresa</h2>
+        <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="mailto:ofarolnws@gmail.com?subject=%5BImprensa%5D">Imprensa</a></li><li><a href="mailto:ofarolnws@gmail.com">Contato</a></li></ul>
+      </nav>
+      <nav aria-label="Confiança">
+        <h2>Confiança</h2>
+        <ul><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
+      </nav>
+    </div>
+    <div class="container rodape__base">
+      <span>© <span id="ano"></span> O Farol. Todos os direitos reservados.</span>
+      <span>Feito para quem quer entender o mundo, não só se informar sobre ele.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/painel/config.js"></script>
+  <script src="js/painel/metodologia.js"></script>
+  <script src="js/painel/agentes.js"></script>
+  <script src="js/painel/casos.js"></script>
+  <script src="js/contestar.js"></script>
+</body>
+</html>

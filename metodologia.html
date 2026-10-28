@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metodologia — O Farol</title>
+  <meta name="description" content="Como o Farol classifica a confiabilidade de notícias e veículos: critérios, pesos, rótulos, painel de verificação e conselho humano.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <p class="faixa-teste">Versão de testes: as notícias da página inicial são reais e ainda não passaram pelo painel. Os casos analisados no painel são fictícios.</p>
+
+  <div class="faixa-topo">
+    <div class="container faixa-topo__linha">
+      <span id="data-hoje">Edição digital</span>
+      <span><span data-local>Sua cidade</span> · atualizado agora</span>
+    </div>
+  </div>
+
+  <header class="cabecalho">
+    <div class="container">
+      <a class="marca" href="index.html" aria-label="O Farol, página inicial">O Farol</a>
+      <p class="marca__lema">Notícias confiáveis, perto de você</p>
+      <div class="cabecalho__regua"></div>
+      <nav class="nav" aria-label="Principal">
+        <button class="nav__alternar" type="button" aria-expanded="false" aria-controls="nav-lista">Menu</button>
+        <ul class="nav__lista" id="nav-lista">
+          <li><a href="index.html#como-funciona">Como funciona</a></li>
+          <li><a href="metodologia.html" aria-current="page">Metodologia</a></li>
+          <li><a href="painel.html">Painel de verificação</a></li>
+          <li><a href="quem-somos.html">Quem somos</a></li>
+        </ul>
+        <a class="botao botao--contorno nav__acao" href="index.html#comecar">Participar dos testes</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="pagina-topo">
+      <div class="container">
+        <p class="sobretitulo">Metodologia · versão 0.1</p>
+        <h1>Como decidimos o que é confiável</h1>
+        <p class="pagina-topo__intro">Classificamos a confiabilidade pelo que dá para verificar — quem afirma, com que provas, quantas fontes independentes confirmam —, nunca pela opinião política do conteúdo ou do veículo.</p>
+        <p class="aviso"><strong>Proposta em discussão.</strong> Os pesos abaixo são a primeira versão e serão ajustados com dados reais. Cada mudança será publicada aqui, com data e motivo.</p>
+      </div>
+    </section>
+
+    <div class="container texto-longo">
+      <nav class="sumario" aria-label="Nesta página">
+        <h2>Nesta página</h2>
+        <ol>
+          <li><a href="#principios">Princípios</a></li>
+          <li><a href="#rotulos">Rótulos</a></li>
+          <li><a href="#sinais">Como pontuamos uma notícia</a></li>
+          <li><a href="#veiculos">Como avaliamos um veículo</a></li>
+          <li><a href="#painel">Painel de verificação</a></li>
+          <li><a href="#imparcialidade">Salvaguardas de imparcialidade</a></li>
+          <li><a href="#contestacao">Contestação e correções</a></li>
+          <li><a href="#limitacoes">Limitações</a></li>
+        </ol>
+      </nav>
+
+      <section id="principios">
+        <h2>Princípios</h2>
+        <ul class="lista-marcada">
+          <li><strong>Verificável, não opinativo.</strong> Todo critério é um fato que qualquer pessoa pode conferir.</li>
+          <li><strong>Confiabilidade não é ideologia.</strong> Não medimos posição política, tom ou tema. Um veículo de qualquer linha pode ter nota máxima.</li>
+          <li><strong>Mesma régua para todos.</strong> Os mesmos critérios valem para grandes e pequenos veículos, de qualquer região.</li>
+          <li><strong>Transparência total.</strong> Cada rótulo mostra os seus motivos.</li>
+          <li><strong>Falta de dados não é culpa.</strong> Com poucos sinais, mostramos “dados insuficientes”, nunca uma nota baixa.</li>
+          <li><strong>Pessoas revisam a máquina.</strong> Casos sensíveis e contestações passam por revisão humana.</li>
+        </ul>
+      </section>
+
+      <section id="rotulos">
+        <h2>Rótulos</h2>
+        <p>Cada notícia recebe um de seis rótulos, sempre com a lista de motivos ao lado. As regras são aplicadas nesta ordem: uma checagem que desmente vale mais que qualquer soma de pontos.</p>
+        <div class="tabela-rolagem">
+          <table class="tabela">
+            <thead><tr><th scope="col">Rótulo</th><th scope="col">Quando aparece</th></tr></thead>
+            <tbody>
+              <tr><td><span class="rotulo rotulo--opiniao">Opinião ou análise</span></td><td>O próprio veículo marca o texto como opinião, coluna ou análise. Não há rótulo de veracidade.</td></tr>
+              <tr><td><span class="rotulo rotulo--desmentida">Desmentida</span></td><td>Uma checagem de signatário da IFCN classificou a afirmação central como falsa.</td></tr>
+              <tr><td><span class="rotulo rotulo--contestada">Contestada</span></td><td>Fontes independentes divergem sobre a afirmação central. Mostramos as versões lado a lado.</td></tr>
+              <tr><td><span class="rotulo rotulo--confirmada">Confirmada</span></td><td>Pontuação 70 ou mais e ao menos dois grupos independentes além do original. Em temas políticos, ao menos uma confirmação de linha editorial diferente.</td></tr>
+              <tr><td><span class="rotulo rotulo--em-apuracao">Em apuração</span></td><td>Uma fonte só, ou pontuação entre 40 e 69, sem contradição. Não é acusação: exclusivas legítimas começam assim.</td></tr>
+              <tr><td><span class="rotulo rotulo--dados-insuficientes">Dados insuficientes</span></td><td>Pontuação abaixo de 40 sem checagem contrária, ou texto que não pôde ser lido.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>O Farol nunca cria sozinho um rótulo de “falsa”: esse julgamento vem sempre de uma checagem independente.</p>
+      </section>
+
+      <section id="sinais">
+        <h2>Como pontuamos uma notícia</h2>
+        <p>A pontuação vai de 0 a 100. O sinal mais forte é a confirmação por fontes independentes com apuração própria.</p>
+        <div class="tabela-rolagem">
+          <table class="tabela">
+            <thead><tr><th scope="col">Sinal</th><th scope="col">Como medimos</th><th scope="col">Pontos</th></tr></thead>
+            <tbody>
+              <tr><td>Corroboração independente</td><td>Grupos de mídia distintos que confirmam a afirmação com apuração própria. Reproduções contam como a fonte original.</td><td>1 grupo: 15 · 2: 25 · 3 ou mais: 35</td></tr>
+              <tr><td>Fonte primária</td><td>Documento, dado oficial ou decisão judicial (20), entrevistado identificado (12), link verificável (8)</td><td>até 20</td></tr>
+              <tr><td>Confiabilidade do veículo</td><td>Nota do veículo, em escala. Veículo em avaliação recebe valor neutro.</td><td>até 20</td></tr>
+              <tr><td>Checagem independente</td><td>Checagem de signatário da IFCN que confirma a afirmação</td><td>15</td></tr>
+              <tr><td>Atribuição</td><td>Autor identificado (5), data de publicação (3), data de atualização (2)</td><td>até 10</td></tr>
+              <tr><td>Sinais de alerta</td><td>Título que contradiz o texto, notícia antiga apresentada como nova, imagem fora de contexto</td><td>−10 cada</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>A nota do veículo vale no máximo 20 pontos de propósito: um bom veículo pode errar, e um veículo pequeno pode acertar. Dois veículos do mesmo grupo empresarial contam como uma fonte só.</p>
+      </section>
+
+      <section id="veiculos">
+        <h2>Como avaliamos um veículo</h2>
+        <p>A nota do veículo vai de 0 a 100. A maior parte vem do histórico de precisão das próprias notícias dele.</p>
+        <div class="tabela-rolagem">
+          <table class="tabela">
+            <thead><tr><th scope="col">Critério</th><th scope="col">Como medimos</th><th scope="col">Peso</th></tr></thead>
+            <tbody>
+              <tr><td>Histórico de precisão</td><td>Nos últimos 12 meses: notícias confirmadas, desmentidas e corrigidas</td><td>30</td></tr>
+              <tr><td>Transparência de propriedade</td><td>Dono, CNPJ ou registro equivalente, expediente e contato publicados</td><td>15</td></tr>
+              <tr><td>Política de correções</td><td>Política publicada e correções de fato visíveis, com data</td><td>15</td></tr>
+              <tr><td>Autoria e datação</td><td>Notícias com autor identificado e datas</td><td>10</td></tr>
+              <tr><td>Separação de conteúdos</td><td>Notícia, opinião e publicidade marcadas de forma distinta</td><td>10</td></tr>
+              <tr><td>Apuração própria</td><td>Textos com apuração original em vez de reprodução</td><td>10</td></tr>
+              <tr><td>Certificações externas</td><td>Journalism Trust Initiative, The Trust Project, signatário da IFCN. Sem certificação, os pontos são redistribuídos.</td><td>10</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>O histórico só entra com pelo menos 30 notícias analisadas em 90 dias; antes disso, o veículo aparece como “Em avaliação”. Faixas: <strong>Alta</strong> 80 a 100 · <strong>Boa</strong> 60 a 79 · <strong>Mista</strong> 40 a 59 · <strong>Baixa</strong> 0 a 39, publicada só depois de revisão humana.</p>
+      </section>
+
+      <section id="painel">
+        <h2>Painel de verificação</h2>
+        <p>Cada notícia é analisada por quatro agentes de inteligência artificial, cada um com um método. Eles não têm “personalidade” política: a pluralidade de visões fica com as pessoas do conselho.</p>
+        <div class="tabela-rolagem">
+          <table class="tabela">
+            <thead><tr><th scope="col">Agente</th><th scope="col">Função</th><th scope="col">Quem executa</th></tr></thead>
+            <tbody>
+              <tr><td>Acusação</td><td>Procura as provas contra a afirmação</td><td>Claude Opus 5.5 (Anthropic)</td></tr>
+              <tr><td>Defesa</td><td>Procura as provas a favor</td><td>GPT, versão a confirmar (OpenAI)</td></tr>
+              <tr><td>Auditor de fontes</td><td>Confere a independência das fontes e a existência de fonte primária</td><td>Claude Opus 5.5 (Anthropic)</td></tr>
+              <tr><td>Auditor de regras</td><td>Confere se o rótulo segue esta metodologia ao pé da letra</td><td>Código da metodologia, sem IA</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="lista-marcada">
+          <li><strong>Prova ou nada.</strong> Cada parecer traz o rótulo sugerido, os motivos e as provas. Conclusão sem prova citada é descartada.</li>
+          <li><strong>Concordância aplica, divergência sobe.</strong> Se os agentes concordam, o rótulo é aplicado e uma amostra é conferida por pessoas. Se divergem, o caso vai ao conselho humano.</li>
+          <li><strong>Texto é dado, não ordem.</strong> Instruções escondidas em uma notícia são ignoradas e o caso é enviado para revisão.</li>
+          <li><strong>Modelos de empresas diferentes.</strong> Acusação e Defesa rodam em empresas diferentes, para que os dois lados não errem do mesmo jeito. O Auditor de regras é o código desta metodologia: regras exatas, que nenhum texto consegue manipular.</li>
+          <li><strong>Mudar a IA é mudar a metodologia.</strong> Toda alteração nos agentes é testada contra casos já decididos por pessoas, auditada quanto a viés, aprovada pelo conselho e publicada aqui.</li>
+        </ul>
+        <p><a class="link-seta" href="painel.html">Veja o painel funcionando com casos de exemplo</a></p>
+      </section>
+
+      <section id="imparcialidade">
+        <h2>Salvaguardas de imparcialidade</h2>
+        <p><strong>Nunca entram no cálculo:</strong> posição política, tema ou tom do texto; audiência ou fama do veículo; se o conteúdo agrada ou desagrada a governos, empresas ou ao próprio Farol.</p>
+        <ul class="lista-marcada">
+          <li><strong>Auditoria de viés trimestral.</strong> Comparamos as notas médias de veículos de linhas editoriais diferentes. Uma diferença grande obriga a revisar os critérios, e o resultado é publicado.</li>
+          <li><strong>Revisão às cegas.</strong> Sempre que possível, o revisor humano avalia o texto sem ver o nome do veículo.</li>
+          <li><strong>Conselho plural.</strong> Revisões sensíveis são decididas por pessoas de formações e visões diferentes, e cada decisão fica registrada.</li>
+          <li><strong>Metodologia versionada.</strong> Pesos e regras são públicos, e cada mudança é registrada com data e motivo.</li>
+        </ul>
+      </section>
+
+      <section id="contestacao">
+        <h2>Contestação e correções</h2>
+        <p>Qualquer veículo ou leitor pode contestar um rótulo ou uma nota, e toda contestação recebe resposta pública.</p>
+        <ol class="lista-numerada">
+          <li>Envie a contestação pelo formulário, com as provas e um e-mail para resposta.</li>
+          <li>O painel de verificação reanalisa o caso com as provas novas.</li>
+          <li>Se os agentes concordam e o caso não é sensível, a resposta sai <strong>na hora</strong>, com os motivos.</li>
+          <li>Se os agentes divergem, o caso é sensível ou você discorda da resposta automática, o caso vai por e-mail ao conselho humano (<a href="mailto:ofarolnws@gmail.com">ofarolnws@gmail.com</a>). A <strong>decisão final</strong> chega por e-mail em até <strong>3 dias úteis</strong>.</li>
+          <li>Toda decisão é publicada com os motivos, seja ela qual for.</li>
+          <li>Se o Farol errou, o rótulo é corrigido e a correção fica registrada, com data.</li>
+          <li>O veículo avaliado pode publicar uma nota de resposta ao lado da avaliação.</li>
+        </ol>
+        <p><a class="botao botao--contorno" href="contestar.html">Contestar uma avaliação</a></p>
+      </section>
+
+      <section id="limitacoes">
+        <h2>Limitações</h2>
+        <p>O método mede evidência e consenso entre fontes independentes, o que não é o mesmo que verdade.</p>
+        <ul class="lista-marcada">
+          <li>Várias redações podem repetir o mesmo erro de uma fonte oficial.</li>
+          <li>Uma apuração inédita e correta fica “Em apuração” até ser confirmada.</li>
+          <li>Em cidades com poucos veículos, a confirmação independente é mais rara.</li>
+          <li>As agências de checagem focam em temas nacionais e virais.</li>
+          <li>Textos com acesso fechado podem ficar com “Dados insuficientes”.</li>
+          <li>A IA pode errar ao agrupar notícias e extrair afirmações; por isso há conferência humana por amostra.</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__grade">
+      <div>
+        <p class="marca marca--rodape">O Farol</p>
+        <p class="rodape__lema">Um farol para a verdade, onde quer que você esteja.</p>
+      </div>
+      <nav aria-label="Produto">
+        <h2>Produto</h2>
+        <ul><li><a href="index.html#como-funciona">Como funciona</a></li><li><a href="painel.html">Painel de verificação</a></li><li><a href="index.html#comecar">Participar dos testes</a></li></ul>
+      </nav>
+      <nav aria-label="Empresa">
+        <h2>Empresa</h2>
+        <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="mailto:ofarolnws@gmail.com?subject=%5BImprensa%5D">Imprensa</a></li><li><a href="mailto:ofarolnws@gmail.com">Contato</a></li></ul>
+      </nav>
+      <nav aria-label="Confiança">
+        <h2>Confiança</h2>
+        <ul><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
+      </nav>
+    </div>
+    <div class="container rodape__base">
+      <span>© <span id="ano"></span> O Farol. Todos os direitos reservados.</span>
+      <span>Feito para quem quer entender o mundo, não só se informar sobre ele.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

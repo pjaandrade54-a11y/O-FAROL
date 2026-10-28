@@ -1,0 +1,71 @@
+# Coleta as notícias e publica o site no GitHub Pages, sem servidor próprio.
+# Roda a cada 30 minutos, a cada envio de código para a branch main e pelo botão "Run workflow".
+
+name: Coletar notícias e publicar o site
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # horário UTC; o GitHub pode atrasar alguns minutos em horários de pico
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: coletar-e-publicar
+  cancel-in-progress: false
+
+jobs:
+  coletar-e-publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.publicar.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # O banco (dados/farol.db) não vai para o repositório: ele passa de uma coleta para a outra pelo cache
+      - name: Recuperar o banco da última coleta
+        uses: actions/cache/restore@v4
+        with:
+          path: dados/farol.db
+          key: farol-db-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: farol-db-
+
+      - name: Rodar os testes
+        run: python -m unittest discover -s tests
+
+      - name: Coletar notícias
+        run: python -m coletor coletar
+
+      - name: Guardar o banco para a próxima coleta
+        if: always() && hashFiles('dados/farol.db') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: dados/farol.db
+          key: farol-db-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Montar o site
+        run: |
+          mkdir -p _site/dados
+          cp *.html _site/
+          cp -r css js img _site/
+          cp dados/noticias.json _site/dados/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: publicar
+        uses: actions/deploy-pages@v4

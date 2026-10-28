@@ -1,0 +1,6 @@
+{
+  "versao": 1,
+  "cidades_monitoradas": [
+    {"nome": "Aracaju", "uf": "SE"}
+  ]
+}

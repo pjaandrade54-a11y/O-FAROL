@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacidade — O Farol</title>
+  <meta name="description" content="Quais dados o Farol usa na versão de testes e como pedir acesso ou exclusão.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <p class="faixa-teste">Versão de testes: as notícias da página inicial são reais e ainda não passaram pelo painel. Os casos analisados no painel são fictícios.</p>
+
+  <div class="faixa-topo">
+    <div class="container faixa-topo__linha">
+      <span id="data-hoje">Edição digital</span>
+      <span><span data-local>Sua cidade</span> · atualizado agora</span>
+    </div>
+  </div>
+
+  <header class="cabecalho">
+    <div class="container">
+      <a class="marca" href="index.html" aria-label="O Farol, página inicial">O Farol</a>
+      <p class="marca__lema">Notícias confiáveis, perto de você</p>
+      <div class="cabecalho__regua"></div>
+      <nav class="nav" aria-label="Principal">
+        <button class="nav__alternar" type="button" aria-expanded="false" aria-controls="nav-lista">Menu</button>
+        <ul class="nav__lista" id="nav-lista">
+          <li><a href="index.html#como-funciona">Como funciona</a></li>
+          <li><a href="metodologia.html">Metodologia</a></li>
+          <li><a href="painel.html">Painel de verificação</a></li>
+          <li><a href="quem-somos.html">Quem somos</a></li>
+        </ul>
+        <a class="botao botao--contorno nav__acao" href="index.html#comecar">Participar dos testes</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="pagina-topo">
+      <div class="container">
+        <p class="sobretitulo">Privacidade</p>
+        <h1>Seus dados no Farol</h1>
+        <p class="pagina-topo__intro">Nesta versão de testes, o Farol não tem cadastro nem banco de dados. Quase tudo fica no seu próprio navegador.</p>
+      </div>
+    </section>
+
+    <div class="container texto-longo">
+      <section>
+        <h2>O que fica no seu navegador</h2>
+        <ul class="lista-marcada">
+          <li><strong>A cidade que você digita</strong> fica guardada só no seu navegador, para aparecer nas outras páginas. Ela não é enviada para nós. Para apagar, limpe os dados do site no navegador.</li>
+          <li><strong>“Usar minha localização”</strong> pede permissão ao navegador. Nesta versão, a posição detectada não é enviada a lugar nenhum.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>O que chega até nós</h2>
+        <p>Só o que você mesmo envia por e-mail para <a href="mailto:ofarolnws@gmail.com">ofarolnws@gmail.com</a>: contestações, pedidos para participar dos testes e mensagens de contato. Os formulários do site apenas preparam a mensagem; o envio é feito por você, no seu programa de e-mail.</p>
+        <p>Usamos esses e-mails só para responder e para registrar as decisões do conselho de revisão. Decisões publicadas não mostram o seu e-mail.</p>
+      </section>
+
+      <section>
+        <h2>Serviços de terceiros</h2>
+        <p>As fontes de letra do site são carregadas do Google Fonts, que recebe o endereço IP do seu navegador. Não usamos cookies de rastreamento, anúncios nem ferramentas de análise de audiência.</p>
+      </section>
+
+      <section>
+        <h2>Seus direitos</h2>
+        <p>Pela Lei Geral de Proteção de Dados (LGPD), você pode pedir acesso, correção ou exclusão dos seus dados a qualquer momento, pelo e-mail <a href="mailto:ofarolnws@gmail.com?subject=Privacidade">ofarolnws@gmail.com</a>.</p>
+        <p>Esta política vale para a versão de testes e será revista antes do lançamento.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__grade">
+      <div>
+        <p class="marca marca--rodape">O Farol</p>
+        <p class="rodape__lema">Um farol para a verdade, onde quer que você esteja.</p>
+      </div>
+      <nav aria-label="Produto">
+        <h2>Produto</h2>
+        <ul><li><a href="index.html#como-funciona">Como funciona</a></li><li><a href="painel.html">Painel de verificação</a></li><li><a href="index.html#comecar">Participar dos testes</a></li></ul>
+      </nav>
+      <nav aria-label="Empresa">
+        <h2>Empresa</h2>
+        <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="mailto:ofarolnws@gmail.com?subject=%5BImprensa%5D">Imprensa</a></li><li><a href="mailto:ofarolnws@gmail.com">Contato</a></li></ul>
+      </nav>
+      <nav aria-label="Confiança">
+        <h2>Confiança</h2>
+        <ul><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
+      </nav>
+    </div>
+    <div class="container rodape__base">
+      <span>© <span id="ano"></span> O Farol. Todos os direitos reservados.</span>
+      <span>Feito para quem quer entender o mundo, não só se informar sobre ele.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
