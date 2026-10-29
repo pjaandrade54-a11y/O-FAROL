@@ -48,17 +48,21 @@ def _numero_do_ambiente(nome, padrao):
 
 
 def _montar_agentes():
-    """Quem executa cada agente. IA_PROVEDOR escolhe: "gemini" (gratuito, padrão), "github" (gratuito),
-    "anthropic" (pago) ou "desligado"."""
-    provedor = (os.environ.get("IA_PROVEDOR") or "gemini").strip().lower()
+    """Quem executa cada agente de IA, conforme IA_PROVEDOR: "gemini", "github" ou "anthropic".
+    Sem IA_PROVEDOR, usa o Gemini se houver GEMINI_API_KEY. Sem IA, a análise é feita por regras."""
+    provedor = _provedor()
     if provedor == "gemini":
         return _agentes_gemini()
     if provedor == "github":
         return _agentes_github()
     if provedor == "anthropic":
         return _agentes_pagos()
-    print(f"IA_PROVEDOR={provedor}: conselho de IA desligado.")
     return None, []
+
+
+def _provedor():
+    padrao = "gemini" if os.environ.get("GEMINI_API_KEY") else "regras"
+    return (os.environ.get("IA_PROVEDOR") or padrao).strip().lower()
 
 
 def _agentes_gemini():
@@ -126,7 +130,10 @@ def cmd_analisar(args):
             casos = None
 
     chamar, executores = _montar_agentes()
-    if chamar:
+    if _provedor() == "desligado":
+        print("IA_PROVEDOR=desligado: as notícias ficam sem análise.")
+        r = None
+    elif chamar:
         print("Conselho de IA analisando as notícias da página inicial…")
         r = conselho.analisar(conexao, veiculos, chamar,
                               por_execucao=_numero_do_ambiente("IA_POR_EXECUCAO", 3),
@@ -136,6 +143,13 @@ def cmd_analisar(args):
         for agente in dict.fromkeys(executores):
             print(f"Tokens {getattr(agente, 'modelo', type(agente).__name__)}: "
                   f"{agente.tokens[0]} de entrada, {agente.tokens[1]} de saída.")
+    else:
+        # Gratuito e sem chave; também é o que roda quando a IA escolhida não está disponível
+        print("Análise automática por regras, sem IA, das notícias da página inicial…")
+        r = conselho.analisar_regras(conexao, veiculos)
+        print(f"\n{r['analisadas']} notícias analisadas por regras ({r['conselho']} com o conselho humano).")
+
+    if r:
         if casos is not None and r["novas_conselho"]:
             try:
                 casos_github.garantir_etiquetas()

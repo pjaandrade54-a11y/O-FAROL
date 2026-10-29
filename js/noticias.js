@@ -161,9 +161,9 @@
     var analisadas = visiveis.filter(function (n) { return n.analise; }).length;
     var data = new Date(dados.gerado_em);
     var atualizado = data.toLocaleString('pt-BR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-    var analise = analisadas
-      ? analisadas + ' de ' + visiveis.length + ' já passaram pelo conselho de IA; as demais aguardam a próxima rodada. '
-      : 'O conselho de IA ainda não analisou estas notícias. ';
+    var analise = analisadas === visiveis.length ? 'Todas já foram analisadas. '
+      : analisadas ? analisadas + ' de ' + visiveis.length + ' já foram analisadas; as demais aguardam a próxima rodada. '
+      : 'Estas notícias ainda não foram analisadas. ';
     legenda.replaceChildren(
       document.createTextNode('Notícias reais de ' + dados.veiculos.length + ' veículos, coletadas em ' + atualizado +
         '. Os títulos levam ao site de cada veículo. ' + analise),
