@@ -54,14 +54,29 @@ def _pedir(url, corpo=None, timeout=180):
         return json.loads(r.read())
 
 
-def catalogo():
-    """Modelos disponíveis: lista de dicionários com id, publisher e rate_limit_tier."""
+def catalogo(aviso=print):
+    """Modelos disponíveis (dicionários com id e publisher). Se o catálogo falhar, devolve lista vazia
+    e os agentes usam o primeiro modelo da lista de preferência de cada um."""
+    pedido = urllib.request.Request(CATALOGO, headers={"Authorization": f"Bearer {_token()}",
+                                                      "Accept": "application/json"})
     try:
-        dados = _pedir(CATALOGO)
+        with urllib.request.urlopen(pedido, timeout=60) as r:
+            corpo = r.read()
+            tipo = r.headers.get("Content-Type", "")
     except urllib.error.HTTPError as e:
-        raise ErroModelo(f"o catálogo do GitHub Models respondeu {e.code} (confira a permissão models: read)") from e
+        aviso(f"  Aviso: o catálogo do GitHub Models respondeu {e.code}; usando os modelos padrão.")
+        return []
     except urllib.error.URLError as e:
         raise ErroModelo(f"sem conexão com o GitHub Models ({e.reason})") from e
+    try:
+        dados = json.loads(corpo)
+    except json.JSONDecodeError:
+        trecho = corpo[:120].decode("utf-8", "replace").replace("\n", " ")
+        aviso(f"  Aviso: o catálogo do GitHub Models não veio em JSON ({tipo or 'sem tipo'}: {trecho!r}); "
+              "usando os modelos padrão.")
+        return []
+    if isinstance(dados, dict):
+        dados = dados.get("models") or dados.get("data") or []
     return [m for m in dados if isinstance(m, dict) and m.get("id")]
 
 
@@ -75,7 +90,7 @@ def escolher_modelos(modelos, aviso=print):
         if pedido:
             escolhidos[agente] = pedido
             continue
-        achado = next((p for p in preferidos if p in ids), None)
+        achado = next((p for p in preferidos if p in ids), None) if ids else preferidos[0]
         if not achado:
             # Fora da lista: um modelo de texto, de empresa diferente da Acusação no caso da Defesa
             empresa_acusacao = escolhidos.get("acusacao", "").split("/")[0]

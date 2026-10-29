@@ -38,6 +38,11 @@ class TestModeloGitHub(unittest.TestCase):
         self.assertEqual(modelos["auditor-fontes"], "openai/gpt-4.1-mini")
         self.assertEqual(modelos["defesa"], "mistral-ai/mistral-small-2503")
 
+    def test_sem_catalogo_usa_a_primeira_preferencia(self):
+        with mock.patch.dict("os.environ", {}, clear=True):
+            modelos = modelo_github.escolher_modelos([], aviso=lambda *_: None)
+        self.assertEqual(modelos, {a: p[0] for a, p in modelo_github.PREFERENCIAS.items()})
+
     def test_variavel_do_repositorio_tem_prioridade(self):
         with mock.patch.dict("os.environ", {"GITHUB_MODELO_DEFESA": "meta/outro"}, clear=True):
             modelos = modelo_github.escolher_modelos(CATALOGO, aviso=lambda *_: None)
