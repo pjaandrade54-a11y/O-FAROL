@@ -1,18 +1,21 @@
-"""Exporta as notícias mais recentes para dados/noticias.json, que o site pode ler direto.
+"""Exporta as notícias mais recentes em arquivos estáticos que o site lê direto, sem servidor:
 
-Um arquivo estático basta para o site: não é preciso servidor ligado o tempo todo.
+- dados/noticias.json: país, mundo, checagens, veículos e a lista de cidades (todo leitor baixa);
+- dados/estados/UF.json: as notícias das cidades e do estado (o leitor baixa só o do estado escolhido).
 """
 
 import json
 import os
+from pathlib import Path
 
 from . import selecao
-from .cadastro import RAIZ
+from .cadastro import RAIZ, UFS
 from .coleta import agora
 from .conselho import carregar_analises
 
 ARQUIVO = RAIZ / "dados" / "noticias.json"
-ESCALAS = ("cidade", "estado", "pais", "mundo")
+GERAIS = ("pais", "mundo")
+POR_ESTADO = ("cidade", "estado")
 
 
 def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
@@ -46,15 +49,29 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
         }
 
     t = selecao.listas(conexao)
-    for escala in ESCALAS:
+    for escala in GERAIS:
         saida["escalas"][escala] = [item(l) for l in t[escala]]
     saida["checagens"] = [item(l) for l in t["checagens"]]
+    _gravar(arquivo, saida)
 
-    temporario = arquivo.with_suffix(".tmp")
-    with open(temporario, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(saida, f, ensure_ascii=False, indent=1)
-    os.replace(temporario, arquivo)
-
-    contagem = {escala: len(lista) for escala, lista in saida["escalas"].items()}
+    # Um arquivo por estado, sempre os 27: um estado que ficou sem notícias não guarda as antigas
+    pasta = Path(arquivo).parent / "estados"
+    pasta.mkdir(exist_ok=True)
+    contagem = {escala: len(saida["escalas"][escala]) for escala in GERAIS}
+    contagem.update({escala: 0 for escala in POR_ESTADO})
+    for uf in sorted(UFS):
+        estado = {"gerado_em": saida["gerado_em"], "uf": uf, "escalas": {}}
+        for escala in POR_ESTADO:
+            estado["escalas"][escala] = [item(l) for l in t[escala] if l["uf"] == uf]
+            contagem[escala] += len(estado["escalas"][escala])
+        _gravar(pasta / f"{uf}.json", estado)
     contagem["checagens"] = len(saida["checagens"])
     return contagem
+
+
+def _gravar(arquivo, dados):
+    arquivo = Path(arquivo)
+    temporario = arquivo.with_suffix(".tmp")
+    with open(temporario, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(dados, f, ensure_ascii=False, separators=(",", ":"))
+    os.replace(temporario, arquivo)

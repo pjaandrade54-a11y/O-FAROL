@@ -148,7 +148,11 @@ class TestConselho(unittest.TestCase):
             arquivo = pathlib.Path(pasta) / "noticias.json"
             exportar.exportar(self.conexao, [{**v, "abrangencia": "local"} for v in VEICULOS], arquivo)
             dados = json.loads(arquivo.read_text(encoding="utf-8"))
-        item = next(n for n in dados["escalas"]["cidade"] if n["link"] == "https://a/1")
+            estado = json.loads((pathlib.Path(pasta) / "estados" / "SE.json").read_text(encoding="utf-8"))
+            vazio = json.loads((pathlib.Path(pasta) / "estados" / "PE.json").read_text(encoding="utf-8"))
+        self.assertNotIn("cidade", dados["escalas"])
+        self.assertEqual(vazio["escalas"], {"cidade": [], "estado": []})
+        item = next(n for n in estado["escalas"]["cidade"] if n["link"] == "https://a/1")
         self.assertEqual(item["analise"]["rotulo"], "em-apuracao")
 
 

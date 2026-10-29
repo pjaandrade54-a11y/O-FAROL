@@ -1,6 +1,8 @@
 # Banco local do coletor (as notícias exportadas ficam em dados/noticias.json)
 dados/farol.db
 dados/*.tmp
+# Arquivos por estado, gerados a cada coleta (dados/noticias.json fica no repositório como exemplo)
+dados/estados/
 __pycache__/
 
 # Site montado pelo GitHub Actions

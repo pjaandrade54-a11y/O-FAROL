@@ -88,6 +88,7 @@ jobs:
           cp *.html _site/
           cp -r css js img _site/
           cp dados/noticias.json _site/dados/
+          cp -r dados/estados _site/dados/
 
       - uses: actions/configure-pages@v5
 
