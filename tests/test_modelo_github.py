@@ -58,6 +58,26 @@ class TestModeloGitHub(unittest.TestCase):
         self.assertEqual(agente.tokens, [10, 5])
         self.assertIn("GitHub Models", modelo)
 
+    def test_endereco_sem_json_passa_para_o_proximo(self):
+        enderecos = list(modelo_github.ENDERECOS)
+        self.addCleanup(lambda: modelo_github.ENDERECOS.__setitem__(slice(None), enderecos))
+        respostas = [modelo_github.RespostaInvalida("OK"), resposta(json.dumps(PARECER))]
+        with mock.patch.object(modelo_github, "_pedir", side_effect=respostas) as pedir, \
+                mock.patch("builtins.print"):
+            parecer, _ = modelo_github.AgenteGitHub("openai/gpt-4.1").parecer("sistema", "conteudo")
+        self.assertEqual(parecer["rotuloSugerido"], "em-apuracao")
+        self.assertEqual(pedir.call_args.args[0], "https://models.inference.ai.azure.com/chat/completions")
+        self.assertEqual(pedir.call_args.args[1]["model"], "gpt-4.1")
+
+    def test_nenhum_endereco_valido_para_a_execucao(self):
+        enderecos = list(modelo_github.ENDERECOS)
+        self.addCleanup(lambda: modelo_github.ENDERECOS.__setitem__(slice(None), enderecos))
+        with mock.patch.object(modelo_github, "_pedir", side_effect=modelo_github.RespostaInvalida("OK")), \
+                mock.patch("builtins.print"):
+            with self.assertRaises(modelo_github.RespostaInvalida) as erro:
+                modelo_github.AgenteGitHub("openai/gpt-4.1").parecer("sistema", "conteudo")
+        self.assertTrue(erro.exception.parar)
+
     def test_cota_esgotada_para_a_execucao(self):
         with mock.patch.object(modelo_github, "_pedir", side_effect=erro_http(429)):
             agente = modelo_github.AgenteGitHub("openai/gpt-4.1")
