@@ -114,6 +114,19 @@ class TestConselho(unittest.TestCase):
         self.assertEqual(len(analises), 2)
         self.assertEqual(next(iter(analises.values()))["rotulo"], "dados-insuficientes")
 
+    def test_erro_que_pede_parada_interrompe_a_execucao(self):
+        chamadas = []
+
+        def chamar(agente, sistema, conteudo):
+            chamadas.append(agente)
+            erro = conselho.ErroModelo("cota esgotada")
+            erro.parar = True
+            raise erro
+
+        inserir(self.conexao, "portal", "Outra notícia da cidade", "https://b/2")
+        r = conselho.analisar(self.conexao, VEICULOS, chamar, por_execucao=5, por_dia=10, aviso=lambda *_: None)
+        self.assertEqual((r["erros"], len(chamadas)), (1, 1))
+
     def test_decisao_do_conselho_humano(self):
         chamar = agentes_falsos({a["id"]: parecer("em-apuracao", []) for a in conselho.AGENTES})
         conselho.guardar(self.conexao, conselho.analisar_noticia(self.noticia, POR_ID, self.conexao, chamar))

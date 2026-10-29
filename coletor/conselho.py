@@ -118,6 +118,9 @@ nossa diz dizem afirma segundo anuncia apareceu primeiro post noticia noticias h
 class ErroModelo(RuntimeError):
     """O modelo não devolveu um parecer utilizável (erro de API, recusa ou resposta cortada)."""
 
+    # True quando não adianta tentar as outras notícias nesta execução (cota esgotada, por exemplo)
+    parar = False
+
 
 def suspeita_manipulacao(texto):
     return any(p.search(texto or "") for p in PADROES_MANIPULACAO)
@@ -379,6 +382,8 @@ def analisar(conexao, veiculos, chamar, por_execucao, por_dia, aviso=print):
         except ErroModelo as e:
             r["erros"] += 1
             aviso(f"  ! {noticia['titulo'][:70]}: {e}")
+            if e.parar:
+                break
             continue
         guardar(conexao, analise)
         r["analisadas"] += 1

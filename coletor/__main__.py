@@ -48,8 +48,34 @@ def _numero_do_ambiente(nome, padrao):
 
 
 def _montar_agentes():
-    """Quem executa cada agente, conforme as chaves cadastradas. Sem chave da Anthropic, o conselho fica desligado."""
+    """Quem executa cada agente. IA_PROVEDOR escolhe: "github" (gratuito, padrão), "anthropic" (pago) ou "desligado"."""
+    provedor = (os.environ.get("IA_PROVEDOR") or "github").strip().lower()
+    if provedor == "github":
+        return _agentes_github()
+    if provedor == "anthropic":
+        return _agentes_pagos()
+    print(f"IA_PROVEDOR={provedor}: conselho de IA desligado.")
+    return None, []
+
+
+def _agentes_github():
+    from . import modelo_github
+    if not os.environ.get("GITHUB_TOKEN"):
+        print("Conselho de IA desligado: o GitHub Models só funciona dentro do GitHub Actions (falta GITHUB_TOKEN).")
+        return None, []
+    try:
+        print("Modelos gratuitos do GitHub Models:")
+        modelos = modelo_github.escolher_modelos(modelo_github.catalogo())
+    except conselho.ErroModelo as e:
+        print(f"Conselho de IA desligado nesta execução: {e}.")
+        return None, []
+    executores = {agente: modelo_github.AgenteGitHub(modelo) for agente, modelo in modelos.items()}
+    return (lambda agente, sistema, conteudo: executores[agente].parecer(sistema, conteudo)), list(executores.values())
+
+
+def _agentes_pagos():
     if not os.environ.get("ANTHROPIC_API_KEY"):
+        print("Conselho de IA desligado: IA_PROVEDOR=anthropic precisa de ANTHROPIC_API_KEY nos Secrets.")
         return None, []
     from . import modelo_claude
     claude = modelo_claude.AgenteClaude(os.environ.get("CLAUDE_MODELO") or modelo_claude.MODELO_PADRAO,
@@ -81,17 +107,16 @@ def cmd_analisar(args):
             casos = None
 
     chamar, executores = _montar_agentes()
-    if not chamar:
-        print("Conselho de IA desligado: cadastre ANTHROPIC_API_KEY (e OPENAI_API_KEY) nos Secrets do repositório.")
-    else:
+    if chamar:
         print("Conselho de IA analisando as notícias da página inicial…")
         r = conselho.analisar(conexao, veiculos, chamar,
-                              por_execucao=_numero_do_ambiente("IA_POR_EXECUCAO", 4),
-                              por_dia=_numero_do_ambiente("IA_POR_DIA", 40))
+                              por_execucao=_numero_do_ambiente("IA_POR_EXECUCAO", 3),
+                              por_dia=_numero_do_ambiente("IA_POR_DIA", 15))
         print(f"\n{r['analisadas']} notícias analisadas ({r['conselho']} para o conselho humano), "
               f"{r['erros']} com erro, {r['pendentes']} pendentes antes desta execução.")
         for agente in dict.fromkeys(executores):
-            print(f"Tokens {type(agente).__name__}: {agente.tokens[0]} de entrada, {agente.tokens[1]} de saída.")
+            print(f"Tokens {getattr(agente, 'modelo', type(agente).__name__)}: "
+                  f"{agente.tokens[0]} de entrada, {agente.tokens[1]} de saída.")
         if casos is not None and r["novas_conselho"]:
             try:
                 casos_github.garantir_etiquetas()
