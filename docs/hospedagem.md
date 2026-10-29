@@ -1,10 +1,8 @@
 # Colocar o site no ar de graça
 
-O site fica no **GitHub Pages** e a coleta roda no **GitHub Actions** a cada 30 minutos, seguida do conselho de IA. Os dois são gratuitos para repositórios públicos, e não é preciso deixar nenhum computador ligado. O fluxo está em `.github/workflows/coletar-e-publicar.yml`. Só os modelos de IA são pagos (veja "Ligar o conselho de IA").
+O site fica no **GitHub Pages** e a coleta roda no **GitHub Actions** a cada 30 minutos, seguida do conselho de IA nos modelos gratuitos do GitHub Models. Tudo é gratuito para repositórios públicos, e não é preciso deixar nenhum computador ligado. O fluxo está em `.github/workflows/coletar-e-publicar.yml`.
 
-## Situação em 29/10/2026
-
-O repositório `pjaandrade54-a11y/O-FAROL` já existe e é público, e as duas execuções da aba *Actions* coletaram as notícias, mas falharam no passo `configure-pages` com *"Get Pages site failed"*: **o GitHub Pages ainda não foi ligado.** Falta só o passo 5 abaixo (*Settings → Pages → Source: GitHub Actions*) e depois o passo 6.
+O site está no ar em **https://pjaandrade54-a11y.github.io/O-FAROL/**.
 
 ## Uma vez só (cerca de 15 minutos)
 
@@ -17,31 +15,28 @@ O repositório `pjaandrade54-a11y/O-FAROL` já existe e é público, e as duas e
 
 Depois disso, a coleta e a publicação acontecem sozinhas a cada 30 minutos.
 
-## Ligar o conselho de IA
+## Conselho de IA (gratuito)
 
-Sem chaves, o site funciona normalmente e as notícias aparecem como "Aguardando análise". Para ligar:
+O conselho de IA já vem ligado e **não custa nada**: ele usa os modelos gratuitos do **GitHub Models**, com a permissão que o próprio GitHub Actions fornece (`models: read` no fluxo). Não é preciso chave, conta paga nem cartão.
 
-1. **Crie as chaves.** Anthropic: [console.anthropic.com](https://console.anthropic.com) → *API Keys*. OpenAI: [platform.openai.com](https://platform.openai.com) → *API keys*. Nas duas, cadastre um cartão e **defina um limite mensal de gasto** (*Limits* / *Billing*), para nunca ter surpresa.
-2. **Guarde as chaves no GitHub, nunca nos arquivos.** No repositório: *Settings → Secrets and variables → Actions → New repository secret*. Crie `ANTHROPIC_API_KEY` e `OPENAI_API_KEY`, cada um com a sua chave.
-3. **Rode uma vez para testar.** *Actions → Coletar notícias e publicar o site → Run workflow*. No passo "Conselho de IA" aparece cada notícia analisada e o rótulo dado.
+- **Modelos:** a cada execução, o fluxo consulta o catálogo do GitHub Models e escolhe um modelo para cada agente (Acusação e Defesa de empresas diferentes). O passo "Conselho de IA" mostra quais foram usados, e o site mostra o modelo de cada parecer.
+- **Cota gratuita:** o GitHub limita os pedidos por dia e por minuto de cada modelo. Cada notícia usa 3 pedidos (um por agente). Por isso, o padrão é analisar no máximo **15 notícias por dia**, 3 por execução. Quando a cota acaba, a execução para e as notícias restantes ficam "Aguardando análise" até a cota renovar. Não há cobrança.
+- **Escolher outros modelos:** crie as variáveis `GITHUB_MODELO_ACUSACAO`, `GITHUB_MODELO_DEFESA` ou `GITHUB_MODELO_FONTES` com o id do modelo (por exemplo `openai/gpt-4.1`), como aparece no passo "Conselho de IA" ou em [github.com/marketplace/models](https://github.com/marketplace/models).
 
-Sem a chave da OpenAI, a Defesa roda no Claude, e o site mostra isso em cada parecer.
-
-### Quanto custa
-
-Cada notícia passa por três agentes (dois no Claude Opus 5.5 e um no GPT): estimativa de **US$ 0,05 a US$ 0,15 por notícia**. Só são analisadas as 5 notícias mais recentes de cada aba (as que aparecem na página inicial), e uma vez cada. Com o limite padrão de 40 notícias por dia, o gasto fica perto de **US$ 2 a 6 por dia**. O passo "Conselho de IA" mostra quantos tokens cada execução usou; compare com o painel de uso de cada empresa nos primeiros dias.
-
-Ajustes, em *Settings → Secrets and variables → Actions → aba Variables → New repository variable* (todos opcionais):
+Variáveis opcionais, em *Settings → Secrets and variables → Actions → aba Variables → New repository variable*:
 
 | Variável | Padrão | Para que serve |
 | --- | --- | --- |
-| `IA_POR_DIA` | 40 | Máximo de notícias analisadas por dia (UTC). A principal trava de custo |
-| `IA_POR_EXECUCAO` | 4 | Máximo por execução de 30 minutos |
-| `IA_ESFORCO` | medium | Quanto o Claude raciocina: `low` custa menos, `high` analisa mais a fundo |
-| `CLAUDE_MODELO` | claude-opus-5-5 | Modelo da Acusação e do Auditor de fontes |
-| `OPENAI_MODELO` | gpt-6.1-terra | Modelo da Defesa. Troque quando a OpenAI lançar outro |
+| `IA_PROVEDOR` | github | `github` (gratuito), `anthropic` (pago, com as chaves abaixo) ou `desligado` |
+| `IA_POR_DIA` | 15 | Máximo de notícias analisadas por dia (UTC) |
+| `IA_POR_EXECUCAO` | 3 | Máximo por execução de 30 minutos |
+| `GITHUB_MODELO_ACUSACAO`, `GITHUB_MODELO_DEFESA`, `GITHUB_MODELO_FONTES` | escolhidos pelo catálogo | Modelo de cada agente no GitHub Models |
 
-Mudar modelo ou esforço é mudar a metodologia: registre a mudança em `metodologia.html`.
+Mudar modelo é mudar a metodologia: registre a mudança em `metodologia.html`.
+
+### Opção paga: Claude e GPT
+
+Para usar o Claude Opus 5.5 (Acusação e Auditor de fontes) e o GPT (Defesa), crie a variável `IA_PROVEDOR` com o valor `anthropic` e guarde as chaves em *Settings → Secrets and variables → Actions → New repository secret*: `ANTHROPIC_API_KEY` e, se quiser, `OPENAI_API_KEY` (sem ela, a Defesa roda no Claude). As contas precisam de créditos; defina um limite mensal de gasto em cada uma. Estimativa: US$ 0,05 a 0,15 por notícia. Nesse modo também valem as variáveis `CLAUDE_MODELO`, `OPENAI_MODELO` e `IA_ESFORCO` (`low`, `medium` ou `high`).
 
 ### Conselho humano
 
@@ -55,7 +50,7 @@ Quando os agentes divergem, um parecer é descartado, o tema é sensível ou há
 
 ## O que é bom saber
 
-- **O código fica público.** Não há nada secreto nele. As chaves de API ficam em *Settings → Secrets and variables → Actions*, **nunca** dentro dos arquivos.
+- **O código fica público.** Não há nada secreto nele. Se um dia usar chaves de API (opção paga), elas ficam em *Settings → Secrets and variables → Actions*, **nunca** dentro dos arquivos.
 - **Atrasos.** O GitHub não garante o horário exato das execuções agendadas: em repositórios novos ou em horário de pico, uma execução pode atrasar bastante ou ser pulada. O fluxo roda nos minutos 7 e 37 de cada hora, fora da virada da hora, quando o GitHub fica mais lento. Com a página aberta, o site busca notícias novas sozinho a cada 5 minutos, então o leitor vê a coleta assim que ela é publicada.
 - **60 dias sem mudanças.** Em repositório público, o GitHub pausa as execuções agendadas depois de 60 dias sem nenhuma atividade no repositório e avisa por e-mail. Basta enviar qualquer mudança ou reativar em *Actions*.
 - **O banco** (`dados/farol.db`) não vai para o repositório. Ele passa de uma execução para a outra pelo cache do GitHub, com as notícias e as análises do conselho de IA, e as notícias com mais de 30 dias são apagadas. Se o cache sumir, a coleta seguinte recomeça do zero: as notícias da página inicial são analisadas de novo (dentro do limite diário), e as decisões do conselho humano são recuperadas dos casos fechados.
