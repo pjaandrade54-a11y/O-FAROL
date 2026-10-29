@@ -14,8 +14,13 @@ import urllib.request
 
 from .conselho import ESQUEMA_PARECER, ErroModelo
 
-INFERENCIA = "https://models.github.ai/inference/chat/completions"
 CATALOGO = "https://models.github.ai/catalog/models"
+# Endereços de inferência, na ordem em que são tentados. O segundo é o endereço antigo do GitHub Models,
+# que usa o nome do modelo sem a empresa ("gpt-4.1" em vez de "openai/gpt-4.1").
+ENDERECOS = [
+    ("https://models.github.ai/inference/chat/completions", lambda modelo: modelo),
+    ("https://models.inference.ai.azure.com/chat/completions", lambda modelo: modelo.split("/", 1)[-1]),
+]
 
 # Preferência de cada agente. Acusação e Defesa em empresas diferentes, para não errarem do mesmo jeito.
 # Se nenhum da lista estiver no catálogo, o agente usa outro modelo do catálogo (veja escolher_modelos).
@@ -30,6 +35,10 @@ VARIAVEIS = {"acusacao": "GITHUB_MODELO_ACUSACAO", "defesa": "GITHUB_MODELO_DEFE
 
 # A cota gratuita também limita pedidos por minuto: uma pausa curta entre chamadas evita estourar
 PAUSA_ENTRE_CHAMADAS = 6
+
+
+class RespostaInvalida(ErroModelo):
+    """O endereço respondeu, mas sem JSON: provavelmente não é (mais) o endereço do serviço."""
 
 
 class CotaEsgotada(ErroModelo):
@@ -51,7 +60,13 @@ def _pedir(url, corpo=None, timeout=180):
         "Content-Type": "application/json",
     })
     with urllib.request.urlopen(pedido, timeout=timeout) as r:
-        return json.loads(r.read())
+        corpo = r.read()
+        tipo = r.headers.get("Content-Type", "")
+    try:
+        return json.loads(corpo)
+    except json.JSONDecodeError as e:
+        trecho = corpo[:80].decode("utf-8", "replace").strip()
+        raise RespostaInvalida(f"{url} respondeu {tipo or 'sem tipo'} sem JSON: {trecho!r}") from e
 
 
 def catalogo(aviso=print):
@@ -132,11 +147,12 @@ class AgenteGitHub:
         if formato is None or formato["type"] != "json_schema":
             sistema += ("\n\nResponda só com um objeto JSON neste esquema, sem texto antes ou depois:\n"
                         + json.dumps(ESQUEMA_PARECER, ensure_ascii=False))
-        corpo = {"model": self.modelo,
+        url, nome = ENDERECOS[0]
+        corpo = {"model": nome(self.modelo),
                  "messages": [{"role": "system", "content": sistema}, {"role": "user", "content": conteudo}]}
         if formato:
             corpo["response_format"] = formato
-        return _pedir(INFERENCIA, corpo)
+        return _pedir(url, corpo)
 
     def parecer(self, sistema, conteudo):
         time.sleep(PAUSA_ENTRE_CHAMADAS)
@@ -157,6 +173,14 @@ class AgenteGitHub:
                     self.formatos.pop(0)  # tenta um formato de resposta mais simples
                     continue
                 raise ErroModelo(f"o GitHub Models respondeu {e.code} para {self.modelo}: {detalhe}") from e
+            except RespostaInvalida as e:
+                # Endereço que não serve: passa para o próximo, para todos os agentes
+                if len(ENDERECOS) > 1:
+                    print(f"  Aviso: {e}; tentando {ENDERECOS[1][0]}")
+                    ENDERECOS.pop(0)
+                    continue
+                e.parar = True
+                raise
             except urllib.error.URLError as e:
                 raise ErroModelo(f"sem conexão com o GitHub Models ({e.reason})") from e
 
