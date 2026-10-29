@@ -1,5 +1,6 @@
 """Coleta: passa pelos feeds dos veículos ativos e guarda só as notícias novas."""
 
+import json
 import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
@@ -20,17 +21,28 @@ def data_confiavel(publicado_em, momento):
     return publicado_em
 
 
-def cidade_citada(item, veiculo, cidades):
-    """Devolve a cidade monitorada citada no título ou resumo. Veículos estaduais e locais só contam
-    cidades do seu estado; cidades de nome ambíguo só contam em veículos do mesmo estado."""
+def cidades_citadas(item, veiculo, cidades):
+    """Cidades monitoradas citadas no título ou resumo, na ordem em que aparecem. Veículos estaduais e
+    locais só contam cidades do seu estado; cidades de nome ambíguo só contam em veículos do mesmo estado.
+    O nome mais longo vence: "Juazeiro do Norte" não conta também como "Juazeiro"."""
     texto = f"{item['titulo']} {item['resumo']}"
-    for c in cidades:
+    achadas = []
+    for c in cidades:  # já vêm das de nome mais longo para as mais curtas
         mesmo_estado = c["uf"] == veiculo.get("uf")
         if (veiculo["abrangencia"] in ("estadual", "local") or c.get("ambigua")) and not mesmo_estado:
             continue
-        if re.search(r"\b" + re.escape(c["nome"]) + r"\b", texto, re.IGNORECASE):
-            return c
-    return None
+        padrao = re.compile(r"\b" + re.escape(c["nome"]) + r"\b", re.IGNORECASE)
+        posicao = padrao.search(texto)
+        if posicao:
+            achadas.append((posicao.start(), c))
+            texto = padrao.sub(lambda m: " " * len(m.group(0)), texto)  # não deixa um nome menor casar dentro dele
+    return [c for _, c in sorted(achadas, key=lambda x: x[0])]
+
+
+def cidade_citada(item, veiculo, cidades):
+    """A primeira cidade monitorada citada, ou None."""
+    achadas = cidades_citadas(item, veiculo, cidades)
+    return achadas[0] if achadas else None
 
 
 def coletar(conexao, veiculos, so_veiculo=None, aviso=print, cidades=(), simultaneos=12):
@@ -83,20 +95,23 @@ def guardar(conexao, veiculo, feed, itens, cidades=()):
     novas = 0
     for item in itens:
         escala, uf, cidade = escala_padrao, veiculo.get("uf"), veiculo.get("cidade")
+        lista = [{"nome": cidade, "uf": uf}] if cidade else []
         if uso == "noticias" and escala in ("estado", "pais"):
-            citada = cidade_citada(item, veiculo, cidades)
-            if citada:
-                # Notícia estadual sobre a cidade vai para a aba Cidade; a nacional fica na aba País e
-                # também aparece na aba Cidade de quem escolheu aquela cidade
-                uf, cidade = citada["uf"], citada["nome"]
+            citadas = cidades_citadas(item, veiculo, cidades)
+            if citadas:
+                # Notícia estadual sobre a cidade vai para a aba Cidade; a nacional fica na aba País. As duas
+                # aparecem na aba Cidade de todas as cidades citadas
+                uf, cidade = citadas[0]["uf"], citadas[0]["nome"]
+                lista = [{"nome": c["nome"], "uf": c["uf"]} for c in citadas]
                 if escala == "estado":
                     escala = "cidade"
         cursor = conexao.execute(
             """INSERT OR IGNORE INTO noticias
-               (veiculo_id, titulo, link, guid, resumo, autor, publicado_em, coletado_em, escala, uso, uf, cidade)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               (veiculo_id, titulo, link, guid, resumo, autor, publicado_em, coletado_em, escala, uso, uf, cidade, cidades)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (veiculo["id"], item["titulo"], item["link"], item["guid"], item["resumo"], item["autor"],
-             data_confiavel(item["publicado_em"], momento), momento, escala, uso, uf, cidade),
+             data_confiavel(item["publicado_em"], momento), momento, escala, uso, uf, cidade,
+             json.dumps(lista, ensure_ascii=False) if lista else None),
         )
         novas += cursor.rowcount
     return novas

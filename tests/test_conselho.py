@@ -136,6 +136,18 @@ class TestConselho(unittest.TestCase):
         a = conselho.carregar_analises(self.conexao)["https://a/1"]
         self.assertEqual((a["rotulo"], a["destino"]), ("contestada", "humano"))
 
+    def test_noticia_de_duas_cidades_vai_para_os_dois_estados(self):
+        self.conexao.execute(
+            "INSERT INTO noticias (veiculo_id, titulo, link, publicado_em, coletado_em, escala, uso, uf, cidade, cidades) "
+            "VALUES ('portal', 'Voo liga Aracaju e Recife', 'https://b/voo', ?, ?, 'pais', 'noticias', 'SE', 'Aracaju', ?)",
+            (AGORA, AGORA, json.dumps([{"nome": "Aracaju", "uf": "SE"}, {"nome": "Recife", "uf": "PE"}])))
+        with tempfile.TemporaryDirectory() as pasta:
+            exportar.exportar(self.conexao, [{**v, "abrangencia": "local"} for v in VEICULOS], pathlib.Path(pasta) / "n.json")
+            se = json.loads((pathlib.Path(pasta) / "estados" / "SE.json").read_text(encoding="utf-8"))
+            pe = json.loads((pathlib.Path(pasta) / "estados" / "PE.json").read_text(encoding="utf-8"))
+        self.assertIn(("https://b/voo", "Aracaju"), [(n["link"], n["cidade"]) for n in se["escalas"]["cidade"]])
+        self.assertEqual([(n["link"], n["cidade"], n["uf"]) for n in pe["escalas"]["cidade"]], [("https://b/voo", "Recife", "PE")])
+
     def test_texto_para_o_conselho_leva_o_link(self):
         chamar = agentes_falsos({a["id"]: parecer("em-apuracao", []) for a in conselho.AGENTES})
         texto = conselho.texto_para_conselho(conselho.analisar_noticia(self.noticia, POR_ID, self.conexao, chamar))

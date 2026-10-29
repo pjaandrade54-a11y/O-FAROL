@@ -39,7 +39,8 @@ Um feed pode ir para outra aba com `"escala"`: por exemplo, o feed internacional
 - Uma notícia **estadual** que cita no título ou no resumo uma cidade do mesmo estado vai para a aba Cidade daquela cidade.
 - Uma notícia **nacional** que cita uma cidade fica na aba País e também aparece na aba Cidade de quem escolheu aquela cidade.
 - Cidades marcadas com `"ambigua": true` têm nome que também é palavra comum ou outro lugar (Natal, Vitória, Serra, Palmas, Lagarto…): elas só contam em veículos do mesmo estado.
-- Quando dois nomes se sobrepõem, vale o mais longo ("Juazeiro do Norte" antes de "Juazeiro").
+- Uma notícia que cita várias cidades aparece na aba Cidade de todas elas (e no arquivo de cada estado envolvido).
+- Quando dois nomes se sobrepõem, vale o mais longo ("Juazeiro do Norte" não conta também como "Juazeiro").
 
 Para incluir outra cidade, acrescente uma linha, por exemplo `{"nome": "Petrópolis", "uf": "RJ", "lat": -22.51, "lon": -43.18}`.
 

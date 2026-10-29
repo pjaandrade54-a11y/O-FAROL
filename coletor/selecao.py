@@ -22,6 +22,22 @@ def _por_grupo(conexao, onde, grupo, limite):
     ).fetchall()
 
 
+def _por_cidade(conexao, limite=POR_CIDADE):
+    """Notícias de cada cidade, com cidade_lista e uf_lista dizendo para qual cidade a linha vale.
+    Linhas gravadas antes da coluna "cidades" usam só a cidade principal."""
+    return conexao.execute(
+        f"""SELECT * FROM (
+              SELECT n.*, json_extract(j.value, '$.nome') AS cidade_lista, json_extract(j.value, '$.uf') AS uf_lista,
+                     ROW_NUMBER() OVER (PARTITION BY json_extract(j.value, '$.nome'), json_extract(j.value, '$.uf')
+                                        ORDER BY {_DATA} DESC) AS posicao
+              FROM noticias n,
+                   json_each(COALESCE(n.cidades, json_array(json_object('nome', n.cidade, 'uf', n.uf)))) j
+              WHERE n.uso = 'noticias' AND (n.cidades IS NOT NULL OR n.cidade IS NOT NULL))
+            WHERE posicao <= ? ORDER BY {_DATA} DESC""",
+        (limite,),
+    ).fetchall()
+
+
 def _mais_recentes(conexao, onde, limite):
     return conexao.execute(f"SELECT * FROM noticias WHERE {onde} ORDER BY {_DATA} DESC LIMIT ?", (limite,)).fetchall()
 
@@ -29,8 +45,9 @@ def _mais_recentes(conexao, onde, limite):
 def listas(conexao):
     """{"cidade": [...], "estado": [...], "pais": [...], "mundo": [...], "checagens": [...]} com as linhas do banco."""
     return {
-        # Inclui notícias nacionais que citam a cidade: elas aparecem na aba País e na aba Cidade
-        "cidade": _por_grupo(conexao, "uso = 'noticias' AND cidade IS NOT NULL", "cidade, uf", POR_CIDADE),
+        # Uma linha por cidade citada (a notícia sobre "Olinda e Recife" entra nas duas), incluindo as
+        # nacionais, que também aparecem na aba País
+        "cidade": _por_cidade(conexao),
         "estado": _por_grupo(conexao, "uso = 'noticias' AND escala = 'estado' AND uf IS NOT NULL", "uf", POR_ESTADO),
         "pais": _mais_recentes(conexao, "uso = 'noticias' AND escala = 'pais'", POR_PAIS),
         "mundo": _mais_recentes(conexao, "uso = 'noticias' AND escala = 'mundo'", POR_MUNDO),
