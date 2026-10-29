@@ -53,12 +53,16 @@ jobs:
       - name: Coletar notícias
         run: python -m coletor coletar
 
-      # Por padrão usa os modelos gratuitos do GitHub Models; IA_PROVEDOR=anthropic usa as chaves pagas
+      # Por padrão usa o Gemini gratuito (GEMINI_API_KEY); IA_PROVEDOR escolhe outro provedor
       - name: Conselho de IA
         run: python -m coletor analisar
         continue-on-error: true   # se a IA falhar, o site é publicado assim mesmo, com as notícias novas
         env:
           IA_PROVEDOR: ${{ vars.IA_PROVEDOR }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODELO_ACUSACAO: ${{ vars.GEMINI_MODELO_ACUSACAO }}
+          GEMINI_MODELO_DEFESA: ${{ vars.GEMINI_MODELO_DEFESA }}
+          GEMINI_MODELO_FONTES: ${{ vars.GEMINI_MODELO_FONTES }}
           GITHUB_MODELO_ACUSACAO: ${{ vars.GITHUB_MODELO_ACUSACAO }}
           GITHUB_MODELO_DEFESA: ${{ vars.GITHUB_MODELO_DEFESA }}
           GITHUB_MODELO_FONTES: ${{ vars.GITHUB_MODELO_FONTES }}

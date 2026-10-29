@@ -17,22 +17,34 @@ Depois disso, a coleta e a publicação acontecem sozinhas a cada 30 minutos.
 
 ## Conselho de IA (gratuito)
 
-O conselho de IA já vem ligado e **não custa nada**: ele usa os modelos gratuitos do **GitHub Models**, com a permissão que o próprio GitHub Actions fornece (`models: read` no fluxo). Não é preciso chave, conta paga nem cartão.
+O conselho de IA usa o **plano gratuito da API do Google Gemini**: sem cartão e sem cobrança.
 
-- **Modelos:** a cada execução, o fluxo consulta o catálogo do GitHub Models e escolhe um modelo para cada agente (Acusação e Defesa de empresas diferentes). O passo "Conselho de IA" mostra quais foram usados, e o site mostra o modelo de cada parecer.
-- **Cota gratuita:** o GitHub limita os pedidos por dia e por minuto de cada modelo. Cada notícia usa 3 pedidos (um por agente). Por isso, o padrão é analisar no máximo **15 notícias por dia**, 3 por execução. Quando a cota acaba, a execução para e as notícias restantes ficam "Aguardando análise" até a cota renovar. Não há cobrança.
-- **Escolher outros modelos:** crie as variáveis `GITHUB_MODELO_ACUSACAO`, `GITHUB_MODELO_DEFESA` ou `GITHUB_MODELO_FONTES` com o id do modelo (por exemplo `openai/gpt-4.1`), como aparece no passo "Conselho de IA" ou em [github.com/marketplace/models](https://github.com/marketplace/models).
+**Para ligar (uma vez só, cerca de 3 minutos):**
+
+1. Entre em [aistudio.google.com](https://aistudio.google.com) com uma conta Google e clique em **Get API key → Create API key**. Copie a chave (começa com `AIza`).
+2. No GitHub, abra o repositório e vá em **Settings → Secrets and variables → Actions → New repository secret**. Em *Name*, escreva `GEMINI_API_KEY`; em *Secret*, cole a chave; clique em **Add secret**.
+3. Rode **Actions → Coletar notícias e publicar o site → Run workflow**. O passo "Conselho de IA" mostra os modelos escolhidos e cada notícia analisada.
+
+**Como funciona:**
+
+- **Modelos:** a cada execução, o fluxo lista os modelos que a chave pode usar e escolhe o Gemini Flash estável mais novo para a Acusação e o Auditor de fontes, e o Flash-Lite para a Defesa. Os três são do Google: a diversidade entre empresas só existe na opção paga. Cada parecer mostra o modelo que o produziu.
+- **Cota gratuita:** o Google limita os pedidos por minuto e por dia. Cada notícia usa 3 pedidos (um por agente), com uma pausa entre eles. O padrão é analisar no máximo **15 notícias por dia**, 3 por execução. Quando a cota acaba, a execução para e as notícias restantes ficam "Aguardando análise" até a cota renovar.
+- **Privacidade:** no plano gratuito, o Google pode usar os textos enviados para melhorar os produtos dele. Aqui vão só títulos e resumos de notícias já públicas.
 
 Variáveis opcionais, em *Settings → Secrets and variables → Actions → aba Variables → New repository variable*:
 
 | Variável | Padrão | Para que serve |
 | --- | --- | --- |
-| `IA_PROVEDOR` | github | `github` (gratuito), `anthropic` (pago, com as chaves abaixo) ou `desligado` |
+| `IA_PROVEDOR` | gemini | `gemini` (gratuito), `github` (GitHub Models, gratuito, mas sem funcionar em 29/10/2026), `anthropic` (pago) ou `desligado` |
 | `IA_POR_DIA` | 15 | Máximo de notícias analisadas por dia (UTC) |
 | `IA_POR_EXECUCAO` | 3 | Máximo por execução de 30 minutos |
-| `GITHUB_MODELO_ACUSACAO`, `GITHUB_MODELO_DEFESA`, `GITHUB_MODELO_FONTES` | escolhidos pelo catálogo | Modelo de cada agente no GitHub Models |
+| `GEMINI_MODELO_ACUSACAO`, `GEMINI_MODELO_DEFESA`, `GEMINI_MODELO_FONTES` | escolhidos pela lista | Modelo de cada agente, por exemplo `gemini-2.5-flash` |
 
 Mudar modelo é mudar a metodologia: registre a mudança em `metodologia.html`.
+
+### GitHub Models
+
+Com `IA_PROVEDOR` = `github`, os agentes usam os modelos gratuitos do GitHub Models, pelo `GITHUB_TOKEN` do próprio Actions. Em 29/10/2026 o serviço respondia só "OK" em texto, sem analisar nada; o código está pronto para quando voltar a funcionar. Modelos por variável: `GITHUB_MODELO_ACUSACAO`, `GITHUB_MODELO_DEFESA`, `GITHUB_MODELO_FONTES`.
 
 ### Opção paga: Claude e GPT
 
