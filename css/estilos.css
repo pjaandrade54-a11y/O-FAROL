@@ -160,6 +160,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .painel__topo { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 18px 22px; border-bottom: 1.5px solid var(--tinta); }
 .painel__topo h2 { font-size: 1.125rem; }
 .painel__ao-vivo { display: inline-flex; align-items: center; gap: 7px; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--texto-suave); }
+.painel__local { display: inline-flex; align-items: center; min-height: 32px; font-size: 0.8125rem; font-weight: 600; color: var(--azul); text-align: right; text-underline-offset: 3px; }
 .painel__ao-vivo::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #b3261e; }
 
 .abas { display: flex; border-bottom: 1px solid var(--linha); padding: 0 8px; }
@@ -224,6 +225,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 }
 .fontes__lista { flex: 1; display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .fontes__lista li { font-family: var(--fonte-titulo); font-weight: 700; font-size: 1rem; color: #4a4943; white-space: nowrap; }
+.fontes__lista .fontes__mais { font-family: var(--fonte-texto); font-weight: 400; font-style: italic; color: var(--texto-suave); }
 
 /* Seções */
 .secao { padding: 88px 0; }

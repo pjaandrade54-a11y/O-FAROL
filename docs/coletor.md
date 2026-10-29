@@ -34,11 +34,24 @@ Um feed pode ir para outra aba com `"escala"`: por exemplo, o feed internacional
 
 ## Cidades monitoradas
 
-Os veículos de Sergipe cobrem o estado inteiro. Para preencher a aba Cidade, uma notícia estadual ou nacional que cita no título ou no resumo uma cidade de `dados/cidades.json` (hoje, Aracaju) vai para a aba Cidade. Para incluir outra cidade, acrescente uma linha nesse arquivo, por exemplo `{"nome": "Nossa Senhora do Socorro", "uf": "SE"}`.
+`dados/cidades.json` tem as 27 capitais, as maiores cidades de cada estado e os principais municípios de Sergipe, com coordenadas aproximadas (usadas no botão "Usar minha localização", que acha a cidade mais próxima no próprio navegador).
 
-A detecção é por nome. Ela ainda não sabe separar uma notícia nacional publicada por um portal sergipano: essas notícias aparecem na aba Estado até a etapa de classificação com IA.
+- Uma notícia **estadual** que cita no título ou no resumo uma cidade do mesmo estado vai para a aba Cidade daquela cidade.
+- Uma notícia **nacional** que cita uma cidade fica na aba País e também aparece na aba Cidade de quem escolheu aquela cidade.
+- Cidades marcadas com `"ambigua": true` têm nome que também é palavra comum ou outro lugar (Natal, Vitória, Serra, Palmas, Lagarto…): elas só contam em veículos do mesmo estado.
+- Quando dois nomes se sobrepõem, vale o mais longo ("Juazeiro do Norte" antes de "Juazeiro").
 
-Veículos de Sergipe que ainda não entraram: F5 News (site respondeu 503) e JL Política (500), que vale testar de novo; Jornal da Cidade (bloqueia o coletor, 403); Correio de Sergipe e g1 Sergipe (sem feed RSS válido).
+Para incluir outra cidade, acrescente uma linha, por exemplo `{"nome": "Petrópolis", "uf": "RJ", "lat": -22.51, "lon": -43.18}`.
+
+No site, o leitor escolhe a cidade (ou só o estado) no campo "Onde você está?". A escolha fica guardada no navegador dele. Sem escolha, o site mostra Aracaju (SE).
+
+## Veículos e como testar feeds novos
+
+O cadastro tem 127 veículos: todos os g1 estaduais, portais de cada estado, nacionais, internacionais em português e checadores. Os 113 incluídos em 29/10/2026 foram testados antes por `ferramentas/testar_candidatos.py`, que tenta o feed informado e os endereços comuns (`/feed/`, `/rss`, `/rss.xml`, `/feed`) e só aceita feed com notícias dos últimos 14 dias.
+
+Para testar outros, ponha os candidatos em `ferramentas/candidatos.json` (mesmo formato) e rode na aba *Actions* o fluxo **Testar veículos candidatos**, ou no computador: `python ferramentas/testar_candidatos.py ferramentas/candidatos.json`. Para conferir os feeds já cadastrados: `python -m coletor veiculos testar`.
+
+Ficaram de fora porque o feed não respondeu, não existe nos endereços testados ou está parado (vale testar de novo no futuro): 180graus, A Crítica, ACidade ON, AFP Checamos, Agência Amapá, Agência Aracaju de Notícias, Agência Brasília, Agência Estadual de Notícias (PR), Agência Pará, Agência Sergipe de Notícias, Agência de Notícias SC, Alô Sergipe, Band Jornalismo, Cada Minuto, Correio (BA), Correio Braziliense, Correio do Estado, Correio do Povo, D24AM, Diario de Pernambuco, Diário do Nordeste, EmSergipe, Extra, F5 News, Folha de Pernambuco, FolhaMax, GP1, GZH, Gazeta Digital, Hoje em Dia, Itatiaia, JL Política, Jornal Opção, Jornal de Brasília, Jornal do Brasil, Jornal do Commercio, Jornal do Comércio (RS), Jornal do Tocantins, Mais Goiás, Matinal, Meio Norte, MidiaNews, Midiamax, Novo Notícias, O Dia, O Estado do Maranhão, O Globo, O Liberal, O Popular, O Povo, O Tempo, Olhar Direto, Plural, Portal Itnet, Portal O Dia, Projeto Comprova, R7, RDNews, RioOnWatch, Roma News, Rondoniaovivo, Rondônia Dinâmica, Roraima em Tempo, SE Notícias, Saiba Mais, Spresso SP, T1 Notícias, Tribuna Hoje, Tribuna do Ceará, Tudo Rondônia, UOL, Universo Político e WSCOM. Também ficaram de fora o Estadão (feed geral parado desde 16/10) e o ge (só esporte, lotaria a aba País).
 
 ## Como os dados são tratados
 

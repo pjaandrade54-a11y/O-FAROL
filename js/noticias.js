@@ -1,7 +1,8 @@
-// O Farol — "Últimas notícias" da página inicial.
-// Lê as notícias reais exportadas pelo coletor (dados/noticias.json), com o rótulo do conselho de IA
-// quando a notícia já foi analisada. Se o arquivo não carregar (por exemplo, com o HTML aberto direto
-// do disco), mostra os casos de exemplo do painel. Com a página aberta, busca notícias novas sozinha.
+// O Farol — "Últimas notícias" da página inicial e a escolha da cidade do leitor.
+// Lê as notícias reais exportadas pelo coletor (dados/noticias.json), com o rótulo da análise quando a
+// notícia já foi analisada. As abas Cidade e Estado mostram a cidade e o estado escolhidos pelo leitor.
+// Se o arquivo não carregar (por exemplo, com o HTML aberto direto do disco), mostra os casos de exemplo
+// do painel. Com a página aberta, busca notícias novas sozinha.
 
 (function (m, agentes, casos) {
   var ESCALAS = ['cidade', 'estado', 'pais', 'mundo'];
@@ -9,6 +10,14 @@
   var RECARREGAR_MS = 5 * 60 * 1000; // a coleta roda a cada 30 minutos; olhar a cada 5 pega a nova logo
   var ultimaBusca = 0;
   var legenda = document.getElementById('painel-legenda');
+  var ultimosDados = null;
+  var ESTADOS = {
+    AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia', CE: 'Ceará', DF: 'Distrito Federal',
+    ES: 'Espírito Santo', GO: 'Goiás', MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul',
+    MG: 'Minas Gerais', PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí',
+    RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul', RO: 'Rondônia', RR: 'Roraima',
+    SC: 'Santa Catarina', SP: 'São Paulo', SE: 'Sergipe', TO: 'Tocantins'
+  };
 
   function el(tag, classe, texto) {
     var no = document.createElement(tag);
@@ -32,7 +41,7 @@
     return dias === 1 ? 'há 1 dia' : 'há ' + dias + ' dias';
   }
 
-  function preencher(porEscala, montar) {
+  function preencher(porEscala, montar, vazios) {
     ESCALAS.forEach(function (escala) {
       var lista = document.getElementById('lista-' + escala);
       if (!lista) return;
@@ -40,7 +49,7 @@
       lista.replaceChildren();
       if (!itens.length) {
         var vazio = el('li', 'noticia');
-        vazio.appendChild(el('p', 'noticia__vazia', 'Nenhuma notícia nesta aba ainda.'));
+        vazio.appendChild(el('p', 'noticia__vazia', (vazios && vazios[escala]) || 'Nenhuma notícia nesta aba ainda.'));
         lista.appendChild(vazio);
         return;
       }
@@ -50,7 +59,7 @@
 
   // Notícias reais: o link leva ao site do veículo; o painel ainda não analisa estas notícias
   function noticiaReal(n, escala) {
-    var nomes = { cidade: 'Cidade · ' + (n.cidade || ''), estado: 'Estado · ' + (n.uf || ''), pais: 'País', mundo: 'Mundo' };
+    var nomes = { cidade: 'Cidade · ' + (n.cidade || n.uf || ''), estado: 'Estado · ' + (ESTADOS[n.uf] || n.uf || ''), pais: 'País', mundo: 'Mundo' };
     var li = el('li', 'noticia');
     li.appendChild(el('p', 'noticia__escala', nomes[escala]));
 
@@ -154,10 +163,33 @@
     return li;
   }
 
-  function mostrarReais(dados) {
-    preencher(dados.escalas, noticiaReal);
+  // Notícias da cidade e do estado escolhidos; sem cidade escolhida, a cidade-piloto (Aracaju)
+  function filtrar(dados, local) {
+    var cidade = (dados.escalas.cidade || []).filter(function (n) {
+      return local.nome ? n.cidade === local.nome && (!local.uf || n.uf === local.uf) : n.uf === local.uf;
+    });
+    var estado = (dados.escalas.estado || []).filter(function (n) { return n.uf === local.uf; });
+    return { cidade: cidade, estado: estado, pais: dados.escalas.pais || [], mundo: dados.escalas.mundo || [] };
+  }
 
-    var visiveis = ESCALAS.reduce(function (t, e) { return t.concat((dados.escalas[e] || []).slice(0, POR_ABA)); }, []);
+  function mostrarReais(dados) {
+    ultimosDados = dados;
+    var local = Farol.local.lerOuPadrao();
+    if (!local.uf) {
+      // Escolha guardada por uma versão antiga do site, só com o nome: tenta achar a cidade na lista
+      local = encontrar(local.nome || '', dados.cidades || []) || { nome: 'Aracaju', uf: 'SE' };
+      Farol.local.guardar(local);
+    }
+    var porEscala = filtrar(dados, local);
+    var nomeEstado = ESTADOS[local.uf] || local.uf || 'seu estado';
+    preencher(porEscala, noticiaReal, {
+      cidade: local.nome
+        ? 'Ainda não há notícias recentes de ' + local.nome + '. Veja a aba Estado.'
+        : 'Escolha uma cidade para ver as notícias dela. Enquanto isso, veja a aba Estado.',
+      estado: 'Estado: ' + nomeEstado + '. Ainda não há notícias estaduais recentes.'
+    });
+
+    var visiveis = ESCALAS.reduce(function (t, e) { return t.concat(porEscala[e].slice(0, POR_ABA)); }, []);
     var analisadas = visiveis.filter(function (n) { return n.analise; }).length;
     var data = new Date(dados.gerado_em);
     var atualizado = data.toLocaleString('pt-BR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -172,12 +204,19 @@
       no.textContent = ' · atualizado às ' + data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     });
 
+    // Veículos do estado do leitor primeiro; os nacionais e internacionais, resumidos
     var titulo = document.getElementById('fontes-titulo');
     var lista = document.getElementById('lista-veiculos');
     if (titulo && lista) {
-      titulo.textContent = 'Veículos acompanhados';
-      lista.replaceChildren.apply(lista, dados.veiculos.map(function (v) { return el('li', null, v.nome); }));
+      var doEstado = dados.veiculos.filter(function (v) { return v.uf && v.uf === local.uf; });
+      var gerais = dados.veiculos.filter(function (v) { return !v.uf; });
+      titulo.textContent = dados.veiculos.length + ' veículos acompanhados';
+      var itens = doEstado.concat(gerais.slice(0, 10)).map(function (v) { return el('li', null, v.nome); });
+      var resto = dados.veiculos.length - itens.length;
+      if (resto > 0) itens.push(el('li', 'fontes__mais', 'e mais ' + resto + ' de outros estados'));
+      lista.replaceChildren.apply(lista, itens);
     }
+    preencherCidades(dados.cidades || []);
   }
 
   function mostrarExemplos() {
@@ -189,6 +228,116 @@
     legenda.replaceChildren(
       document.createTextNode('Notícias de exemplo (fictícias). Clique em uma para ver a análise do painel. '),
       linkEntendaRotulos());
+  }
+
+  // Escolha da cidade (página inicial)
+  var form = document.getElementById('form-local');
+  var campo = document.getElementById('campo-local');
+  var status = document.getElementById('status-local');
+  var opcoes = document.getElementById('lista-cidades');
+
+  function normalizar(texto) {
+    return (texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  function avisar(texto, erro) {
+    if (!status) return;
+    status.textContent = texto;
+    status.classList.toggle('erro', !!erro);
+  }
+
+  function preencherCidades(cidades) {
+    if (!opcoes || opcoes.childElementCount === cidades.length) return;
+    opcoes.replaceChildren.apply(opcoes, cidades.map(function (c) {
+      var o = document.createElement('option');
+      o.value = c.nome + ' (' + c.uf + ')';
+      return o;
+    }));
+  }
+
+  // Aceita "Recife", "Recife (PE)", "Recife - PE", "Recife/PE", e também só o estado ("PE", "Pernambuco")
+  function encontrar(texto, cidades) {
+    var partes = texto.match(/^(.*?)(?:\s*[\(\-\/,]\s*([A-Za-z]{2})\)?)?\s*$/);
+    var nome = normalizar(partes[1]);
+    var uf = partes[2] ? partes[2].toUpperCase() : null;
+    var achadas = cidades.filter(function (c) { return normalizar(c.nome) === nome && (!uf || c.uf === uf); });
+    if (achadas.length) return { nome: achadas[0].nome, uf: achadas[0].uf };
+    var estado = Object.keys(ESTADOS).filter(function (s) {
+      return normalizar(s) === nome || normalizar(ESTADOS[s]) === nome;
+    })[0];
+    return estado ? { nome: null, uf: estado } : null;
+  }
+
+  function escolher(local, mensagem) {
+    Farol.local.guardar(local);
+    if (Farol.selecionarAba) Farol.selecionarAba(local.nome ? 0 : 1);
+    if (ultimosDados) mostrarReais(ultimosDados);
+    avisar(mensagem);
+  }
+
+  // "trocar" no topo do painel leva ao campo da cidade
+  var trocar = document.querySelector('.painel__local');
+  if (trocar && campo) {
+    trocar.addEventListener('click', function (e) {
+      e.preventDefault();
+      campo.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      campo.focus({ preventScroll: true });
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var texto = campo.value.trim();
+      if (!texto) return;
+      var local = encontrar(texto, (ultimosDados && ultimosDados.cidades) || []);
+      if (!local) {
+        avisar('Ainda não acompanhamos “' + texto + '”. Escolha uma cidade da lista ou digite o seu estado.', true);
+        return;
+      }
+      escolher(local, local.nome
+        ? 'Mostrando as notícias de ' + local.nome + ' (' + local.uf + ').'
+        : 'Mostrando as notícias do estado: ' + ESTADOS[local.uf] + '. Se a sua cidade estiver na lista, escolha-a também.');
+    });
+  }
+
+  function distanciaKm(a, b) {
+    var rad = Math.PI / 180;
+    var x = (b.lon - a.lon) * rad * Math.cos((a.lat + b.lat) / 2 * rad);
+    var y = (b.lat - a.lat) * rad;
+    return Math.sqrt(x * x + y * y) * 6371;
+  }
+
+  var botaoLocalizacao = document.getElementById('usar-localizacao');
+  if (botaoLocalizacao) {
+    botaoLocalizacao.addEventListener('click', function () {
+      if (!('geolocation' in navigator)) {
+        avisar('Seu navegador não permite detectar a localização. Digite sua cidade.', true);
+        return;
+      }
+      avisar('Detectando sua localização…');
+      navigator.geolocation.getCurrentPosition(function (posicao) {
+        // A localização é usada só aqui, no navegador, para achar a cidade acompanhada mais próxima
+        var aqui = { lat: posicao.coords.latitude, lon: posicao.coords.longitude };
+        var cidades = ((ultimosDados && ultimosDados.cidades) || []).filter(function (c) { return c.lat != null; });
+        if (!cidades.length) {
+          avisar('Não foi possível usar sua localização agora. Digite sua cidade.', true);
+          return;
+        }
+        var perto = cidades.reduce(function (melhor, c) {
+          var d = distanciaKm(aqui, c);
+          return !melhor || d < melhor.d ? { c: c, d: d } : melhor;
+        }, null);
+        if (perto.d <= 40) {
+          escolher({ nome: perto.c.nome, uf: perto.c.uf }, 'Você está em ' + perto.c.nome + ' (' + perto.c.uf + ') ou perto.');
+        } else {
+          escolher({ nome: null, uf: perto.c.uf }, 'Sua cidade ainda não está entre as acompanhadas; mostrando as notícias do estado: ' +
+            ESTADOS[perto.c.uf] + '.');
+        }
+      }, function () {
+        avisar('Não foi possível detectar sua localização. Digite sua cidade.', true);
+      }, { timeout: 10000 });
+    });
   }
 
   var temReais = false;

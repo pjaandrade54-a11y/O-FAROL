@@ -19,10 +19,11 @@ AGORA = "2026-10-28T12:00:00+00:00"
 
 
 def inserir(conexao, veiculo, titulo, link, escala="cidade", uso="noticias", resumo=""):
+    cidade = "Aracaju" if escala == "cidade" else None
     conexao.execute(
-        "INSERT INTO noticias (veiculo_id, titulo, link, resumo, publicado_em, coletado_em, escala, uso) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        (veiculo, titulo, link, resumo, AGORA, AGORA, escala, uso),
+        "INSERT INTO noticias (veiculo_id, titulo, link, resumo, publicado_em, coletado_em, escala, uso, uf, cidade) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'SE', ?)",
+        (veiculo, titulo, link, resumo, AGORA, AGORA, escala, uso, cidade),
     )
 
 

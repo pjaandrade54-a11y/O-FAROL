@@ -54,7 +54,8 @@
             <label class="local__rotulo" for="campo-local">Onde você está?</label>
             <div class="local__campo">
               <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-              <input id="campo-local" name="local" type="text" placeholder="Sua cidade, estado ou país" required>
+              <input id="campo-local" name="local" type="text" list="lista-cidades" placeholder="Sua cidade ou estado" autocomplete="off" required>
+              <datalist id="lista-cidades"></datalist>
               <button class="botao botao--azul" type="submit">Ver notícias</button>
             </div>
             <div class="local__extras">
@@ -74,7 +75,7 @@
         <aside class="painel" aria-labelledby="painel-titulo">
           <div class="painel__topo">
             <h2 id="painel-titulo">Últimas notícias</h2>
-            <span class="painel__ao-vivo">Edição ao vivo</span>
+            <a class="painel__local" href="#campo-local" aria-label="Trocar a cidade"><span data-local>Sua cidade</span> · trocar</a>
           </div>
           <div class="abas" role="tablist" aria-label="Escala das notícias">
             <button role="tab" id="aba-cidade" aria-controls="lista-cidade" aria-selected="true">Cidade</button>

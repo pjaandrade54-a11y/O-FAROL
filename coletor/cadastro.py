@@ -128,16 +128,24 @@ def buscar(veiculos, id):
 
 
 def carregar_cidades(arquivo=ARQUIVO_CIDADES):
-    """Cidades cujas notícias vão para a aba Cidade quando o nome aparece no título ou no resumo."""
+    """Cidades monitoradas, das de nome mais longo para as mais curtas ("Juazeiro do Norte" antes de "Juazeiro").
+
+    Uma notícia que cita uma delas no título ou no resumo aparece na aba Cidade daquela cidade.
+    Cidades com "ambigua" (nome que também é palavra comum, como Natal ou Serra) só contam em
+    veículos do mesmo estado."""
     try:
         with open(arquivo, encoding="utf-8") as f:
             cidades = json.load(f)["cidades_monitoradas"]
     except FileNotFoundError:
         return []
+    vistas = set()
     for c in cidades:
         if not c.get("nome") or c.get("uf") not in UFS:
             raise ErroCadastro(f"Cidade monitorada inválida em {Path(arquivo).name}: {c}")
-    return cidades
+        if (c["nome"], c["uf"]) in vistas:
+            raise ErroCadastro(f"Cidade repetida em {Path(arquivo).name}: {c['nome']} ({c['uf']})")
+        vistas.add((c["nome"], c["uf"]))
+    return sorted(cidades, key=lambda c: len(c["nome"]), reverse=True)
 
 
 def escala_do_feed(veiculo, feed):
