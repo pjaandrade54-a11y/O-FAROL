@@ -8,6 +8,7 @@ import os
 
 from .cadastro import RAIZ
 from .coleta import agora
+from .conselho import carregar_analises
 
 ARQUIVO = RAIZ / "dados" / "noticias.json"
 POR_ESCALA = 30
@@ -16,6 +17,7 @@ ESCALAS = ("cidade", "estado", "pais", "mundo")
 
 def exportar(conexao, veiculos, arquivo=ARQUIVO, por_escala=POR_ESCALA):
     nomes = {v["id"]: v["nome"] for v in veiculos}
+    analises = carregar_analises(conexao)
     saida = {
         "gerado_em": agora(),
         "veiculos": [
@@ -43,6 +45,7 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, por_escala=POR_ESCALA):
             "publicado_em": linha["publicado_em"],
             "uf": linha["uf"],
             "cidade": linha["cidade"],
+            "analise": analises.get(linha["link"]),
         }
 
     for escala in ESCALAS:

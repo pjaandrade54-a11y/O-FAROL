@@ -198,6 +198,23 @@ ul { list-style: none; margin: 0; padding: 0; }
 .rotulo--aguardando { color: var(--texto-suave); background: transparent; border-style: dashed; }
 .noticia__vazia { font-style: italic; color: var(--texto-suave); }
 
+/* "Por que este rótulo?": pareceres do conselho de IA em cada notícia real */
+.analise { margin-top: 6px; font-size: 0.875rem; }
+.analise summary {
+  display: inline-flex; align-items: center; min-height: 40px; cursor: pointer;
+  font-weight: 600; color: var(--azul); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
+}
+.analise[open] summary { margin-bottom: 4px; }
+.analise ul { margin: 0; padding-left: 18px; }
+.analise li + li { margin-top: 3px; }
+.analise__motivos { margin-bottom: 8px !important; }
+.analise__nota { margin-bottom: 8px; font-style: italic; color: var(--texto-suave); }
+.analise__parecer { padding: 10px 0; border-top: 1px dashed var(--linha); overflow-wrap: anywhere; }
+.analise__agente { margin-bottom: 4px; }
+.analise__provas { margin-top: 4px !important; color: var(--texto-suave); }
+.analise__provas a { color: var(--azul); font-weight: 600; }
+.analise__descartado { margin-top: 4px !important; color: #8c1d18; }
+
 /* Fontes agregadas */
 .fontes { background: var(--branco); border-top: 1px solid var(--linha); border-bottom: 1px solid var(--linha); }
 .fontes__linha { display: flex; align-items: center; gap: 32px; padding-top: 26px; padding-bottom: 26px; }
@@ -498,6 +515,19 @@ span.loja { color: var(--texto-suave); border-style: dashed; }
   .formulario, .confirmacao { padding: 20px; }
   .campo--duplo { grid-template-columns: 1fr; }
   .formulario .botao { width: 100%; }
+
+  /* No celular, as últimas notícias vêm logo depois do título, antes do campo de cidade */
+  .destaque__grade { gap: 0; }
+  .destaque__grade > .painel { margin: 28px 0 8px; }
+  .destaque__texto { display: contents; }
+  .destaque__texto > * { order: 1; }
+  .destaque__grade > .painel { order: 2; }
+  .destaque__texto > .local, .destaque__texto > .garantia { order: 3; }
+  .local { margin-top: 0; }
+
+  /* Alvos de toque com pelo menos 44px de altura */
+  .local__extras .link-botao, .angulo__link, .link-seta { display: inline-flex; align-items: center; min-height: 44px; }
+  .abas button { min-height: 44px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -9,7 +9,7 @@ Farol.config = {
   // O Auditor de regras é o próprio código da metodologia: regras exatas, sem IA.
   modelos: {
     'acusacao': { empresa: 'Anthropic', modelo: 'Claude Opus 5.5', id: 'claude-opus-5-5' },
-    'defesa': { empresa: 'OpenAI', modelo: 'GPT (versão a confirmar)', id: null },
+    'defesa': { empresa: 'OpenAI', modelo: 'GPT-6.1 Terra', id: 'gpt-6.1-terra' },
     'auditor-fontes': { empresa: 'Anthropic', modelo: 'Claude Opus 5.5', id: 'claude-opus-5-5' },
     'auditor-regras': { empresa: 'O Farol', modelo: 'Código da metodologia, sem IA', id: null }
   }

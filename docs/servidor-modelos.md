@@ -1,5 +1,7 @@
 # Servidor de modelos do painel de verificação
 
+> **Notícias reais:** os agentes já rodam de verdade nas notícias coletadas, sem servidor, dentro do GitHub Actions (`python -m coletor analisar`, código em `coletor/conselho.py`). Veja [hospedagem.md](hospedagem.md#ligar-o-conselho-de-ia). Este documento trata do painel interativo (`painel.html`), que ainda precisa de um servidor para chamar os modelos a partir do navegador.
+
 O painel (`painel.html`) funciona hoje em **modo demonstração**: os quatro agentes são simulados pelas regras de `js/painel/agentes.js`. Para usar modelos de IA de verdade, falta um servidor que receba cada caso e devolva o parecer de cada agente. As chaves de API ficam **só no servidor**, nunca no navegador.
 
 ## Quem executa cada agente
@@ -9,7 +11,7 @@ Definido em `js/painel/config.js`:
 | Agente | Executa | Observação |
 | --- | --- | --- |
 | Acusação | Claude Opus 5.5 (`claude-opus-5-5`, Anthropic) | |
-| Defesa | GPT, da OpenAI | Versão exata a confirmar ao montar o servidor |
+| Defesa | GPT-6.1 Terra (`gpt-6.1-terra`, OpenAI) | |
 | Auditor de fontes | Claude Opus 5.5 (`claude-opus-5-5`, Anthropic) | |
 | Auditor de regras | Código da metodologia (`js/painel/metodologia.js`) | Não usa IA e nunca vai ao servidor |
 
