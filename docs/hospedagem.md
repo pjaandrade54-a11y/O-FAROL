@@ -15,9 +15,13 @@ O site está no ar em **https://pjaandrade54-a11y.github.io/O-FAROL/**.
 
 Depois disso, a coleta e a publicação acontecem sozinhas a cada 30 minutos.
 
-## Conselho de IA (gratuito)
+## Análise das notícias (gratuita)
 
-O conselho de IA usa o **plano gratuito da API do Google Gemini**: sem cartão e sem cobrança.
+**Sem configurar nada**, cada coleta rotula as notícias da página inicial por **regras, sem IA**, de graça: *Confirmada* quando dois veículos de grupos diferentes publicam o mesmo fato, *Desmentida* (provisória, com caso para o conselho humano) quando um checador publica que o assunto é falso, *Opinião* para colunas e artigos, e *Em apuração* nos demais casos. A análise é refeita a cada coleta. Ela compara palavras dos títulos, então é mais simples e mais cautelosa que a análise por IA.
+
+## Conselho de IA (gratuito, opcional)
+
+Para análise com IA, o conselho usa o **plano gratuito da API do Google Gemini**: sem cartão e sem cobrança. Com a chave cadastrada, a IA substitui as regras nas notícias que ela analisar.
 
 **Para ligar (uma vez só, cerca de 3 minutos):**
 
@@ -35,7 +39,7 @@ Variáveis opcionais, em *Settings → Secrets and variables → Actions → aba
 
 | Variável | Padrão | Para que serve |
 | --- | --- | --- |
-| `IA_PROVEDOR` | gemini | `gemini` (gratuito), `github` (GitHub Models, gratuito, mas sem funcionar em 29/10/2026), `anthropic` (pago) ou `desligado` |
+| `IA_PROVEDOR` | `gemini` com chave, `regras` sem chave | `regras` (sem IA), `gemini` (gratuito), `github` (GitHub Models, gratuito, mas sem funcionar em 29/10/2026), `anthropic` (pago) ou `desligado` |
 | `IA_POR_DIA` | 15 | Máximo de notícias analisadas por dia (UTC) |
 | `IA_POR_EXECUCAO` | 3 | Máximo por execução de 30 minutos |
 | `GEMINI_MODELO_ACUSACAO`, `GEMINI_MODELO_DEFESA`, `GEMINI_MODELO_FONTES` | escolhidos pela lista | Modelo de cada agente, por exemplo `gemini-2.5-flash` |

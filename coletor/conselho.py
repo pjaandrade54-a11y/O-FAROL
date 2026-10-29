@@ -165,11 +165,11 @@ def montar_dossie(conexao, noticia, veiculos_por_id, limite=FONTES_NO_DOSSIE, ho
         comuns_titulo = len(titulo_alvo & do_titulo)
         comuns = len(alvo & todas)
         if comuns >= 3 or (comuns_titulo >= 1 and comuns >= 2):
-            candidatas.append((comuns + comuns_titulo, c["publicado_em"] or c["coletado_em"] or "", c))
+            candidatas.append((comuns + comuns_titulo, c["publicado_em"] or c["coletado_em"] or "", c, comuns_titulo))
     candidatas.sort(key=lambda x: (x[0], x[1]), reverse=True)
 
     fontes = []
-    for i, (_, _, c) in enumerate(candidatas[:limite], start=1):
+    for i, (_, _, c, comuns_titulo) in enumerate(candidatas[:limite], start=1):
         v = veiculos_por_id.get(c["veiculo_id"]) or {"id": c["veiculo_id"], "nome": c["veiculo_id"], "tipo": None}
         fontes.append({
             "ref": f"F{i}",
@@ -183,6 +183,7 @@ def montar_dossie(conexao, noticia, veiculos_por_id, limite=FONTES_NO_DOSSIE, ho
             "resumo": c["resumo"] or "",
             "link": c["link"],
             "publicado_em": c["publicado_em"],
+            "palavras_no_titulo": comuns_titulo,
         })
     return fontes
 
@@ -205,7 +206,7 @@ def descrever_noticia(noticia, veiculo):
 
 def mensagem(original, fontes):
     dados = {"noticia": {k: v for k, v in original.items() if k != "link"},
-             "dossie": [{k: v for k, v in f.items() if k != "link"} for f in fontes]}
+             "dossie": [{k: v for k, v in f.items() if k not in ("link", "palavras_no_titulo")} for f in fontes]}
     return ("Analise a notícia abaixo segundo o seu papel e devolva o parecer.\n\n<dados>\n"
             + json.dumps(dados, ensure_ascii=False, indent=1) + "\n</dados>")
 
@@ -329,7 +330,7 @@ def analisar_noticia(noticia, veiculos_por_id, conexao, chamar):
     }
 
 
-def pendentes(conexao, por_escala=POR_ESCALA):
+def pendentes(conexao, por_escala=POR_ESCALA, incluir_analisadas=False):
     """Notícias que aparecem na página inicial e ainda não têm análise, das mais novas para as mais antigas."""
     abas = []
     for escala in ESCALAS:
@@ -338,7 +339,9 @@ def pendentes(conexao, por_escala=POR_ESCALA):
             "ORDER BY COALESCE(n.publicado_em, n.coletado_em) DESC LIMIT ?",
             (escala, por_escala),
         ).fetchall())
-    analisados = {l for (l,) in conexao.execute("SELECT link FROM analises")}
+    # Uma análise por regras não impede a análise por IA, que a substitui quando houver IA disponível
+    analisados = set() if incluir_analisadas else {l for (l,) in conexao.execute(
+        "SELECT link FROM analises WHERE destino = 'humano' OR json_extract(dados, '$.metodo') IS NOT 'regras'")}
     # Intercala as abas para que nenhuma fique sem análise quando o limite da execução é pequeno
     fila = []
     for i in range(por_escala):
@@ -354,8 +357,11 @@ def analisadas_hoje(conexao):
 
 
 def guardar(conexao, analise):
+    # Atualiza sem apagar o número do caso do conselho, se já houver
     conexao.execute(
-        "INSERT OR REPLACE INTO analises (link, analisado_em, rotulo, destino, dados) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO analises (link, analisado_em, rotulo, destino, dados) VALUES (?, ?, ?, ?, ?) "
+        "ON CONFLICT(link) DO UPDATE SET analisado_em = excluded.analisado_em, rotulo = excluded.rotulo, "
+        "destino = excluded.destino, dados = excluded.dados",
         (analise["noticia"]["link"], agora(), analise["rotulo"], analise["destino"],
          json.dumps(analise, ensure_ascii=False)),
     )
@@ -394,6 +400,103 @@ def analisar(conexao, veiculos, chamar, por_execucao, por_dia, aviso=print):
             r["novas_conselho"].append(analise)
     if len(fila) > vagas:
         aviso(f"  {len(fila) - vagas} notícias ficaram para a próxima execução (limite de custo).")
+    return r
+
+
+# --- Análise por regras, sem IA -------------------------------------------------------------
+# Gratuita e sem chave: compara a notícia com o que os outros veículos acompanhados publicaram.
+# Mais simples e mais cautelosa que a análise por IA: o código não lê o texto, só compara palavras.
+
+MESMO_FATO = 3  # palavras raras em comum nos títulos para considerar que é o mesmo fato
+OPINIAO_TITULO = re.compile(r"\b(opini[aã]o|artigo|coluna|editorial|cr[oô]nica)\b", re.I)
+OPINIAO_LINK = re.compile(r"/(opiniao|colunas?|colunistas?|artigos?|blogs?|editorial)/", re.I)
+CHECAGEM_FALSO = re.compile(r"\b(fals[oa]s?|enganos[oa]s?|fake|sem provas|boato|mentira|mente|distorcid[oa]|"
+                            r"fora de contexto|n[aã]o [eé] verdade)\b", re.I)
+
+
+def regras(noticia, original, fontes):
+    """Rótulo pela metodologia, só com o que o dossiê mostra. Devolve (rótulo, motivos, provas, conselho)."""
+    if OPINIAO_TITULO.search(noticia["titulo"]) or OPINIAO_LINK.search(noticia["link"]):
+        return "opiniao", ["O título ou o endereço indicam texto de opinião; não recebe rótulo de veracidade."], [], []
+
+    mesmo_fato = [f for f in fontes if f["palavras_no_titulo"] >= MESMO_FATO]
+    checagens = [f for f in mesmo_fato if f["checador"] and CHECAGEM_FALSO.search(f["titulo"])]
+    if checagens:
+        return ("desmentida",
+                [f"Um checador publicou uma checagem sobre o assunto que indica informação falsa ({checagens[0]['veiculo']})."],
+                [{"f": f, "explicacao": "Checagem sobre o assunto"} for f in checagens],
+                ["Checagem encontrada por comparação de títulos: uma pessoa precisa confirmar que trata desta notícia."])
+
+    grupos = {}
+    for f in mesmo_fato:
+        if not f["checador"] and f["grupo"] != original["grupo"]:
+            grupos.setdefault(f["grupo"], f)
+    provas = [{"f": f, "explicacao": "Publicou o mesmo fato"} for f in grupos.values()]
+    if len(grupos) >= 2:
+        nomes = ", ".join(f["veiculo"] for f in grupos.values())
+        return "confirmada", [f"{len(grupos)} veículos de grupos diferentes publicaram o mesmo fato: {nomes}."], provas, []
+    if len(grupos) == 1:
+        f = next(iter(grupos.values()))
+        return "em-apuracao", [f"{f['veiculo']} também publicou o fato; falta mais uma confirmação independente."], provas, []
+    parecidas = [f for f in fontes if not f["checador"]]
+    motivo = ("Outros veículos publicaram notícias parecidas, mas não deu para afirmar que é o mesmo fato."
+              if parecidas else "Nenhum outro veículo acompanhado publicou este fato até agora.")
+    return "em-apuracao", [motivo, "Falta a confirmação de dois veículos de grupos diferentes."], [], []
+
+
+def analisar_por_regras(noticia, veiculos_por_id, conexao):
+    original = descrever_noticia(noticia, veiculos_por_id.get(noticia["veiculo_id"]))
+    fontes = montar_dossie(conexao, noticia, veiculos_por_id)
+    rotulo, motivos, provas, para_conselho = regras(noticia, original, fontes)
+    if suspeita_manipulacao(noticia["titulo"] + "\n" + (noticia["resumo"] or "")):
+        para_conselho.append("Suspeita de tentativa de manipulação do sistema no texto analisado.")
+    parecer = {
+        "agente": "auditor-regras", "nome": "Auditor de regras", "modelo": "regras da metodologia, sem IA",
+        "rotuloSugerido": rotulo, "confianca": None, "tema": None, "afirmacao": None, "manipulacao": False,
+        "motivos": motivos,
+        "provas": [{"veiculo": p["f"]["veiculo"], "titulo": p["f"]["titulo"], "link": p["f"]["link"],
+                    "explicacao": p["explicacao"]} for p in provas],
+        "descartado": [],
+    }
+    return {
+        "versaoMetodologia": VERSAO_METODOLOGIA,
+        "metodo": "regras",
+        "noticia": {"titulo": noticia["titulo"], "link": noticia["link"], "veiculo": original["veiculo"]},
+        "fontesNoDossie": len(fontes),
+        "pareceres": [parecer],
+        "rotulo": rotulo,
+        "tema": None,
+        "consenso": True,
+        "destino": "conselho" if para_conselho else "automatico",
+        "motivos": ["Análise automática por regras, sem IA: compara a notícia com o que os outros veículos "
+                    "acompanhados publicaram nos últimos três dias."],
+        "motivosDestino": para_conselho,
+    }
+
+
+def analisar_regras(conexao, veiculos, aviso=print):
+    """Analisa de novo, a cada coleta, as notícias da página inicial (exceto as já decididas pelo conselho
+    humano): uma notícia em apuração vira confirmada quando outros veículos publicam o mesmo fato."""
+    remover_orfas(conexao)
+    veiculos_por_id = {v["id"]: v for v in veiculos}
+    anteriores = {l["link"]: (l["rotulo"], l["destino"], l["metodo"]) for l in conexao.execute(
+        "SELECT link, rotulo, destino, json_extract(dados, '$.metodo') AS metodo FROM analises")}
+    r = {"pendentes": 0, "analisadas": 0, "conselho": 0, "erros": 0, "novas_conselho": []}
+    for noticia in pendentes(conexao, incluir_analisadas=True):
+        antes = anteriores.get(noticia["link"])
+        # Não mexe no que o conselho humano decidiu nem no que a IA já analisou
+        if antes and (antes[1] == "humano" or antes[2] != "regras"):
+            continue
+        analise = analisar_por_regras(noticia, veiculos_por_id, conexao)
+        guardar(conexao, analise)
+        r["analisadas"] += 1
+        if not antes or (analise["rotulo"], analise["destino"]) != antes[:2]:
+            selo = " (provisório, vai ao conselho)" if analise["destino"] == "conselho" else ""
+            aviso(f"  {ROTULOS[analise['rotulo']]}{selo}: {noticia['titulo'][:70]}")
+        if analise["destino"] == "conselho":
+            r["conselho"] += 1
+            if not antes or antes[1] != "conselho":
+                r["novas_conselho"].append(analise)
     return r
 
 

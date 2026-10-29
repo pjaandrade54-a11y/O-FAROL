@@ -151,5 +151,57 @@ class TestConselho(unittest.TestCase):
         self.assertEqual(item["analise"]["rotulo"], "em-apuracao")
 
 
+
+class TestRegras(unittest.TestCase):
+    def setUp(self):
+        self.conexao = banco.abrir(":memory:")
+        inserir(self.conexao, "gazeta", "Ponte da Rua das Palmeiras é interditada em Aracaju", "https://a/1")
+        inserir(self.conexao, "radio", "Feira de artesanato abre no sábado", "https://c/2")
+
+    def analise(self, link="https://a/1"):
+        conselho.analisar_regras(self.conexao, VEICULOS, aviso=lambda *_: None)
+        return conselho.carregar_analises(self.conexao)[link]
+
+    def test_sem_outra_fonte_fica_em_apuracao(self):
+        a = self.analise()
+        self.assertEqual((a["rotulo"], a["destino"]), ("em-apuracao", "automatico"))
+        self.assertEqual(a["pareceres"][0]["modelo"], "regras da metodologia, sem IA")
+
+    def test_vira_confirmada_quando_dois_grupos_publicam_o_mesmo_fato(self):
+        self.assertEqual(self.analise()["rotulo"], "em-apuracao")
+        inserir(self.conexao, "portal", "Defesa Civil: ponte da Rua das Palmeiras é interditada", "https://b/1")
+        inserir(self.conexao, "radio", "Ponte da Rua das Palmeiras fica interditada após laudo", "https://c/1")
+        a = self.analise()
+        self.assertEqual(a["rotulo"], "confirmada")
+        self.assertEqual({p["link"] for p in a["pareceres"][0]["provas"]}, {"https://b/1", "https://c/1"})
+
+    def test_mesmo_grupo_do_original_nao_confirma(self):
+        inserir(self.conexao, "irma", "Ponte da Rua das Palmeiras é interditada", "https://d/1")
+        inserir(self.conexao, "portal", "Defesa Civil: ponte da Rua das Palmeiras é interditada", "https://b/1")
+        self.assertEqual(self.analise()["rotulo"], "em-apuracao")
+
+    def test_checagem_de_falso_vai_ao_conselho(self):
+        inserir(self.conexao, "checa", "É falso que ponte da Rua das Palmeiras foi interditada", "https://e/1",
+                uso="checagens")
+        a = self.analise()
+        self.assertEqual((a["rotulo"], a["destino"]), ("desmentida", "conselho"))
+
+    def test_opiniao_pelo_endereco(self):
+        inserir(self.conexao, "portal", "O que a ponte nos ensina", "https://b/opiniao/ponte")
+        self.assertEqual(self.analise("https://b/opiniao/ponte")["rotulo"], "opiniao")
+
+    def test_ia_substitui_regras_mas_regras_nao_substituem_ia(self):
+        self.analise()
+        self.assertIn("https://a/1", [n["link"] for n in conselho.pendentes(self.conexao)])
+        chamar = agentes_falsos({a["id"]: parecer("dados-insuficientes", []) for a in conselho.AGENTES})
+        conselho.analisar(self.conexao, VEICULOS, chamar, por_execucao=5, por_dia=10, aviso=lambda *_: None)
+        self.assertEqual(self.analise()["rotulo"], "dados-insuficientes")
+
+    def test_decisao_humana_nao_e_sobrescrita(self):
+        self.analise()
+        conselho.aplicar_decisoes(self.conexao, {"https://a/1": (3, "contestada")})
+        self.assertEqual(self.analise()["rotulo"], "contestada")
+
+
 if __name__ == "__main__":
     unittest.main()
