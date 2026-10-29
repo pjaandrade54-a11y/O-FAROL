@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS noticias (
   escala TEXT NOT NULL,
   uso TEXT NOT NULL DEFAULT 'noticias',
   uf TEXT,
-  cidade TEXT
+  cidade TEXT,
+  cidades TEXT
 );
 CREATE INDEX IF NOT EXISTS noticias_escala_data ON noticias (uso, escala, publicado_em DESC);
 
@@ -53,4 +54,8 @@ def abrir(arquivo=ARQUIVO):
     conexao = sqlite3.connect(arquivo)
     conexao.row_factory = sqlite3.Row
     conexao.executescript(ESQUEMA)
+    # Banco criado antes da coluna "cidades" (todas as cidades citadas, em JSON): acrescenta a coluna
+    colunas = {c["name"] for c in conexao.execute("PRAGMA table_info(noticias)")}
+    if "cidades" not in colunas:
+        conexao.execute("ALTER TABLE noticias ADD COLUMN cidades TEXT")
     return conexao

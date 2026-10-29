@@ -43,8 +43,8 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
             "veiculo_id": linha["veiculo_id"],
             "veiculo": nomes.get(linha["veiculo_id"], linha["veiculo_id"]),
             "publicado_em": linha["publicado_em"],
-            "uf": linha["uf"],
-            "cidade": linha["cidade"],
+            "uf": _da_lista(linha, "uf"),
+            "cidade": _da_lista(linha, "cidade"),
             "analise": analises.get(linha["link"]),
         }
 
@@ -62,11 +62,17 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
     for uf in sorted(UFS):
         estado = {"gerado_em": saida["gerado_em"], "uf": uf, "escalas": {}}
         for escala in POR_ESTADO:
-            estado["escalas"][escala] = [item(l) for l in t[escala] if l["uf"] == uf]
+            estado["escalas"][escala] = [item(l) for l in t[escala] if _da_lista(l, "uf") == uf]
             contagem[escala] += len(estado["escalas"][escala])
         _gravar(pasta / f"{uf}.json", estado)
     contagem["checagens"] = len(saida["checagens"])
     return contagem
+
+
+def _da_lista(linha, campo):
+    """Na lista de cidades, cada linha vale para uma das cidades citadas (cidade_lista, uf_lista)."""
+    chave = campo + "_lista"
+    return linha[chave] if chave in linha.keys() else linha[campo]
 
 
 def _gravar(arquivo, dados):

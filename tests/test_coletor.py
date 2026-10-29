@@ -1,5 +1,6 @@
 """Testes do coletor. Rode na pasta do projeto: python -m unittest discover -s tests"""
 
+import json
 import unittest
 
 from coletor import banco, cadastro, coleta, feeds
@@ -163,6 +164,38 @@ class TestColeta(unittest.TestCase):
         item = {"titulo": "Romaria movimenta Juazeiro do Norte", "resumo": ""}
         self.assertEqual(coleta.cidade_citada(item, {"abrangencia": "nacional", "uf": None}, cidades)["nome"],
                          "Juazeiro do Norte")
+
+    def test_noticia_com_duas_cidades_guarda_as_duas(self):
+        conexao = banco.abrir(":memory:")
+        veiculo = cadastro.novo_veiculo("g1-pe", "g1 PE", "https://exemplo.org", "portal", "estadual",
+                                        [{"url": "https://exemplo.org/feed"}], uf="PE")
+        item = {"titulo": "Chuva alaga ruas de Olinda e Recife", "link": "https://exemplo.org/c", "guid": "c",
+                "resumo": "", "autor": None, "publicado_em": None}
+        coleta.guardar(conexao, veiculo, veiculo["feeds"][0], [item], cadastro.carregar_cidades())
+        linha = conexao.execute("SELECT escala, cidade, cidades FROM noticias").fetchone()
+        self.assertEqual((linha["escala"], linha["cidade"]), ("cidade", "Olinda"))
+        self.assertEqual([c["nome"] for c in json.loads(linha["cidades"])], ["Olinda", "Recife"])
+
+    def test_nome_menor_nao_casa_dentro_do_maior(self):
+        cidades = [{"nome": "Juazeiro do Norte", "uf": "CE"}, {"nome": "Juazeiro", "uf": "BA"}]
+        item = {"titulo": "Romaria movimenta Juazeiro do Norte", "resumo": ""}
+        achadas = coleta.cidades_citadas(item, {"abrangencia": "nacional", "uf": None}, cidades)
+        self.assertEqual([c["nome"] for c in achadas], ["Juazeiro do Norte"])
+
+    def test_banco_antigo_ganha_a_coluna_cidades(self):
+        import sqlite3, tempfile, pathlib
+        with tempfile.TemporaryDirectory() as pasta:
+            arquivo = pathlib.Path(pasta) / "farol.db"
+            antigo = sqlite3.connect(arquivo)
+            antigo.execute("CREATE TABLE noticias (id INTEGER PRIMARY KEY, veiculo_id TEXT NOT NULL, titulo TEXT NOT NULL, "
+                           "link TEXT NOT NULL UNIQUE, guid TEXT, resumo TEXT, autor TEXT, publicado_em TEXT, "
+                           "coletado_em TEXT NOT NULL, escala TEXT NOT NULL, uso TEXT NOT NULL DEFAULT 'noticias', "
+                           "uf TEXT, cidade TEXT)")
+            antigo.commit()
+            antigo.close()
+            conexao = banco.abrir(arquivo)
+            self.assertIn("cidades", [c["name"] for c in conexao.execute("PRAGMA table_info(noticias)")])
+            conexao.close()
 
     def test_cidade_nao_casa_parte_de_palavra(self):
         veiculo = {"abrangencia": "estadual", "uf": "SE"}
