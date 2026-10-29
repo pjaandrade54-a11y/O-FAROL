@@ -442,10 +442,13 @@ def regras(noticia, original, fontes):
     mesmo_fato = [f for f in fontes if f["palavras_no_titulo"] >= MESMO_FATO]
     checagens = [f for f in mesmo_fato if f["checador"] and CHECAGEM_FALSO.search(f["titulo"])]
     if checagens:
-        return ("desmentida",
-                [f"Um checador publicou uma checagem sobre o assunto que indica informação falsa ({checagens[0]['veiculo']})."],
+        # Comparando palavras não dá para saber se a checagem desmente esta notícia ou outra coisa sobre o
+        # mesmo assunto (por exemplo, uma fala de quem aparece nela): quem decide é o conselho humano
+        return ("em-apuracao",
+                [f"Um checador publicou uma checagem sobre o mesmo assunto ({checagens[0]['veiculo']}).",
+                 "Uma pessoa do conselho vai conferir se a checagem trata desta notícia."],
                 [{"f": f, "explicacao": "Checagem sobre o assunto"} for f in checagens],
-                ["Checagem encontrada por comparação de títulos: uma pessoa precisa confirmar que trata desta notícia."])
+                ["Checagem relacionada encontrada por comparação de títulos: o conselho decide se desmente a notícia."])
 
     grupos = {}
     for f in mesmo_fato:

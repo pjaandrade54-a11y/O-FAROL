@@ -17,7 +17,7 @@ Depois disso, a coleta e a publicação acontecem sozinhas a cada 30 minutos.
 
 ## Análise das notícias (gratuita)
 
-**Sem configurar nada**, cada coleta rotula as notícias da página inicial por **regras, sem IA**, de graça: *Confirmada* quando dois veículos de grupos diferentes publicam o mesmo fato, *Desmentida* (provisória, com caso para o conselho humano) quando um checador publica que o assunto é falso, *Opinião* para colunas e artigos, e *Em apuração* nos demais casos. A análise é refeita a cada coleta. Ela compara palavras dos títulos, então é mais simples e mais cautelosa que a análise por IA.
+**Sem configurar nada**, cada coleta rotula as notícias da página inicial por **regras, sem IA**, de graça: *Confirmada* quando dois veículos de grupos diferentes publicam o mesmo fato, *Em apuração* com caso para o conselho humano quando um checador publica algo falso sobre o mesmo assunto (só o conselho marca *Desmentida*), *Opinião* para colunas e artigos, e *Em apuração* nos demais casos. A análise é refeita a cada coleta. Ela compara palavras dos títulos, então é mais simples e mais cautelosa que a análise por IA.
 
 ## Conselho de IA (gratuito, opcional)
 

@@ -185,7 +185,8 @@ class TestRegras(unittest.TestCase):
         inserir(self.conexao, "checa", "É falso que ponte da Rua das Palmeiras foi interditada", "https://e/1",
                 uso="checagens")
         a = self.analise()
-        self.assertEqual((a["rotulo"], a["destino"]), ("desmentida", "conselho"))
+        self.assertEqual((a["rotulo"], a["destino"]), ("em-apuracao", "conselho"))
+        self.assertEqual(a["pareceres"][0]["provas"][0]["link"], "https://e/1")
 
     def test_opiniao_pelo_endereco(self):
         inserir(self.conexao, "portal", "O que a ponte nos ensina", "https://b/opiniao/ponte")
