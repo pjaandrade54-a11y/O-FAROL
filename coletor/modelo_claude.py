@@ -1,6 +1,7 @@
 """Agentes do conselho de IA que rodam no Claude (Anthropic). Precisa do pacote anthropic e de ANTHROPIC_API_KEY."""
 
 import json
+import os
 
 import anthropic
 
@@ -13,7 +14,9 @@ class AgenteClaude:
     def __init__(self, modelo=MODELO_PADRAO, esforco="medium"):
         self.modelo = modelo
         self.esforco = esforco
-        self.cliente = anthropic.Anthropic(max_retries=3, timeout=300)
+        # Chave colada nos Secrets às vezes vem com quebra de linha no fim, o que invalida o cabeçalho HTTP
+        self.cliente = anthropic.Anthropic(api_key=(os.environ.get("ANTHROPIC_API_KEY") or "").strip(),
+                                           max_retries=3, timeout=300)
         self.tokens = [0, 0]
 
     def parecer(self, sistema, conteudo):
@@ -35,7 +38,7 @@ class AgenteClaude:
         except anthropic.APIStatusError as e:
             raise ErroModelo(f"a API da Anthropic respondeu {e.status_code}: {e.message}") from e
         except anthropic.APIConnectionError as e:
-            raise ErroModelo("sem conexão com a API da Anthropic") from e
+            raise ErroModelo(f"sem conexão com a API da Anthropic ({type(e.__cause__).__name__})") from e
 
         self.tokens[0] += r.usage.input_tokens
         self.tokens[1] += r.usage.output_tokens

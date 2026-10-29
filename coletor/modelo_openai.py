@@ -4,6 +4,7 @@ A Defesa fica numa empresa diferente da Acusação para que os dois lados não e
 """
 
 import json
+import os
 
 import openai
 
@@ -16,7 +17,8 @@ MODELO_PADRAO = "gpt-6.1-terra"
 class AgenteOpenAI:
     def __init__(self, modelo):
         self.modelo = modelo
-        self.cliente = openai.OpenAI(max_retries=3, timeout=300)
+        self.cliente = openai.OpenAI(api_key=(os.environ.get("OPENAI_API_KEY") or "").strip(),
+                                     max_retries=3, timeout=300)
         self.tokens = [0, 0]
 
     def parecer(self, sistema, conteudo):
@@ -36,7 +38,7 @@ class AgenteOpenAI:
         except openai.APIStatusError as e:
             raise ErroModelo(f"a API da OpenAI respondeu {e.status_code}: {e.message}") from e
         except openai.APIConnectionError as e:
-            raise ErroModelo("sem conexão com a API da OpenAI") from e
+            raise ErroModelo(f"sem conexão com a API da OpenAI ({type(e.__cause__).__name__})") from e
 
         if r.usage:
             self.tokens[0] += r.usage.prompt_tokens
