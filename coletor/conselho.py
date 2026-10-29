@@ -12,7 +12,7 @@ Os agentes só veem título e resumo de cada notícia (o coletor não copia o te
 import json
 import re
 import unicodedata
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 
 from .coleta import agora
@@ -138,34 +138,53 @@ def _grupo(veiculo):
     return veiculo.get("grupo") or (veiculo.get("transparencia") or {}).get("dono") or veiculo["id"]
 
 
-def montar_dossie(conexao, noticia, veiculos_por_id, limite=FONTES_NO_DOSSIE, horas=HORAS_DOSSIE):
+class Indice:
+    """Palavras das notícias recentes, calculadas uma vez por execução: com muitos veículos, comparar cada
+    notícia com todas as outras do zero ficaria lento demais."""
+
+    def __init__(self, conexao, horas=HORAS_DOSSIE + 24):
+        ultima = conexao.execute("SELECT MAX(COALESCE(publicado_em, coletado_em)) FROM noticias").fetchone()[0]
+        try:
+            desde = (datetime.fromisoformat(ultima) - timedelta(hours=horas)).isoformat()
+        except (TypeError, ValueError):
+            desde = ""
+        self.linhas = conexao.execute(
+            "SELECT * FROM noticias WHERE COALESCE(publicado_em, coletado_em) >= ?", (desde,)).fetchall()
+        self.palavras = {l["link"]: (_palavras(l["titulo"]), _palavras(l["titulo"]) | _palavras(l["resumo"]))
+                         for l in self.linhas}
+        # Palavras que aparecem em muitas notícias do período ("Aracaju", "governo"…) não indicam o mesmo fato
+        frequencia = Counter(p for _, todas in self.palavras.values() for p in todas)
+        self.comum_demais = {p for p, n in frequencia.items() if n > max(6, len(self.linhas) * 0.03)}
+        self.por_palavra = defaultdict(list)
+        for l in self.linhas:
+            for p in self.palavras[l["link"]][1] - self.comum_demais:
+                self.por_palavra[p].append(l)
+
+
+def montar_dossie(conexao, noticia, veiculos_por_id, limite=FONTES_NO_DOSSIE, horas=HORAS_DOSSIE, indice=None):
     """Notícias de outros veículos e checadores com palavras em comum com a notícia analisada."""
+    indice = indice or Indice(conexao)
     base = noticia["publicado_em"] or noticia["coletado_em"]
     try:
         inicio = (datetime.fromisoformat(base) - timedelta(hours=horas)).isoformat()
     except (TypeError, ValueError):
         inicio = ""
-    linhas = conexao.execute(
-        "SELECT * FROM noticias WHERE link != ? AND COALESCE(publicado_em, coletado_em) >= ?",
-        (noticia["link"], inicio),
-    ).fetchall()
-    palavras = {c["link"]: (_palavras(c["titulo"]), _palavras(c["titulo"]) | _palavras(c["resumo"])) for c in linhas}
+    titulo_alvo = _palavras(noticia["titulo"]) - indice.comum_demais
+    alvo = (titulo_alvo | _palavras(noticia["resumo"])) - indice.comum_demais
 
-    # Palavras que aparecem em muitas notícias do período ("Aracaju", "governo"…) não indicam o mesmo fato
-    frequencia = Counter(p for _, todas in palavras.values() for p in todas)
-    comum_demais = {p for p, n in frequencia.items() if n > max(6, len(linhas) * 0.03)}
-    titulo_alvo = _palavras(noticia["titulo"]) - comum_demais
-    alvo = (titulo_alvo | _palavras(noticia["resumo"])) - comum_demais
-
-    candidatas = []
-    for c in linhas:
-        if c["veiculo_id"] == noticia["veiculo_id"]:
-            continue
-        do_titulo, todas = palavras[c["link"]]
-        comuns_titulo = len(titulo_alvo & do_titulo)
-        comuns = len(alvo & todas)
-        if comuns >= 3 or (comuns_titulo >= 1 and comuns >= 2):
-            candidatas.append((comuns + comuns_titulo, c["publicado_em"] or c["coletado_em"] or "", c, comuns_titulo))
+    vistas, candidatas = set(), []
+    for p in alvo:
+        for c in indice.por_palavra.get(p, ()):
+            if c["link"] in vistas or c["link"] == noticia["link"] or c["veiculo_id"] == noticia["veiculo_id"]:
+                continue
+            vistas.add(c["link"])
+            if (c["publicado_em"] or c["coletado_em"] or "") < inicio:
+                continue
+            do_titulo, todas = indice.palavras[c["link"]]
+            comuns_titulo = len(titulo_alvo & do_titulo)
+            comuns = len(alvo & todas)
+            if comuns >= 3 or (comuns_titulo >= 1 and comuns >= 2):
+                candidatas.append((comuns + comuns_titulo, c["publicado_em"] or c["coletado_em"] or "", c, comuns_titulo))
     candidatas.sort(key=lambda x: (x[0], x[1]), reverse=True)
 
     fontes = []
@@ -288,10 +307,10 @@ def decidir(pareceres, texto_noticia):
     }
 
 
-def analisar_noticia(noticia, veiculos_por_id, conexao, chamar):
+def analisar_noticia(noticia, veiculos_por_id, conexao, chamar, indice=None):
     """Roda os três agentes e o Auditor de regras. Levanta ErroModelo se algum agente não responder."""
     original = descrever_noticia(noticia, veiculos_por_id.get(noticia["veiculo_id"]))
-    fontes = montar_dossie(conexao, noticia, veiculos_por_id)
+    fontes = montar_dossie(conexao, noticia, veiculos_por_id, indice=indice)
     conteudo = mensagem(original, fontes)
     por_ref = {f["ref"]: f for f in fontes}
     por_ref["N"] = original
@@ -382,9 +401,10 @@ def analisar(conexao, veiculos, chamar, por_execucao, por_dia, aviso=print):
     vagas = max(0, min(por_execucao, por_dia - analisadas_hoje(conexao)))
     fila = pendentes(conexao)
     r = {"pendentes": len(fila), "analisadas": 0, "conselho": 0, "erros": 0, "novas_conselho": []}
+    indice = Indice(conexao) if fila[:vagas] else None
     for noticia in fila[:vagas]:
         try:
-            analise = analisar_noticia(noticia, veiculos_por_id, conexao, chamar)
+            analise = analisar_noticia(noticia, veiculos_por_id, conexao, chamar, indice)
         except ErroModelo as e:
             r["erros"] += 1
             aviso(f"  ! {noticia['titulo'][:70]}: {e}")
@@ -444,9 +464,9 @@ def regras(noticia, original, fontes):
     return "em-apuracao", [motivo, "Falta a confirmação de dois veículos de grupos diferentes."], [], []
 
 
-def analisar_por_regras(noticia, veiculos_por_id, conexao):
+def analisar_por_regras(noticia, veiculos_por_id, conexao, indice=None):
     original = descrever_noticia(noticia, veiculos_por_id.get(noticia["veiculo_id"]))
-    fontes = montar_dossie(conexao, noticia, veiculos_por_id)
+    fontes = montar_dossie(conexao, noticia, veiculos_por_id, indice=indice)
     rotulo, motivos, provas, para_conselho = regras(noticia, original, fontes)
     if suspeita_manipulacao(noticia["titulo"] + "\n" + (noticia["resumo"] or "")):
         para_conselho.append("Suspeita de tentativa de manipulação do sistema no texto analisado.")
@@ -475,19 +495,21 @@ def analisar_por_regras(noticia, veiculos_por_id, conexao):
 
 
 def analisar_regras(conexao, veiculos, aviso=print):
-    """Analisa de novo, a cada coleta, as notícias da página inicial (exceto as já decididas pelo conselho
-    humano): uma notícia em apuração vira confirmada quando outros veículos publicam o mesmo fato."""
+    """Analisa de novo, a cada coleta, todas as notícias que vão para o site (exceto as já decididas pelo
+    conselho humano): uma notícia em apuração vira confirmada quando outros veículos publicam o mesmo fato."""
     remover_orfas(conexao)
     veiculos_por_id = {v["id"]: v for v in veiculos}
     anteriores = {l["link"]: (l["rotulo"], l["destino"], l["metodo"]) for l in conexao.execute(
         "SELECT link, rotulo, destino, json_extract(dados, '$.metodo') AS metodo FROM analises")}
     r = {"pendentes": 0, "analisadas": 0, "conselho": 0, "erros": 0, "novas_conselho": []}
-    for noticia in pendentes(conexao, incluir_analisadas=True):
+    from .selecao import noticias_do_site  # importado aqui: selecao não depende do conselho
+    indice = Indice(conexao)
+    for noticia in noticias_do_site(conexao):
         antes = anteriores.get(noticia["link"])
         # Não mexe no que o conselho humano decidiu nem no que a IA já analisou
         if antes and (antes[1] == "humano" or antes[2] != "regras"):
             continue
-        analise = analisar_por_regras(noticia, veiculos_por_id, conexao)
+        analise = analisar_por_regras(noticia, veiculos_por_id, conexao, indice)
         guardar(conexao, analise)
         r["analisadas"] += 1
         if not antes or (analise["rotulo"], analise["destino"]) != antes[:2]:

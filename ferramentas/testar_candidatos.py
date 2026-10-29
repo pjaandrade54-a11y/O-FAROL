@@ -50,6 +50,8 @@ def testar(candidato):
 
 def main(arquivo):
     candidatos = json.loads(Path(arquivo).read_text(encoding="utf-8"))
+    if isinstance(candidatos, dict):  # dados/veiculos.json: testa só o feed cadastrado
+        candidatos = [{**v, "feeds": [f["url"] for f in v["feeds"]], "adivinhar": False} for v in candidatos["veiculos"]]
     with ThreadPoolExecutor(max_workers=16) as grupo:
         resultados = list(grupo.map(testar, candidatos))
     for r in sorted(resultados, key=lambda r: (not r["ok"], r["id"])):

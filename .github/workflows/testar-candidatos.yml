@@ -1,11 +1,15 @@
-# Testa os feeds de ferramentas/candidatos.json antes de cadastrar os veículos (não publica nada).
+# Testa feeds sem publicar nada: os candidatos de ferramentas/candidatos.json (antes de cadastrar)
+# ou, escolhendo "cadastrados", os feeds de dados/veiculos.json.
 name: Testar veículos candidatos
 
 on:
   workflow_dispatch:
-  push:
-    branches: ["claude/**"]
-    paths: ["ferramentas/candidatos.json", "ferramentas/testar_candidatos.py"]
+    inputs:
+      arquivo:
+        description: "Quais feeds testar"
+        type: choice
+        options: [ferramentas/candidatos.json, dados/veiculos.json]
+        default: ferramentas/candidatos.json
 
 permissions:
   contents: read
@@ -19,4 +23,4 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python ferramentas/testar_candidatos.py ferramentas/candidatos.json
+      - run: python ferramentas/testar_candidatos.py ${{ inputs.arquivo }}

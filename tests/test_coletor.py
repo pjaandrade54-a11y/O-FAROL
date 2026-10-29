@@ -143,6 +143,27 @@ class TestColeta(unittest.TestCase):
         self.assertEqual(coleta.remover_antigas(conexao, dias=30), 1)
         self.assertEqual([l[0] for l in conexao.execute("SELECT link FROM noticias")], ["https://exemplo.org/nova"])
 
+    def test_nacional_que_cita_cidade_fica_no_pais_com_a_cidade_marcada(self):
+        conexao = banco.abrir(":memory:")
+        veiculo = cadastro.novo_veiculo("nacional", "Nacional", "https://exemplo.org", "portal", "nacional",
+                                        [{"url": "https://exemplo.org/feed"}])
+        item = {"titulo": "Chuva forte alaga ruas de Recife", "link": "https://exemplo.org/r", "guid": "r",
+                "resumo": "", "autor": None, "publicado_em": None}
+        coleta.guardar(conexao, veiculo, veiculo["feeds"][0], [item], [{"nome": "Recife", "uf": "PE"}])
+        self.assertEqual(tuple(conexao.execute("SELECT escala, cidade, uf FROM noticias").fetchone()), ("pais", "Recife", "PE"))
+
+    def test_cidade_ambigua_so_conta_no_mesmo_estado(self):
+        natal = {"nome": "Natal", "uf": "RN", "ambigua": True}
+        item = {"titulo": "Shoppings abrem mais cedo no Natal", "resumo": ""}
+        self.assertIsNone(coleta.cidade_citada(item, {"abrangencia": "nacional", "uf": None}, [natal]))
+        self.assertEqual(coleta.cidade_citada(item, {"abrangencia": "estadual", "uf": "RN"}, [natal]), natal)
+
+    def test_nome_mais_longo_tem_prioridade(self):
+        cidades = cadastro.carregar_cidades()
+        item = {"titulo": "Romaria movimenta Juazeiro do Norte", "resumo": ""}
+        self.assertEqual(coleta.cidade_citada(item, {"abrangencia": "nacional", "uf": None}, cidades)["nome"],
+                         "Juazeiro do Norte")
+
     def test_cidade_nao_casa_parte_de_palavra(self):
         veiculo = {"abrangencia": "estadual", "uf": "SE"}
         item = {"titulo": "Aracajuanos lotam a praia", "resumo": ""}

@@ -1,6 +1,7 @@
 """Coleta: passa pelos feeds dos veículos ativos e guarda só as notícias novas."""
 
 import re
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 
 from . import feeds as leitor
@@ -20,27 +21,43 @@ def data_confiavel(publicado_em, momento):
 
 
 def cidade_citada(item, veiculo, cidades):
-    """Devolve a cidade monitorada citada no título ou resumo. Veículos estaduais só contam cidades do seu estado."""
+    """Devolve a cidade monitorada citada no título ou resumo. Veículos estaduais e locais só contam
+    cidades do seu estado; cidades de nome ambíguo só contam em veículos do mesmo estado."""
     texto = f"{item['titulo']} {item['resumo']}"
     for c in cidades:
-        if veiculo["abrangencia"] == "estadual" and c["uf"] != veiculo.get("uf"):
+        mesmo_estado = c["uf"] == veiculo.get("uf")
+        if (veiculo["abrangencia"] in ("estadual", "local") or c.get("ambigua")) and not mesmo_estado:
             continue
         if re.search(r"\b" + re.escape(c["nome"]) + r"\b", texto, re.IGNORECASE):
             return c
     return None
 
 
-def coletar(conexao, veiculos, so_veiculo=None, aviso=print, cidades=()):
+def coletar(conexao, veiculos, so_veiculo=None, aviso=print, cidades=(), simultaneos=12):
     resumo = {"feeds": 0, "novas": 0, "sem_mudanca": 0, "erros": 0}
+    pedidos = []
     for v in veiculos:
         if not v.get("ativo", True) or (so_veiculo and v["id"] != so_veiculo):
             continue
         for feed in v["feeds"]:
+            estado = conexao.execute("SELECT etag, modificado FROM feeds WHERE url = ?", (feed["url"],)).fetchone()
+            pedidos.append((v, feed, estado["etag"] if estado else None, estado["modificado"] if estado else None))
+
+    # Baixa vários feeds ao mesmo tempo (um site lento não segura os outros); grava um de cada vez
+    def baixar(pedido):
+        v, feed, etag, modificado = pedido
+        try:
+            return pedido, leitor.baixar(feed["url"], etag, modificado), None
+        except leitor.ErroFeed as e:
+            return pedido, None, e
+
+    with ThreadPoolExecutor(max_workers=simultaneos) as grupo:
+        for (v, feed, _, _), resposta, erro in grupo.map(baixar, pedidos):
             resumo["feeds"] += 1
             url = feed["url"]
-            estado = conexao.execute("SELECT etag, modificado FROM feeds WHERE url = ?", (url,)).fetchone()
             try:
-                resposta = leitor.baixar(url, estado["etag"] if estado else None, estado["modificado"] if estado else None)
+                if erro:
+                    raise erro
                 if resposta.status == 304:
                     resumo["sem_mudanca"] += 1
                     aviso(f"  {v['nome']}: nada novo desde a última coleta")
@@ -69,7 +86,11 @@ def guardar(conexao, veiculo, feed, itens, cidades=()):
         if uso == "noticias" and escala in ("estado", "pais"):
             citada = cidade_citada(item, veiculo, cidades)
             if citada:
-                escala, uf, cidade = "cidade", citada["uf"], citada["nome"]
+                # Notícia estadual sobre a cidade vai para a aba Cidade; a nacional fica na aba País e
+                # também aparece na aba Cidade de quem escolheu aquela cidade
+                uf, cidade = citada["uf"], citada["nome"]
+                if escala == "estado":
+                    escala = "cidade"
         cursor = conexao.execute(
             """INSERT OR IGNORE INTO noticias
                (veiculo_id, titulo, link, guid, resumo, autor, publicado_em, coletado_em, escala, uso, uf, cidade)

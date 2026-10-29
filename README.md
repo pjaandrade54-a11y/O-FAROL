@@ -1,6 +1,6 @@
 # O Farol
 
-Agregador de notícias com rótulos de confiabilidade e cobertura local, em fase de testes. Piloto em Aracaju (SE).
+Agregador de notícias com rótulos de confiabilidade e cobertura local, em fase de testes: 127 veículos de todos os estados e 143 cidades (capitais, maiores cidades e municípios de Sergipe).
 
 - **Site:** páginas estáticas (`index.html`, `painel.html`, `metodologia.html`, `quem-somos.html`, `contestar.html`, `privacidade.html`).
 - **Coletor:** `python -m coletor coletar` lê os feeds RSS de `dados/veiculos.json` e gera `dados/noticias.json`. Veja [docs/coletor.md](docs/coletor.md).

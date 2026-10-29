@@ -166,7 +166,7 @@ def cmd_analisar(args):
 
 
 def _exportar(conexao, veiculos):
-    contagem = exportar.exportar(conexao, veiculos)
+    contagem = exportar.exportar(conexao, veiculos, cidades=cadastro.carregar_cidades())
     partes = ", ".join(f"{k}: {n}" for k, n in contagem.items())
     print(f"dados/noticias.json atualizado ({partes}).")
 

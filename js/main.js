@@ -24,18 +24,33 @@ Farol.copiar = function (texto, campo, status) {
   if (campoData) campoData.textContent = data + ' · edição digital';
   if (campoAno) campoAno.textContent = hoje.getFullYear();
 
-  // Localização lembrada entre as páginas (só neste navegador)
-  function lerLocal() {
-    try { return localStorage.getItem('farol-local'); } catch (e) { return null; }
-  }
-  function guardarLocal(nome) {
-    try { localStorage.setItem('farol-local', nome); } catch (e) { /* sem armazenamento: segue sem lembrar */ }
-  }
-  function aplicarLocal(nome) {
-    document.querySelectorAll('[data-local]').forEach(function (el) { el.textContent = nome; });
-  }
-  var lembrado = lerLocal();
-  if (lembrado) aplicarLocal(lembrado);
+  // Localização lembrada entre as páginas (só neste navegador): {nome, uf}; sem cidade, só o estado
+  var PADRAO = { nome: 'Aracaju', uf: 'SE' };
+  Farol.local = {
+    ler: function () {
+      var guardado = null;
+      try { guardado = localStorage.getItem('farol-local'); } catch (e) { /* sem armazenamento */ }
+      if (!guardado) return null;
+      try {
+        var local = JSON.parse(guardado);
+        if (local && (local.nome || local.uf)) return local;
+      } catch (e) { /* versão antiga guardava só o nome */ }
+      return { nome: guardado, uf: null };
+    },
+    lerOuPadrao: function () { return Farol.local.ler() || PADRAO; },
+    guardar: function (local) {
+      try { localStorage.setItem('farol-local', JSON.stringify(local)); } catch (e) { /* segue sem lembrar */ }
+      Farol.local.aplicar(local);
+    },
+    texto: function (local) {
+      if (!local) return 'Sua cidade';
+      return local.nome ? local.nome + (local.uf ? ' (' + local.uf + ')' : '') : 'Estado: ' + local.uf;
+    },
+    aplicar: function (local) {
+      document.querySelectorAll('[data-local]').forEach(function (el) { el.textContent = Farol.local.texto(local); });
+    }
+  };
+  Farol.local.aplicar(Farol.local.lerOuPadrao());
 
   // Menu no celular
   var alternar = document.querySelector('.nav__alternar');
@@ -63,6 +78,7 @@ Farol.copiar = function (texto, campo, status) {
       document.getElementById(a.getAttribute('aria-controls')).hidden = !ativa;
     });
   }
+  Farol.selecionarAba = function (indice) { if (abas[indice]) selecionar(abas[indice]); };
   abas.forEach(function (aba, i) {
     aba.addEventListener('click', function () { selecionar(aba); });
     aba.addEventListener('keydown', function (e) {
@@ -74,44 +90,4 @@ Farol.copiar = function (texto, campo, status) {
     });
   });
 
-  // Localização do leitor (página inicial)
-  var form = document.getElementById('form-local');
-  if (!form) return;
-  var campo = document.getElementById('campo-local');
-  var status = document.getElementById('status-local');
-
-  function avisar(texto, erro) {
-    status.textContent = texto;
-    status.classList.toggle('erro', !!erro);
-  }
-
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var nome = campo.value.trim();
-    if (!nome) return;
-    aplicarLocal(nome);
-    guardarLocal(nome);
-    if (abas.length) selecionar(abas[0]);
-    avisar('Cidade salva: ' + nome + '. Nesta versão de testes, a cobertura local é de Aracaju (SE).');
-  });
-
-  document.getElementById('usar-localizacao').addEventListener('click', function () {
-    if (!('geolocation' in navigator)) {
-      avisar('Seu navegador não permite detectar a localização. Digite sua cidade.', true);
-      return;
-    }
-    avisar('Detectando sua localização…');
-    navigator.geolocation.getCurrentPosition(
-      function () {
-        // TODO: converter as coordenadas no nome da cidade (geocodificação reversa no servidor)
-        aplicarLocal('Sua localização');
-        if (abas.length) selecionar(abas[0]);
-        avisar('Localização detectada. Nesta versão de testes, a cobertura local é de Aracaju (SE).');
-      },
-      function () {
-        avisar('Não foi possível detectar sua localização. Digite sua cidade.', true);
-      },
-      { timeout: 10000 }
-    );
-  });
 })();
