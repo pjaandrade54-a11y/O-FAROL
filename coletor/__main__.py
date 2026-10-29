@@ -3,6 +3,7 @@
     python -m coletor coletar                 coleta todos os feeds e atualiza dados/noticias.json
     python -m coletor coletar --veiculo g1    coleta só um veículo
     python -m coletor exportar                só regenera dados/noticias.json
+    python -m coletor analisar                o conselho de IA analisa as notícias novas do site
     python -m coletor veiculos listar         mostra o cadastro e a situação de cada feed
     python -m coletor veiculos validar        confere o arquivo dados/veiculos.json
     python -m coletor veiculos testar [ID]    baixa e lê os feeds sem gravar nada
@@ -11,9 +12,10 @@
 """
 
 import argparse
+import os
 import sys
 
-from . import banco, cadastro, coleta, exportar
+from . import banco, cadastro, coleta, conselho, exportar
 from . import feeds as leitor
 from .cadastro import ABRANGENCIAS, TIPOS, UFS, ErroCadastro
 
@@ -34,6 +36,74 @@ def cmd_coletar(args):
 
 def cmd_exportar(args):
     _exportar(banco.abrir(), cadastro.carregar())
+    return 0
+
+
+def _numero_do_ambiente(nome, padrao):
+    try:
+        return int(os.environ.get(nome) or padrao)
+    except ValueError:
+        print(f"{nome} precisa ser um número; usando {padrao}.")
+        return padrao
+
+
+def _montar_agentes():
+    """Quem executa cada agente, conforme as chaves cadastradas. Sem chave da Anthropic, o conselho fica desligado."""
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        return None, []
+    from . import modelo_claude
+    claude = modelo_claude.AgenteClaude(os.environ.get("CLAUDE_MODELO") or modelo_claude.MODELO_PADRAO,
+                                        esforco=os.environ.get("IA_ESFORCO") or "medium")
+    defesa = claude
+    if os.environ.get("OPENAI_API_KEY"):
+        from . import modelo_openai
+        defesa = modelo_openai.AgenteOpenAI(os.environ.get("OPENAI_MODELO") or modelo_openai.MODELO_PADRAO)
+    else:
+        print("Aviso: sem OPENAI_API_KEY, a Defesa roda no Claude (o site mostra o modelo de cada parecer).")
+    executores = {"acusacao": claude, "defesa": defesa, "auditor-fontes": claude}
+    return (lambda agente, sistema, conteudo: executores[agente].parecer(sistema, conteudo)), [claude, defesa]
+
+
+def cmd_analisar(args):
+    from . import casos_github
+    veiculos = cadastro.carregar()
+    conexao = banco.abrir()
+
+    casos = None
+    if casos_github.configurado() and not args.sem_casos:
+        try:
+            casos = casos_github.casos_existentes()
+            mudaram = conselho.aplicar_decisoes(conexao, casos_github.decisoes(casos))
+            if mudaram:
+                print(f"{mudaram} decisões do conselho humano aplicadas.")
+        except casos_github.ErroGitHub as e:
+            print(f"Aviso: não foi possível ler os casos do conselho ({e}).")
+            casos = None
+
+    chamar, executores = _montar_agentes()
+    if not chamar:
+        print("Conselho de IA desligado: cadastre ANTHROPIC_API_KEY (e OPENAI_API_KEY) nos Secrets do repositório.")
+    else:
+        print("Conselho de IA analisando as notícias da página inicial…")
+        r = conselho.analisar(conexao, veiculos, chamar,
+                              por_execucao=_numero_do_ambiente("IA_POR_EXECUCAO", 4),
+                              por_dia=_numero_do_ambiente("IA_POR_DIA", 40))
+        print(f"\n{r['analisadas']} notícias analisadas ({r['conselho']} para o conselho humano), "
+              f"{r['erros']} com erro, {r['pendentes']} pendentes antes desta execução.")
+        for agente in dict.fromkeys(executores):
+            print(f"Tokens {type(agente).__name__}: {agente.tokens[0]} de entrada, {agente.tokens[1]} de saída.")
+        if casos is not None and r["novas_conselho"]:
+            try:
+                casos_github.garantir_etiquetas()
+                for analise in r["novas_conselho"]:
+                    link = analise["noticia"]["link"]
+                    numero = casos[link]["numero"] if link in casos else casos_github.abrir_caso(analise)
+                    conselho.registrar_caso(conexao, link, numero)
+                print(f"{len(r['novas_conselho'])} casos enviados ao conselho humano (aba Issues do GitHub).")
+            except casos_github.ErroGitHub as e:
+                print(f"Aviso: não foi possível abrir os casos do conselho ({e}).")
+
+    _exportar(conexao, veiculos)
     return 0
 
 
@@ -141,6 +211,10 @@ def montar_parser():
     c.set_defaults(func=cmd_coletar)
 
     sub.add_parser("exportar", help="regenera dados/noticias.json").set_defaults(func=cmd_exportar)
+
+    n = sub.add_parser("analisar", help="o conselho de IA analisa as notícias novas e atualiza dados/noticias.json")
+    n.add_argument("--sem-casos", action="store_true", help="não abre nem lê os casos do conselho no GitHub")
+    n.set_defaults(func=cmd_analisar)
 
     v = sub.add_parser("veiculos", help="cadastro de veículos").add_subparsers(dest="acao", required=True)
     v.add_parser("listar", help="mostra o cadastro").set_defaults(func=cmd_listar)

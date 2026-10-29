@@ -43,7 +43,13 @@
     var botao = el('button', { classe: 'casos__botao', attrs: { type: 'button', 'data-caso': caso.id } },
       el('span', { classe: 'casos__tema', texto: TEMAS[caso.tema] + (caso.tipo === 'opiniao' ? ' · opinião' : '') }),
       el('span', { classe: 'casos__titulo', texto: caso.titulo }));
-    botao.addEventListener('click', function () { selecionar(caso); });
+    botao.addEventListener('click', function () {
+      selecionar(caso);
+      // Em tela estreita a lista fica acima do caso: leva o leitor até o caso escolhido
+      if (window.matchMedia && window.matchMedia('(max-width: 960px)').matches) {
+        area.scrollIntoView({ behavior: calmo ? 'auto' : 'smooth', block: 'start' });
+      }
+    });
     lista.appendChild(el('li', null, botao));
   });
 

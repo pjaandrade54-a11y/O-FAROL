@@ -34,6 +34,16 @@ CREATE TABLE IF NOT EXISTS feeds (
   ultimo_erro TEXT,
   falhas_seguidas INTEGER NOT NULL DEFAULT 0
 );
+
+-- Pareceres do conselho de IA, um por notícia (pelo link, que sobrevive a uma recoleta)
+CREATE TABLE IF NOT EXISTS analises (
+  link TEXT PRIMARY KEY,
+  analisado_em TEXT NOT NULL,
+  rotulo TEXT NOT NULL,
+  destino TEXT NOT NULL,
+  dados TEXT NOT NULL,
+  issue INTEGER
+);
 """
 
 

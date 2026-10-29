@@ -1,10 +1,13 @@
 // O Farol — "Últimas notícias" da página inicial.
-// Lê as notícias reais exportadas pelo coletor (dados/noticias.json). Se o arquivo não
-// carregar (por exemplo, com o HTML aberto direto do disco), mostra os casos de exemplo do painel.
+// Lê as notícias reais exportadas pelo coletor (dados/noticias.json), com o rótulo do conselho de IA
+// quando a notícia já foi analisada. Se o arquivo não carregar (por exemplo, com o HTML aberto direto
+// do disco), mostra os casos de exemplo do painel. Com a página aberta, busca notícias novas sozinha.
 
 (function (m, agentes, casos) {
   var ESCALAS = ['cidade', 'estado', 'pais', 'mundo'];
   var POR_ABA = 5;
+  var RECARREGAR_MS = 5 * 60 * 1000; // a coleta roda a cada 30 minutos; olhar a cada 5 pega a nova logo
+  var ultimaBusca = 0;
   var legenda = document.getElementById('painel-legenda');
 
   function el(tag, classe, texto) {
@@ -63,11 +66,69 @@
     }
     li.appendChild(titulo);
 
+    var a = n.analise;
     var meta = el('p', 'noticia__meta');
-    meta.appendChild(el('span', 'rotulo rotulo--aguardando', 'Aguardando análise'));
+    if (a && m.ROTULOS[a.rotulo]) {
+      var selo = a.destino === 'conselho' ? ' · provisório' : a.destino === 'humano' ? ' · conselho' : '';
+      meta.appendChild(el('span', 'rotulo rotulo--' + a.rotulo, m.ROTULOS[a.rotulo] + selo));
+    } else {
+      meta.appendChild(el('span', 'rotulo rotulo--aguardando', 'Aguardando análise'));
+    }
     meta.appendChild(document.createTextNode(n.veiculo + (n.publicado_em ? ' · ' + tempoDesde(n.publicado_em) : '')));
     li.appendChild(meta);
+    if (a && m.ROTULOS[a.rotulo]) li.appendChild(detalhesAnalise(a));
     return li;
+  }
+
+  function linkExterno(texto, href) {
+    if (!/^https?:\/\//i.test(href || '')) return document.createTextNode(texto);
+    var link = el('a', null, texto);
+    link.href = href;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    return link;
+  }
+
+  function lista(classe, textos) {
+    var ul = el('ul', classe);
+    textos.forEach(function (t) { ul.appendChild(el('li', null, t)); });
+    return ul;
+  }
+
+  // "Por que este rótulo?": a decisão, cada parecer e as provas citadas, com link para a fonte
+  function detalhesAnalise(a) {
+    var caixa = el('details', 'analise');
+    caixa.appendChild(el('summary', null, 'Por que este rótulo?'));
+    caixa.appendChild(lista('analise__motivos', a.motivos.concat(a.motivosDestino || [])));
+    if (a.destino === 'conselho') {
+      caixa.appendChild(el('p', 'analise__nota', 'Rótulo provisório: o caso foi enviado ao conselho humano.'));
+    }
+    a.pareceres.forEach(function (p) {
+      var bloco = el('div', 'analise__parecer');
+      var titulo = el('p', 'analise__agente');
+      titulo.appendChild(el('strong', null, p.nome));
+      titulo.appendChild(document.createTextNode(' · ' + p.modelo + ': ' + (m.ROTULOS[p.rotuloSugerido] || 'sem rótulo') +
+        (typeof p.confianca === 'number' ? ', confiança ' + Math.round(p.confianca * 100) + '%' : '')));
+      bloco.appendChild(titulo);
+      bloco.appendChild(lista('analise__lista', p.motivos));
+      if (p.provas.length) {
+        var provas = el('ul', 'analise__lista analise__provas');
+        p.provas.forEach(function (prova) {
+          var li = el('li');
+          li.appendChild(linkExterno(prova.veiculo, prova.link));
+          li.appendChild(document.createTextNode(': ' + prova.explicacao));
+          provas.appendChild(li);
+        });
+        bloco.appendChild(provas);
+      }
+      if (p.descartado.length) {
+        bloco.appendChild(lista('analise__lista analise__descartado', p.descartado.map(function (x) {
+          return 'Descartado pelo Auditor de regras: ' + x;
+        })));
+      }
+      caixa.appendChild(bloco);
+    });
+    return caixa;
   }
 
   // Casos de exemplo: o rótulo vem do painel e o link abre a análise
@@ -96,11 +157,20 @@
   function mostrarReais(dados) {
     preencher(dados.escalas, noticiaReal);
 
-    var atualizado = new Date(dados.gerado_em).toLocaleString('pt-BR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    var visiveis = ESCALAS.reduce(function (t, e) { return t.concat((dados.escalas[e] || []).slice(0, POR_ABA)); }, []);
+    var analisadas = visiveis.filter(function (n) { return n.analise; }).length;
+    var data = new Date(dados.gerado_em);
+    var atualizado = data.toLocaleString('pt-BR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    var analise = analisadas
+      ? analisadas + ' de ' + visiveis.length + ' já passaram pelo conselho de IA; as demais aguardam a próxima rodada. '
+      : 'O conselho de IA ainda não analisou estas notícias. ';
     legenda.replaceChildren(
       document.createTextNode('Notícias reais de ' + dados.veiculos.length + ' veículos, coletadas em ' + atualizado +
-        '. Os títulos levam ao site de cada veículo. A análise do painel ainda não roda nestas notícias. '),
+        '. Os títulos levam ao site de cada veículo. ' + analise),
       linkEntendaRotulos());
+    document.querySelectorAll('[data-atualizado]').forEach(function (no) {
+      no.textContent = ' · atualizado às ' + data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    });
 
     var titulo = document.getElementById('fontes-titulo');
     var lista = document.getElementById('lista-veiculos');
@@ -121,11 +191,33 @@
       linkEntendaRotulos());
   }
 
-  fetch('dados/noticias.json', { cache: 'no-store' })
-    .then(function (r) {
-      if (!r.ok) throw new Error('noticias.json respondeu ' + r.status);
-      return r.json();
-    })
-    .then(mostrarReais)
-    .catch(mostrarExemplos);
+  var temReais = false;
+
+  function buscar() {
+    ultimaBusca = Date.now();
+    return fetch('dados/noticias.json', { cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('noticias.json respondeu ' + r.status);
+        return r.json();
+      })
+      .then(function (dados) {
+        temReais = true;
+        mostrarReais(dados);
+      })
+      .catch(function () {
+        // Numa atualização que falha (sem internet, por exemplo), as notícias já na tela ficam
+        if (!temReais) mostrarExemplos();
+      });
+  }
+
+  // Não troca a lista enquanto o leitor está com uma explicação aberta
+  function atualizarSePossivel() {
+    if (document.hidden || Date.now() - ultimaBusca < RECARREGAR_MS) return;
+    if (document.querySelector('.painel details[open]')) return;
+    buscar();
+  }
+
+  buscar();
+  setInterval(atualizarSePossivel, 60 * 1000);
+  document.addEventListener('visibilitychange', atualizarSePossivel);
 })(Farol.metodologia, Farol.agentes, Farol.casos);

@@ -1,17 +1,19 @@
-# Coleta as notícias e publica o site no GitHub Pages, sem servidor próprio.
+# Coleta as notícias, roda o conselho de IA e publica o site no GitHub Pages, sem servidor próprio.
 # Roda a cada 30 minutos, a cada envio de código para a branch main e pelo botão "Run workflow".
 
 name: Coletar notícias e publicar o site
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # horário UTC; o GitHub pode atrasar alguns minutos em horários de pico
+    # Minutos 7 e 37 (UTC): fora da virada da hora, quando o GitHub atrasa ou pula mais execuções agendadas
+    - cron: "7,37 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
 
 permissions:
   contents: read
+  issues: write      # o conselho de IA abre um caso (issue) para cada notícia que vai ao conselho humano
   pages: write
   id-token: write
 
@@ -41,11 +43,28 @@ jobs:
           key: farol-db-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: farol-db-
 
+      - name: Instalar os pacotes dos modelos de IA
+        run: pip install --quiet "anthropic>=2.3,<3" "openai>=3.41,<4"
+
       - name: Rodar os testes
         run: python -m unittest discover -s tests
 
       - name: Coletar notícias
         run: python -m coletor coletar
+
+      # Sem a chave da Anthropic nos Secrets, este passo só avisa que o conselho está desligado
+      - name: Conselho de IA
+        run: python -m coletor analisar
+        continue-on-error: true   # se a IA falhar, o site é publicado assim mesmo, com as notícias novas
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CLAUDE_MODELO: ${{ vars.CLAUDE_MODELO }}
+          OPENAI_MODELO: ${{ vars.OPENAI_MODELO }}
+          IA_ESFORCO: ${{ vars.IA_ESFORCO }}
+          IA_POR_EXECUCAO: ${{ vars.IA_POR_EXECUCAO }}
+          IA_POR_DIA: ${{ vars.IA_POR_DIA }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Guardar o banco para a próxima coleta
         if: always() && hashFiles('dados/farol.db') != ''

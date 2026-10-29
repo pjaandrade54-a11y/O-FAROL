@@ -14,12 +14,12 @@
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
-  <p class="faixa-teste">Versão de testes: as notícias da página inicial são reais e ainda não passaram pelo painel. Os casos analisados no painel são fictícios.</p>
+  <p class="faixa-teste">Versão de testes: as notícias da página inicial são reais, e os rótulos delas vêm do conselho de IA, ainda em teste. Os casos do painel de verificação são fictícios.</p>
 
   <div class="faixa-topo">
     <div class="container faixa-topo__linha">
       <span id="data-hoje">Edição digital</span>
-      <span><span data-local>Sua cidade</span> · atualizado agora</span>
+      <span><span data-local>Sua cidade</span><span data-atualizado></span></span>
     </div>
   </div>
 
@@ -144,7 +144,7 @@
             <thead><tr><th scope="col">Agente</th><th scope="col">Função</th><th scope="col">Quem executa</th></tr></thead>
             <tbody>
               <tr><td>Acusação</td><td>Procura as provas contra a afirmação</td><td>Claude Opus 5.5 (Anthropic)</td></tr>
-              <tr><td>Defesa</td><td>Procura as provas a favor</td><td>GPT, versão a confirmar (OpenAI)</td></tr>
+              <tr><td>Defesa</td><td>Procura as provas a favor</td><td>GPT-6.1 Terra (OpenAI)</td></tr>
               <tr><td>Auditor de fontes</td><td>Confere a independência das fontes e a existência de fonte primária</td><td>Claude Opus 5.5 (Anthropic)</td></tr>
               <tr><td>Auditor de regras</td><td>Confere se o rótulo segue esta metodologia ao pé da letra</td><td>Código da metodologia, sem IA</td></tr>
             </tbody>
@@ -156,6 +156,14 @@
           <li><strong>Texto é dado, não ordem.</strong> Instruções escondidas em uma notícia são ignoradas e o caso é enviado para revisão.</li>
           <li><strong>Modelos de empresas diferentes.</strong> Acusação e Defesa rodam em empresas diferentes, para que os dois lados não errem do mesmo jeito. O Auditor de regras é o código desta metodologia: regras exatas, que nenhum texto consegue manipular.</li>
           <li><strong>Mudar a IA é mudar a metodologia.</strong> Toda alteração nos agentes é testada contra casos já decididos por pessoas, auditada quanto a viés, aprovada pelo conselho e publicada aqui.</li>
+        </ul>
+        <h3 class="subtitulo" id="conselho-ia">Nas notícias reais (fase de testes)</h3>
+        <ul class="lista-marcada">
+          <li><strong>O que os agentes leem.</strong> A cada coleta, as notícias da página inicial ainda sem rótulo são analisadas. Os agentes leem o título e o resumo da notícia e um dossiê com o que outros veículos e checadores acompanhados publicaram sobre o assunto nos três dias anteriores. O texto completo das notícias não é copiado.</li>
+          <li><strong>O Auditor de regras confere as provas.</strong> Um parecer que cita fonte fora do dossiê é descartado, assim como “Confirmada” sem dois grupos de mídia diferentes do original e “Desmentida” sem checagem.</li>
+          <li><strong>Rótulo provisório.</strong> Se os agentes divergem, um parecer é descartado, o tema é sensível ou há suspeita de manipulação, a notícia aparece como “Em apuração · provisório” e o caso vai ao conselho humano. Quando o conselho decide, o site passa a mostrar a decisão dele.</li>
+          <li><strong>Tudo à vista.</strong> Em cada notícia, “Por que este rótulo?” mostra o parecer de cada agente, o modelo que o produziu e as provas, com link para a fonte.</li>
+          <li><strong>Limite de testes.</strong> Nesta fase, o número de notícias analisadas por dia é limitado, e algumas ficam “Aguardando análise”. Como os agentes só veem título e resumo, os rótulos são mais cautelosos do que serão com o texto completo.</li>
         </ul>
         <p><a class="link-seta" href="painel.html">Veja o painel funcionando com casos de exemplo</a></p>
       </section>
