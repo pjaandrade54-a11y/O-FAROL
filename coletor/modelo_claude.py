@@ -10,6 +10,14 @@ from .conselho import ESQUEMA_PARECER, ErroModelo
 MODELO_PADRAO = "claude-opus-5-5"
 
 
+def _descrever_chave():
+    """Tamanho, começo e fim da chave, para conferir se o Secret guardou a chave inteira sem revelá-la."""
+    chave = (os.environ.get("ANTHROPIC_API_KEY") or "").strip()
+    if len(chave) < 20:
+        return f"{len(chave)} caracteres"
+    return f"{len(chave)} caracteres, começa com {chave[:11]}…, termina com …{chave[-4:]}"
+
+
 class AgenteClaude:
     def __init__(self, modelo=MODELO_PADRAO, esforco="medium"):
         self.modelo = modelo
@@ -32,7 +40,7 @@ class AgenteClaude:
                 messages=[{"role": "user", "content": conteudo}],
             )
         except anthropic.AuthenticationError as e:
-            raise ErroModelo("chave da Anthropic inválida (ANTHROPIC_API_KEY)") from e
+            raise ErroModelo(f"a Anthropic recusou a chave ANTHROPIC_API_KEY ({_descrever_chave()})") from e
         except anthropic.RateLimitError as e:
             raise ErroModelo("limite de uso da Anthropic atingido; tenta de novo na próxima coleta") from e
         except anthropic.APIStatusError as e:
