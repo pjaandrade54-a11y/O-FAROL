@@ -52,6 +52,46 @@ Farol.copiar = function (texto, campo, status) {
   };
   Farol.local.aplicar(Farol.local.lerOuPadrao());
 
+  // Canais (WhatsApp, Instagram, TikTok, resumo por e-mail): link quando existir, "em breve" enquanto não
+  var site = Farol.site || {};
+  document.querySelectorAll('[data-canal]').forEach(function (link) {
+    var endereco = site[link.getAttribute('data-canal')];
+    if (endereco) {
+      link.href = endereco;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    } else {
+      link.classList.add('em-breve');
+      link.setAttribute('aria-disabled', 'true');
+      link.removeAttribute('href');
+      link.appendChild(document.createTextNode(' · em breve'));
+    }
+  });
+
+  // Apoie: mostra a chave Pix configurada em js/site.js, com botão de copiar
+  var chave = document.getElementById('pix-chave');
+  var copiarPix = document.getElementById('copiar-pix');
+  if (chave && copiarPix && site.pix) {
+    chave.textContent = site.pix;
+    copiarPix.hidden = false;
+    copiarPix.addEventListener('click', function () {
+      var status = document.getElementById('pix-status');
+      function manual() {
+        var faixa = document.createRange();
+        faixa.selectNodeContents(chave);
+        var selecao = window.getSelection();
+        selecao.removeAllRanges();
+        selecao.addRange(faixa);
+        status.textContent = 'Chave selecionada: copie e cole no app do seu banco.';
+      }
+      try {
+        navigator.clipboard.writeText(site.pix).then(function () {
+          status.textContent = 'Chave copiada. Cole no app do seu banco, na opção Pix.';
+        }, manual);
+      } catch (e) { manual(); }
+    });
+  }
+
   // Menu no celular
   var alternar = document.querySelector('.nav__alternar');
   var lista = document.getElementById('nav-lista');
