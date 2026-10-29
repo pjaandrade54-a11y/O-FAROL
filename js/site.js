@@ -7,6 +7,6 @@ Farol.site = {
   instagram: '',       // ex.: 'https://instagram.com/ofarolse'
   tiktok: '',          // ex.: 'https://tiktok.com/@ofarolse'
   resumoEmail: '',     // página de inscrição do resumo semanal (Substack, Buttondown...)
-  pix: '',             // chave Pix do projeto, para o botão "Apoie"
+  pix: 'b10a62fe-39c1-40a3-8e59-04f0bfb34e82', // chave Pix aleatória do projeto (botão "Apoie")
   email: 'ofarolnws@gmail.com'
 };
