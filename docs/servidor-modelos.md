@@ -1,6 +1,6 @@
 # Servidor de modelos do painel de verificação
 
-> **Notícias reais:** os agentes já rodam de verdade nas notícias coletadas, sem servidor, dentro do GitHub Actions (`python -m coletor analisar`, código em `coletor/conselho.py`). Por padrão, nos modelos gratuitos do GitHub Models; veja [hospedagem.md](hospedagem.md#conselho-de-ia-gratuito). Este documento trata do painel interativo (`painel.html`), que ainda precisa de um servidor para chamar os modelos a partir do navegador.
+> **Notícias reais:** os agentes já rodam de verdade nas notícias coletadas, sem servidor, dentro do GitHub Actions (`python -m coletor analisar`, código em `coletor/conselho.py`). Por padrão, no plano gratuito do Google Gemini; veja [hospedagem.md](hospedagem.md#conselho-de-ia-gratuito). Este documento trata do painel interativo (`painel.html`), que ainda precisa de um servidor para chamar os modelos a partir do navegador.
 
 O painel (`painel.html`) funciona hoje em **modo demonstração**: os quatro agentes são simulados pelas regras de `js/painel/agentes.js`. Para usar modelos de IA de verdade, falta um servidor que receba cada caso e devolva o parecer de cada agente. As chaves de API ficam **só no servidor**, nunca no navegador.
 

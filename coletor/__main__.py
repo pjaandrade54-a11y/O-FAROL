@@ -48,14 +48,33 @@ def _numero_do_ambiente(nome, padrao):
 
 
 def _montar_agentes():
-    """Quem executa cada agente. IA_PROVEDOR escolhe: "github" (gratuito, padrão), "anthropic" (pago) ou "desligado"."""
-    provedor = (os.environ.get("IA_PROVEDOR") or "github").strip().lower()
+    """Quem executa cada agente. IA_PROVEDOR escolhe: "gemini" (gratuito, padrão), "github" (gratuito),
+    "anthropic" (pago) ou "desligado"."""
+    provedor = (os.environ.get("IA_PROVEDOR") or "gemini").strip().lower()
+    if provedor == "gemini":
+        return _agentes_gemini()
     if provedor == "github":
         return _agentes_github()
     if provedor == "anthropic":
         return _agentes_pagos()
     print(f"IA_PROVEDOR={provedor}: conselho de IA desligado.")
     return None, []
+
+
+def _agentes_gemini():
+    from . import modelo_gemini
+    if not os.environ.get("GEMINI_API_KEY"):
+        print("Conselho de IA desligado: cadastre GEMINI_API_KEY nos Secrets do repositório "
+              "(chave gratuita em aistudio.google.com).")
+        return None, []
+    try:
+        print("Modelos gratuitos do Google Gemini:")
+        modelos = modelo_gemini.escolher_modelos(modelo_gemini.listar_modelos())
+    except conselho.ErroModelo as e:
+        print(f"Conselho de IA desligado nesta execução: {e}.")
+        return None, []
+    executores = {agente: modelo_gemini.AgenteGemini(modelo) for agente, modelo in modelos.items()}
+    return (lambda agente, sistema, conteudo: executores[agente].parecer(sistema, conteudo)), list(executores.values())
 
 
 def _agentes_github():

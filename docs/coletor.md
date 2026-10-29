@@ -11,7 +11,7 @@ Rode na pasta do projeto:
 | `python -m coletor coletar` | Coleta todos os veículos ativos e atualiza `dados/noticias.json` |
 | `python -m coletor coletar --veiculo g1` | Coleta um veículo só |
 | `python -m coletor exportar` | Só regenera `dados/noticias.json` |
-| `python -m coletor analisar` | O conselho de IA analisa as notícias da página inicial ainda sem rótulo e regenera `dados/noticias.json` (no GitHub Actions, usa os modelos gratuitos do GitHub Models; veja [hospedagem.md](hospedagem.md#conselho-de-ia-gratuito)) |
+| `python -m coletor analisar` | O conselho de IA analisa as notícias da página inicial ainda sem rótulo e regenera `dados/noticias.json` (usa o plano gratuito do Google Gemini, com `GEMINI_API_KEY`; veja [hospedagem.md](hospedagem.md#conselho-de-ia-gratuito)) |
 | `python -m coletor veiculos listar` | Mostra o cadastro, quantas notícias cada um tem e se o último feed deu erro |
 | `python -m coletor veiculos testar [id]` | Baixa e lê os feeds sem gravar nada |
 | `python -m coletor veiculos validar` | Confere `dados/veiculos.json` depois de editar à mão |
