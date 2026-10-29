@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>O Farol — Notícias confiáveis, perto de você</title>
+  <title>O Farol: as notícias da sua cidade, com a fonte à vista</title>
   <meta name="description" content="O Farol reúne as principais fontes de notícia do mundo e da sua região, com transparência total sobre cada fonte.">
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
@@ -24,20 +24,23 @@
   </div>
 
   <header class="cabecalho">
-    <div class="container">
-      <a class="marca" href="index.html" aria-label="O Farol, página inicial">O Farol</a>
-      <p class="marca__lema">Notícias confiáveis, perto de você</p>
-      <div class="cabecalho__regua"></div>
+    <div class="container cabecalho__linha">
+      <a class="marca" href="index.html" aria-label="O Farol, página inicial">
+        <svg class="marca__simbolo" viewBox="0 0 32 32" aria-hidden="true"><path class="marca__feixe" d="M17 8 31 2.5v11z"/><path class="marca__torre" d="M12.6 11h6.8l2.2 16.4H10.4z"/><path class="marca__luz" d="M12 11h8V8.3L16 5.6l-4 2.7z"/><path class="marca__listra" d="M11.9 16.4h8.2v2.1h-8.2zM11.2 22h9.6v2.1h-9.6z"/><path class="marca__torre" d="M8 27.4h16V29H8z"/></svg>
+        <span class="marca__nome">O Farol</span>
+      </a>
       <nav class="nav" aria-label="Principal">
         <button class="nav__alternar" type="button" aria-expanded="false" aria-controls="nav-lista">Menu</button>
         <ul class="nav__lista" id="nav-lista">
+          <li><a href="index.html#ultimas">Notícias</a></li>
           <li><a href="index.html#como-funciona">Como funciona</a></li>
           <li><a href="metodologia.html">Metodologia</a></li>
           <li><a href="painel.html">Painel de verificação</a></li>
           <li><a href="quem-somos.html">Quem somos</a></li>
+          <li><a href="index.html#apoie">Apoie</a></li>
         </ul>
-        <a class="botao botao--contorno nav__acao" href="index.html#comecar">Participar dos testes</a>
       </nav>
+      <a class="botao botao--luz cabecalho__acao" href="index.html#receber">Receber notícias</a>
     </div>
   </header>
 
@@ -46,9 +49,9 @@
     <section class="destaque">
       <div class="container destaque__grade">
         <div class="destaque__texto">
-          <p class="sobretitulo">Seu jornal, sem ruído</p>
-          <h1>Informação clara em um mundo de ruído.</h1>
-          <p class="lide"><span class="capitular">O</span> Farol reúne as principais fontes de notícia do mundo e da sua região — cidade, estado e país — em um só lugar, com transparência total sobre cada fonte.</p>
+          <p class="sobretitulo">127 veículos · 143 cidades · atualizado a cada 30 minutos</p>
+          <h1>As notícias da sua cidade, com a <em>fonte à vista</em>.</h1>
+          <p class="lide">O Farol junta o que os jornais, portais e TVs de todo o Brasil publicam e marca o que já foi confirmado por mais de um veículo. Antes de repassar, confere no Farol.</p>
 
           <form class="local" id="form-local" autocomplete="off">
             <label class="local__rotulo" for="campo-local">Onde você está?</label>
@@ -72,7 +75,7 @@
           </p>
         </div>
 
-        <aside class="painel" aria-labelledby="painel-titulo">
+        <aside class="painel" id="ultimas" aria-labelledby="painel-titulo">
           <div class="painel__topo">
             <h2 id="painel-titulo">Últimas notícias</h2>
             <a class="painel__local" href="#campo-local" aria-label="Trocar a cidade"><span data-local>Sua cidade</span> · trocar</a>
@@ -215,37 +218,99 @@
       </div>
     </section>
 
-    <!-- Chamada final -->
-    <section class="chamada" id="comecar" aria-labelledby="chamada-titulo">
-      <div class="container chamada__conteudo">
-        <h2 id="chamada-titulo">Veja o mundo com clareza.</h2>
-        <p>O Farol está em fase de testes. Experimente o painel e mande sua opinião, ou entre na lista para testar as próximas versões primeiro.</p>
-        <div class="chamada__botoes">
-          <a class="botao botao--escuro" href="mailto:ofarolnws@gmail.com?subject=%5BTestes%5D%20Quero%20participar">Participar dos testes</a>
-          <a class="botao botao--contorno" href="painel.html">Testar o painel agora</a>
+    <!-- Receber notícias -->
+    <section class="secao receber" id="receber" aria-labelledby="receber-titulo">
+      <div class="container">
+        <div class="secao__cabeca">
+          <p class="sobretitulo">Receba o Farol</p>
+          <h2 id="receber-titulo">As notícias confirmadas chegam até você.</h2>
+          <p class="secao__intro">Escolha onde prefere ler. Tudo de graça e sem spam: só o que importa na sua cidade e no seu estado, com o rótulo e o link de cada veículo.</p>
         </div>
-        <p class="chamada__email">Ou escreva para <strong>ofarolnws@gmail.com</strong> com “Testes” no assunto.</p>
-        <div class="chamada__lojas">
-          <span class="loja">App para iOS: em breve</span>
-          <span class="loja">App para Android: em breve</span>
+        <ul class="canais">
+          <li class="canal canal--destaque">
+            <span class="canal__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.7z"/><path d="M9 9.5c.4 2.2 2.3 4.2 4.6 4.8l1.2-1.1 2 1-.5 1.6c-3.8.4-7.6-3.3-7.3-7.1L10.6 8l1 2z"/></svg></span>
+            <h3>Canal no WhatsApp</h3>
+            <p>Resumo das 7h e das 18h com as cinco notícias mais importantes do seu estado.</p>
+            <a class="botao botao--luz" data-canal="whatsappCanal" href="#receber">Entrar no canal</a>
+          </li>
+          <li class="canal">
+            <span class="canal__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+            <h3>Resumo por e-mail</h3>
+            <p>Toda sexta, "a semana em 7 notícias", com o que foi confirmado e o que ainda está em apuração.</p>
+            <a class="botao botao--contorno" data-canal="resumoEmail" href="#receber">Assinar o resumo</a>
+          </li>
+          <li class="canal">
+            <span class="canal__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></span>
+            <h3>Instagram e TikTok</h3>
+            <p>"Isso é verdade?": os boatos da semana explicados em um minuto, com a fonte.</p>
+            <div class="canal__botoes">
+              <a class="botao botao--contorno" data-canal="instagram" href="#receber">Instagram</a>
+              <a class="botao botao--contorno" data-canal="tiktok" href="#receber">TikTok</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Apoie -->
+    <section class="secao apoie" id="apoie" aria-labelledby="apoie-titulo">
+      <div class="container apoie__grade">
+        <div>
+          <p class="sobretitulo">Apoie o Farol</p>
+          <h2 id="apoie-titulo">Jornalismo checado se paga com leitores, não com lados.</h2>
+          <p class="secao__intro">O Farol é independente: não recebe dinheiro de governo, partido ou candidato. Quem mantém o projeto são os leitores. Todo mês publicamos quanto entrou e no que foi gasto.</p>
+          <ul class="apoie__usos">
+            <li>Servidores e coleta das notícias a cada 30 minutos</li>
+            <li>Novos veículos e cidades acompanhados</li>
+            <li>Revisão humana dos casos difíceis</li>
+          </ul>
         </div>
+        <div class="pix" data-pix>
+          <p class="pix__titulo">Apoie com qualquer valor pelo Pix</p>
+          <p class="pix__chave" id="pix-chave">A chave Pix do projeto será publicada aqui em breve.</p>
+          <button class="botao botao--luz" type="button" id="copiar-pix" hidden>Copiar chave Pix</button>
+          <p class="pix__status" id="pix-status" role="status" aria-live="polite"></p>
+          <p class="pix__nota">Prefere outro jeito de ajudar? Escreva para <strong>ofarolnws@gmail.com</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Anuncie -->
+    <section class="secao anuncie" id="anuncie" aria-labelledby="anuncie-titulo">
+      <div class="container anuncie__grade">
+        <div>
+          <p class="sobretitulo">Anuncie</p>
+          <h2 id="anuncie-titulo">Sua marca ao lado de notícia confiável.</h2>
+          <p class="secao__intro">Comércios e empresas locais podem patrocinar o resumo semanal ou um espaço no site, para leitores da sua cidade.</p>
+        </div>
+        <ul class="regras">
+          <li><strong>Sempre marcado como "Patrocinado"</strong>, fora da lista de notícias.</li>
+          <li><strong>O anunciante não influencia nenhum rótulo.</strong> A análise das notícias segue a mesma metodologia para todos.</li>
+          <li><strong>Sem anúncio político</strong> de governo, partido ou candidato.</li>
+        </ul>
+        <p class="anuncie__contato">Fale com a gente: <strong>ofarolnws@gmail.com</strong>, com "Anuncie" no assunto.</p>
       </div>
     </section>
   </main>
 
   <footer class="rodape">
     <div class="container rodape__grade">
-      <div>
-        <p class="marca marca--rodape">O Farol</p>
-        <p class="rodape__lema">Um farol para a verdade, onde quer que você esteja.</p>
+      <div class="rodape__marca">
+        <p class="marca marca--rodape"><svg class="marca__simbolo" viewBox="0 0 32 32" aria-hidden="true"><path class="marca__feixe" d="M17 8 31 2.5v11z"/><path class="marca__torre" d="M12.6 11h6.8l2.2 16.4H10.4z"/><path class="marca__luz" d="M12 11h8V8.3L16 5.6l-4 2.7z"/><path class="marca__listra" d="M11.9 16.4h8.2v2.1h-8.2zM11.2 22h9.6v2.1h-9.6z"/><path class="marca__torre" d="M8 27.4h16V29H8z"/></svg><span class="marca__nome">O Farol</span></p>
+        <p class="rodape__lema">As notícias da sua cidade, do seu estado e do mundo, com a fonte à vista.</p>
+        <ul class="redes" aria-label="O Farol nas redes">
+          <li><a class="rede" data-canal="whatsappCanal" href="index.html#receber">WhatsApp</a></li>
+          <li><a class="rede" data-canal="instagram" href="index.html#receber">Instagram</a></li>
+          <li><a class="rede" data-canal="tiktok" href="index.html#receber">TikTok</a></li>
+        </ul>
       </div>
       <nav aria-label="Produto">
         <h2>Produto</h2>
-        <ul><li><a href="index.html#como-funciona">Como funciona</a></li><li><a href="painel.html">Painel de verificação</a></li><li><a href="index.html#comecar">Participar dos testes</a></li></ul>
+        <ul><li><a href="index.html#ultimas">Últimas notícias</a></li><li><a href="index.html#receber">Receber notícias</a></li><li><a href="painel.html">Painel de verificação</a></li></ul>
       </nav>
-      <nav aria-label="Empresa">
-        <h2>Empresa</h2>
-        <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="mailto:ofarolnws@gmail.com?subject=%5BImprensa%5D">Imprensa</a></li><li><a href="mailto:ofarolnws@gmail.com">Contato</a></li></ul>
+      <nav aria-label="O Farol">
+        <h2>O Farol</h2>
+        <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="index.html#apoie">Apoie</a></li><li><a href="index.html#anuncie">Anuncie</a></li><li><a href="mailto:ofarolnws@gmail.com">Contato</a></li></ul>
       </nav>
       <nav aria-label="Confiança">
         <h2>Confiança</h2>
@@ -253,11 +318,12 @@
       </nav>
     </div>
     <div class="container rodape__base">
-      <span>© <span id="ano"></span> O Farol. Todos os direitos reservados.</span>
-      <span>Feito para quem quer entender o mundo, não só se informar sobre ele.</span>
+      <span>© <span id="ano"></span> O Farol. Projeto independente, em fase de testes.</span>
+      <span>Contato e testes: <strong>ofarolnws@gmail.com</strong></span>
     </div>
   </footer>
 
+  <script src="js/site.js"></script>
   <script src="js/main.js"></script>
   <script src="js/painel/config.js"></script>
   <script src="js/painel/metodologia.js"></script>

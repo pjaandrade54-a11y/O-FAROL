@@ -86,8 +86,24 @@
     }
     meta.appendChild(document.createTextNode(n.veiculo + (n.publicado_em ? ' · ' + tempoDesde(n.publicado_em) : '')));
     li.appendChild(meta);
-    if (a && m.ROTULOS[a.rotulo]) li.appendChild(detalhesAnalise(a));
+    var acoes = el('div', 'noticia__acoes');
+    if (a && m.ROTULOS[a.rotulo]) acoes.appendChild(detalhesAnalise(a));
+    if (/^https?:\/\//i.test(n.link)) acoes.appendChild(botaoCompartilhar(n, a));
+    li.appendChild(acoes);
     return li;
+  }
+
+  // Compartilhar no WhatsApp: título, rótulo, link do veículo e o convite para o Farol
+  function botaoCompartilhar(n, a) {
+    var selo = a && m.ROTULOS[a.rotulo] ? ' [' + m.ROTULOS[a.rotulo] + ' no Farol]' : '';
+    var texto = n.titulo + selo + '\n' + n.veiculo + ': ' + n.link +
+      '\n\nAntes de repassar, confere no Farol: ' + location.origin + location.pathname;
+    var link = el('a', 'compartilhar', 'Compartilhar');
+    link.href = 'https://wa.me/?text=' + encodeURIComponent(texto);
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.setAttribute('aria-label', 'Compartilhar no WhatsApp: ' + n.titulo);
+    return link;
   }
 
   function linkExterno(texto, href) {
