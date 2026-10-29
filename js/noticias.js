@@ -10,7 +10,8 @@
   var RECARREGAR_MS = 5 * 60 * 1000; // a coleta roda a cada 30 minutos; olhar a cada 5 pega a nova logo
   var ultimaBusca = 0;
   var legenda = document.getElementById('painel-legenda');
-  var ultimosDados = null;
+  var ultimosDados = null; // arquivo geral (país, mundo, veículos, cidades)
+  var ultimoEstado = null;  // arquivo do estado escolhido (cidades e estado)
   var ESTADOS = {
     AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia', CE: 'Ceará', DF: 'Distrito Federal',
     ES: 'Espírito Santo', GO: 'Goiás', MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul',
@@ -172,14 +173,35 @@
     return { cidade: cidade, estado: estado, pais: dados.escalas.pais || [], mundo: dados.escalas.mundo || [] };
   }
 
-  function mostrarReais(dados) {
-    ultimosDados = dados;
+  // Escolha do leitor; uma escolha guardada por versão antiga do site (só o nome) é procurada na lista
+  function localAtual() {
     var local = Farol.local.lerOuPadrao();
-    if (!local.uf) {
-      // Escolha guardada por uma versão antiga do site, só com o nome: tenta achar a cidade na lista
-      local = encontrar(local.nome || '', dados.cidades || []) || { nome: 'Aracaju', uf: 'SE' };
+    if (!local.uf && ultimosDados) {
+      local = encontrar(local.nome || '', ultimosDados.cidades || []) || { nome: 'Aracaju', uf: 'SE' };
       Farol.local.guardar(local);
     }
+    return local;
+  }
+
+  // Junta o arquivo geral com o do estado (o arquivo geral antigo, com tudo dentro, também serve)
+  function combinar(geral, estado) {
+    if (geral.escalas.cidade) return geral;
+    var escalas = { pais: geral.escalas.pais, mundo: geral.escalas.mundo, cidade: [], estado: [] };
+    if (estado) { escalas.cidade = estado.escalas.cidade || []; escalas.estado = estado.escalas.estado || []; }
+    return Object.assign({}, geral, { escalas: escalas });
+  }
+
+  function buscarEstado(uf) {
+    if (!uf || (ultimosDados && ultimosDados.escalas.cidade)) return Promise.resolve(null);
+    return fetch('dados/estados/' + uf + '.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+
+  function mostrarReais(geral) {
+    ultimosDados = geral;
+    var dados = combinar(geral, ultimoEstado);
+    var local = localAtual();
     var porEscala = filtrar(dados, local);
     var nomeEstado = ESTADOS[local.uf] || local.uf || 'seu estado';
     preencher(porEscala, noticiaReal, {
@@ -271,8 +293,17 @@
   function escolher(local, mensagem) {
     Farol.local.guardar(local);
     if (Farol.selecionarAba) Farol.selecionarAba(local.nome ? 0 : 1);
-    if (ultimosDados) mostrarReais(ultimosDados);
     avisar(mensagem);
+    if (!ultimosDados) return;
+    if (ultimoEstado && ultimoEstado.uf === local.uf) {
+      mostrarReais(ultimosDados);
+      return;
+    }
+    // Outro estado: baixa só o arquivo dele
+    buscarEstado(local.uf).then(function (estado) {
+      ultimoEstado = estado;
+      mostrarReais(ultimosDados);
+    });
   }
 
   // "trocar" no topo do painel leva ao campo da cidade
@@ -349,9 +380,13 @@
         if (!r.ok) throw new Error('noticias.json respondeu ' + r.status);
         return r.json();
       })
-      .then(function (dados) {
-        temReais = true;
-        mostrarReais(dados);
+      .then(function (geral) {
+        ultimosDados = geral;
+        return buscarEstado(localAtual().uf).then(function (estado) {
+          ultimoEstado = estado;
+          temReais = true;
+          mostrarReais(geral);
+        });
       })
       .catch(function () {
         // Numa atualização que falha (sem internet, por exemplo), as notícias já na tela ficam
