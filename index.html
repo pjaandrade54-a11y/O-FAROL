@@ -8,20 +8,15 @@
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="css/inicio.css">
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
   <p class="faixa-teste">Versão de testes: as notícias da página inicial são reais, e os rótulos delas vêm de uma análise automática, ainda em teste. Os casos do painel de verificação são fictícios.</p>
 
-  <div class="faixa-topo">
-    <div class="container faixa-topo__linha">
-      <span id="data-hoje">Edição digital</span>
-      <span><span data-local>Sua cidade</span><span data-atualizado></span></span>
-    </div>
-  </div>
 
   <header class="cabecalho">
     <div class="container cabecalho__linha">
@@ -34,9 +29,8 @@
         <ul class="nav__lista" id="nav-lista">
           <li><a href="index.html#ultimas">Notícias</a></li>
           <li><a href="index.html#como-funciona">Como funciona</a></li>
+          <li><a href="index.html#rotulos">Os rótulos</a></li>
           <li><a href="metodologia.html">Metodologia</a></li>
-          <li><a href="painel.html">Painel de verificação</a></li>
-          <li><a href="quem-somos.html">Quem somos</a></li>
           <li><a href="index.html#apoie">Apoie</a></li>
         </ul>
       </nav>
@@ -45,281 +39,186 @@
   </header>
 
   <main id="conteudo">
-    <!-- Destaque principal -->
-    <section class="destaque">
-      <div class="container destaque__grade">
-        <div class="destaque__texto">
-          <p class="sobretitulo">127 veículos · 143 cidades · atualizado a cada 30 minutos</p>
-          <h1>As notícias da sua cidade, com a <em>fonte à vista</em>.</h1>
-          <p class="lide">O Farol junta o que os jornais, portais e TVs de todo o Brasil publicam e marca o que já foi confirmado por mais de um veículo. Antes de repassar, confere no Farol.</p>
+    <!-- Abertura: o feixe do farol e as pastas Cidade / Estado / País / Mundo -->
+    <section class="abertura" aria-labelledby="titulo-pagina">
+      <div class="abertura__feixe" aria-hidden="true"></div>
+      <div class="container abertura__texto">
+        <h1 id="titulo-pagina">Notícias, <br>conferidas.</h1>
+        <p class="abertura__apoio">O Farol junta o que 127 jornais, portais e TVs publicam e marca o que dois veículos de grupos diferentes já confirmaram.</p>
+      </div>
 
-          <form class="local" id="form-local" autocomplete="off">
-            <label class="local__rotulo" for="campo-local">Onde você está?</label>
-            <div class="local__campo">
-              <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-              <input id="campo-local" name="local" type="text" list="lista-cidades" placeholder="Sua cidade ou estado" autocomplete="off" required>
-              <datalist id="lista-cidades"></datalist>
-              <button class="botao botao--azul" type="submit">Ver notícias</button>
-            </div>
-            <div class="local__extras">
-              <button class="link-botao" type="button" id="usar-localizacao">Usar minha localização</button>
-              <span aria-hidden="true">·</span>
-              <a class="link-botao" href="#como-funciona">Ver como funciona</a>
-            </div>
-            <p class="local__status" id="status-local" role="status" aria-live="polite"></p>
-          </form>
-
-          <p class="garantia">
-            <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>
-            Sem viés escondido. Só fatos, com fonte e contexto.
-          </p>
-        </div>
-
-        <aside class="painel" id="ultimas" aria-labelledby="painel-titulo">
-          <div class="painel__topo">
-            <h2 id="painel-titulo">Últimas notícias</h2>
-            <a class="painel__local" href="#campo-local" aria-label="Trocar a cidade"><span data-local>Sua cidade</span> · trocar</a>
-          </div>
-          <div class="abas" role="tablist" aria-label="Escala das notícias">
+      <div class="container pastas">
+        <div class="pastas__fundo" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="pasta" id="ultimas">
+          <div class="abas" role="tablist" aria-label="Notícias por lugar">
             <button role="tab" id="aba-cidade" aria-controls="lista-cidade" aria-selected="true">Cidade</button>
             <button role="tab" id="aba-estado" aria-controls="lista-estado" aria-selected="false" tabindex="-1">Estado</button>
             <button role="tab" id="aba-pais" aria-controls="lista-pais" aria-selected="false" tabindex="-1">País</button>
             <button role="tab" id="aba-mundo" aria-controls="lista-mundo" aria-selected="false" tabindex="-1">Mundo</button>
           </div>
-          <ul class="painel__lista" role="tabpanel" id="lista-cidade" aria-labelledby="aba-cidade"></ul>
-          <ul class="painel__lista" role="tabpanel" id="lista-estado" aria-labelledby="aba-estado" hidden></ul>
-          <ul class="painel__lista" role="tabpanel" id="lista-pais" aria-labelledby="aba-pais" hidden></ul>
-          <ul class="painel__lista" role="tabpanel" id="lista-mundo" aria-labelledby="aba-mundo" hidden></ul>
-          <p class="painel__legenda" id="painel-legenda">Carregando notícias… <a href="metodologia.html#rotulos">Entenda os rótulos</a></p>
-        </aside>
-      </div>
-    </section>
-
-    <!-- Fontes agregadas -->
-    <section class="fontes" id="fontes" aria-labelledby="fontes-titulo">
-      <div class="container fontes__linha">
-        <h2 class="fontes__titulo" id="fontes-titulo">Veículos de exemplo nos testes</h2>
-        <ul class="fontes__lista" id="lista-veiculos">
-          <li>Agência Prisma</li>
-          <li>Gazeta Aurora</li>
-          <li>Jornal Vértice</li>
-          <li>Portal Maré</li>
-          <li>Diário Candeia</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Como funciona -->
-    <section class="secao" id="como-funciona" aria-labelledby="como-titulo">
-      <div class="container">
-        <div class="secao__cabeca">
-          <p class="sobretitulo">Como funciona</p>
-          <h2 id="como-titulo">Cada notícia, com contexto e procedência.</h2>
-        </div>
-        <ul class="cartoes">
-          <li class="cartao">
-            <span class="cartao__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
-            <h3>Localização inteligente</h3>
-            <p>Notícias priorizadas pela sua cidade, estado, país e pelo mundo, nessa ordem de proximidade.</p>
-          </li>
-          <li class="cartao">
-            <span class="cartao__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5.5c0 4.4 3 8.2 7 9.5 4-1.3 7-5.1 7-9.5V6l-7-3z"/><path d="m9 12 2 2 4-4"/></svg></span>
-            <h3>Transparência de fontes</h3>
-            <p>Veja de onde vem cada notícia, o posicionamento editorial declarado e o histórico de precisão da fonte.</p>
-          </li>
-          <li class="cartao">
-            <span class="cartao__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg></span>
-            <h3>Múltiplos ângulos</h3>
-            <p>Compare como diferentes veículos cobrem o mesmo fato, lado a lado, sem precisar sair do Farol.</p>
-          </li>
-          <li class="cartao">
-            <span class="cartao__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg></span>
-            <h3>Verificação cruzada</h3>
-            <p>Quatro agentes analisam cada notícia, e pessoas decidem os casos difíceis. <a href="painel.html">Veja o painel</a>.</p>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Múltiplos ângulos: demonstração -->
-    <section class="secao secao--clara" id="angulos" aria-labelledby="angulos-titulo">
-      <div class="container">
-        <div class="secao__cabeca">
-          <p class="sobretitulo">Múltiplos ângulos</p>
-          <h2 id="angulos-titulo">O mesmo fato, visto de vários lados.</h2>
-          <p class="secao__intro">Em vez de escolher uma versão por você, o Farol mostra o que as fontes têm em comum e onde cada uma coloca o foco.</p>
-        </div>
-
-        <article class="comparacao">
-          <header class="comparacao__fato">
-            <p class="noticia__escala">Fato · exemplo fictício</p>
-            <h3>Inflação de outubro fica em 0,31%</h3>
-            <p class="noticia__meta"><span class="rotulo rotulo--confirmada">Confirmada</span> 4 fontes independentes · dado oficial</p>
-            <p class="comparacao__consenso"><strong>O que todas confirmam:</strong> o índice oficial de preços subiu 0,31% em outubro, abaixo dos 0,44% de setembro.</p>
-          </header>
-          <div class="comparacao__colunas">
-            <div class="angulo">
-              <p class="angulo__veiculo">Gazeta Aurora</p>
-              <p class="angulo__linha">Linha editorial declarada: centro</p>
-              <h4>Inflação desacelera e fica em 0,31% em outubro</h4>
-              <p>Foco no alívio dos preços dos alimentos.</p>
-              <p class="angulo__precisao">Nota do veículo: 84 de 100</p>
-              <a class="angulo__link" href="painel.html#caso-inflacao">Ver a análise no painel</a>
-            </div>
-            <div class="angulo">
-              <p class="angulo__veiculo">Jornal Vértice</p>
-              <p class="angulo__linha">Linha editorial declarada: centro-esquerda</p>
-              <h4>Mesmo com inflação de 0,31%, aluguel segue pesando no orçamento</h4>
-              <p>Foco no impacto sobre as famílias de baixa renda.</p>
-              <p class="angulo__precisao">Nota do veículo: 78 de 100</p>
-              <a class="angulo__link" href="painel.html#caso-inflacao">Ver a análise no painel</a>
-            </div>
-            <div class="angulo">
-              <p class="angulo__veiculo">Portal Maré</p>
-              <p class="angulo__linha">Linha editorial declarada: centro-direita</p>
-              <h4>Inflação de 0,31% abre espaço para corte de juros, avaliam analistas</h4>
-              <p>Foco no efeito sobre os juros e o mercado.</p>
-              <p class="angulo__precisao">Nota do veículo: 71 de 100</p>
-              <a class="angulo__link" href="painel.html#caso-inflacao">Ver a análise no painel</a>
+          <div class="pasta__corpo">
+            <form class="local" id="form-local" autocomplete="off">
+              <label class="local__rotulo" for="campo-local">Notícias de <span data-local>Aracaju (SE)</span></label>
+              <div class="local__campo">
+                <input id="campo-local" name="local" type="text" list="lista-cidades" placeholder="Outra cidade ou estado" autocomplete="off" required>
+                <datalist id="lista-cidades"></datalist>
+                <button class="botao botao--luz" type="submit">Ver notícias</button>
+              </div>
+              <button class="link-botao" type="button" id="usar-localizacao">Usar minha localização</button>
+              <p class="local__status" id="status-local" role="status" aria-live="polite"></p>
+            </form>
+            <div class="pasta__listas" data-ui>
+              <ul class="painel__lista" role="tabpanel" id="lista-cidade" aria-labelledby="aba-cidade"></ul>
+              <ul class="painel__lista" role="tabpanel" id="lista-estado" aria-labelledby="aba-estado" hidden></ul>
+              <ul class="painel__lista" role="tabpanel" id="lista-pais" aria-labelledby="aba-pais" hidden></ul>
+              <ul class="painel__lista" role="tabpanel" id="lista-mundo" aria-labelledby="aba-mundo" hidden></ul>
+              <p class="painel__legenda" id="painel-legenda">Carregando notícias… <a href="metodologia.html#rotulos">Entenda os rótulos</a></p>
             </div>
           </div>
-        </article>
+        </div>
       </div>
     </section>
 
-    <!-- Confiança -->
-    <section class="confianca" id="confianca" aria-labelledby="confianca-titulo">
+    <!-- Da notícia ao rótulo: as etapas como uma barra, cada uma do tamanho do tempo que leva -->
+    <section class="secao etapas" id="como-funciona" aria-labelledby="etapas-titulo">
       <div class="container">
-        <div class="secao__cabeca">
-          <p class="sobretitulo">Confiança, mensurável</p>
-          <h2 id="confianca-titulo">Não pedimos para você confiar — mostramos por quê.</h2>
-        </div>
-        <ul class="compromissos">
-          <li>
-            <span class="compromissos__num">01</span>
-            <h3>Fonte original em toda notícia</h3>
-            <p>Cada item leva ao texto do veículo que o publicou.</p>
-          </li>
-          <li>
-            <span class="compromissos__num">02</span>
-            <h3>Linha editorial declarada</h3>
-            <p>Mostramos como cada veículo se posiciona, ao lado do que ele publica.</p>
-          </li>
-          <li>
-            <span class="compromissos__num">03</span>
-            <h3>Correções públicas</h3>
-            <p>Quando algo muda ou estava errado, a correção fica visível, com data.</p>
-          </li>
-        </ul>
-        <div class="confianca__links">
-          <a class="botao botao--claro" href="metodologia.html">Ler a metodologia</a>
-          <a class="link-seta link-seta--claro" href="painel.html">Ver o painel de verificação</a>
-        </div>
+        <h2 id="etapas-titulo">Da notícia ao rótulo</h2>
+        <ol class="etapas__barra" data-ui>
+          <li class="etapa etapa--coleta"><strong>Até 30 minutos</strong><span>Primeiro, o Farol lê o feed do veículo. A coleta roda a cada meia hora.</span></li>
+          <li class="etapa etapa--compara"><strong>Segundos</strong><span>Depois, compara o título com o que os outros 126 veículos publicaram em três dias.</span></li>
+          <li class="etapa etapa--confirma"><strong>Horas, às vezes um dia</strong><span>Quando um segundo grupo de mídia publica o mesmo fato, a notícia vira Confirmada.</span></li>
+          <li class="etapa etapa--conselho"><strong>Até 3 dias úteis</strong><span>Se aparece uma checagem sobre o assunto, o caso vai ao conselho humano.</span></li>
+        </ol>
       </div>
     </section>
 
-    <!-- Receber notícias -->
-    <section class="secao receber" id="receber" aria-labelledby="receber-titulo">
-      <div class="container">
-        <div class="secao__cabeca">
-          <p class="sobretitulo">Receba o Farol</p>
-          <h2 id="receber-titulo">As notícias confirmadas chegam até você.</h2>
-          <p class="secao__intro">Escolha onde prefere ler. Tudo de graça e sem spam: só o que importa na sua cidade e no seu estado, com o rótulo e o link de cada veículo.</p>
-        </div>
-        <ul class="canais">
-          <li class="canal canal--destaque">
-            <span class="canal__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.7z"/><path d="M9 9.5c.4 2.2 2.3 4.2 4.6 4.8l1.2-1.1 2 1-.5 1.6c-3.8.4-7.6-3.3-7.3-7.1L10.6 8l1 2z"/></svg></span>
-            <h3>Canal no WhatsApp</h3>
-            <p>Resumo das 7h e das 18h com as cinco notícias mais importantes do seu estado.</p>
-            <a class="botao botao--luz" data-canal="whatsappCanal" href="#receber">Entrar no canal</a>
-          </li>
-          <li class="canal">
-            <span class="canal__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
-            <h3>Resumo por e-mail</h3>
-            <p>Toda sexta, "a semana em 7 notícias", com o que foi confirmado e o que ainda está em apuração.</p>
-            <a class="botao botao--contorno" data-canal="resumoEmail" href="#receber">Assinar o resumo</a>
-          </li>
-          <li class="canal">
-            <span class="canal__icone"><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></span>
-            <h3>Instagram e TikTok</h3>
-            <p>"Isso é verdade?": os boatos da semana explicados em um minuto, com a fonte.</p>
-            <div class="canal__botoes">
-              <a class="botao botao--contorno" data-canal="instagram" href="#receber">Instagram</a>
-              <a class="botao botao--contorno" data-canal="tiktok" href="#receber">TikTok</a>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Apoie -->
-    <section class="secao apoie" id="apoie" aria-labelledby="apoie-titulo">
-      <div class="container apoie__grade">
-        <div>
-          <p class="sobretitulo">Apoie o Farol</p>
-          <h2 id="apoie-titulo">Jornalismo checado se paga com leitores, não com lados.</h2>
-          <p class="secao__intro">O Farol é independente: não recebe dinheiro de governo, partido ou candidato. Quem mantém o projeto são os leitores. Todo mês publicamos quanto entrou e no que foi gasto.</p>
-          <ul class="apoie__usos">
-            <li>Servidores e coleta das notícias a cada 30 minutos</li>
-            <li>Novos veículos e cidades acompanhados</li>
-            <li>Revisão humana dos casos difíceis</li>
+    <!-- Os rótulos: cada nome mostra uma notícia real com aquele rótulo, sobre o feixe -->
+    <section class="secao rotulos" id="rotulos" aria-labelledby="rotulos-titulo">
+      <div class="container rotulos__grade">
+        <div class="rotulos__lista">
+          <h2 id="rotulos-titulo">Os rótulos</h2>
+          <ul role="list">
+            <li><button type="button" class="rotulos__nome" data-rotulo="confirmada" aria-pressed="true">Confirmada</button></li>
+            <li><button type="button" class="rotulos__nome" data-rotulo="em-apuracao" aria-pressed="false">Em apuração</button></li>
+            <li><button type="button" class="rotulos__nome" data-rotulo="opiniao" aria-pressed="false">Opinião</button></li>
+            <li><button type="button" class="rotulos__nome" data-rotulo="desmentida" aria-pressed="false">Desmentida</button></li>
+            <li><button type="button" class="rotulos__nome" data-rotulo="aguardando" aria-pressed="false">Aguardando</button></li>
           </ul>
         </div>
-        <div class="pix" data-pix>
-          <p class="pix__titulo">Apoie com qualquer valor pelo Pix</p>
-          <p class="pix__chave" id="pix-chave">A chave Pix do projeto será publicada aqui em breve.</p>
-          <button class="botao botao--luz" type="button" id="copiar-pix" hidden>Copiar chave Pix</button>
-          <p class="pix__status" id="pix-status" role="status" aria-live="polite"></p>
-          <p class="pix__nota">Prefere outro jeito de ajudar? Escreva para <strong>ofarolnws@gmail.com</strong>.</p>
+        <div class="rotulos__palco" aria-live="polite">
+          <div class="rotulos__feixe" aria-hidden="true"></div>
+          <article class="exemplo" data-ui>
+            <p class="exemplo__escala" id="exemplo-escala">País</p>
+            <p class="exemplo__titulo" id="exemplo-titulo">Pelo menos 30 pessoas morrem na Espanha após colisão entre dois trens</p>
+            <p class="exemplo__meta"><span class="rotulo rotulo--confirmada" id="exemplo-rotulo">Confirmada</span> <span id="exemplo-veiculo">Agência Brasil</span></p>
+            <p class="exemplo__porque" id="exemplo-porque">Outros veículos, de grupos diferentes, publicaram o mesmo fato.</p>
+          </article>
         </div>
+        <p class="rotulos__regra" id="rotulos-regra">Dois veículos de grupos diferentes do original publicaram o mesmo fato.</p>
       </div>
     </section>
 
-    <!-- Anuncie -->
-    <section class="secao anuncie" id="anuncie" aria-labelledby="anuncie-titulo">
-      <div class="container anuncie__grade">
-        <div>
-          <p class="sobretitulo">Anuncie</p>
-          <h2 id="anuncie-titulo">Sua marca ao lado de notícia confiável.</h2>
-          <p class="secao__intro">Comércios e empresas locais podem patrocinar o resumo semanal ou um espaço no site, para leitores da sua cidade.</p>
+    <!-- Sem dono e sem lado: quem paga e como se corrige -->
+    <section class="secao independencia" id="apoie" aria-labelledby="independencia-titulo">
+      <div class="independencia__painel">
+        <h2 id="independencia-titulo">Sem dono, <br>sem lado.</h2>
+          <div class="bloco bloco--pago">
+            <h3>Pago por quem lê</h3>
+            <p>O Farol não recebe dinheiro de governo, partido ou candidato. Leitores mantêm a coleta, os novos veículos e a revisão humana, e todo mês publicamos quanto entrou e no que foi gasto.</p>
+            <div class="pix" data-pix>
+              <p class="pix__chave" id="pix-chave">A chave Pix do projeto será publicada aqui em breve.</p>
+              <button class="botao botao--luz" type="button" id="copiar-pix" hidden>Copiar chave Pix</button>
+              <p class="pix__status" id="pix-status" role="status" aria-live="polite"></p>
+            </div>
+          </div>
+        <figure class="mensagem" data-ui>
+            <p class="mensagem__app">Compartilhado do Farol</p>
+            <p class="mensagem__texto"><strong>Pelo menos 30 pessoas morrem na Espanha após colisão entre dois trens</strong> [Confirmada no Farol]</p>
+            <p class="mensagem__texto">Agência Brasil: agenciabrasil.ebc.com.br</p>
+            <p class="mensagem__texto">Antes de repassar, confere no Farol: pjaandrade54-a11y.github.io/O-FAROL</p>
+            <figcaption class="mensagem__hora">Botão Compartilhar de cada notícia</figcaption>
+          </figure>
+          <div class="bloco bloco--correcao">
+            <h3>Correção à vista</h3>
+            <p>Toda notícia leva ao texto do veículo que a publicou. Quando um rótulo muda ou estava errado, a correção fica visível com data, e qualquer leitor pode contestar com provas.</p>
+            <p><a class="link-seta" href="metodologia.html">Ler a metodologia</a></p>
+          </div>
+      </div>
+    </section>
+
+    <!-- Receba o Farol: a ação, como uma linha de blocos -->
+    <section class="secao receber" id="receber" aria-labelledby="receber-titulo">
+      <div class="receber__linha">
+        <div class="receber__lado" aria-hidden="true"></div>
+        <div class="receber__centro">
+          <h2 id="receber-titulo">Receba o Farol</h2>
+          <p>O resumo das 7h e das 18h no canal do WhatsApp, com as cinco notícias que importam no seu estado. Também no e-mail toda sexta, no Instagram e no TikTok.</p>
+          <div class="receber__acoes">
+            <a class="botao botao--noite" data-canal="whatsappCanal" href="#receber">Entrar no canal do WhatsApp</a>
+            <a class="receber__link" data-canal="resumoEmail" href="#receber">Resumo por e-mail</a>
+            <a class="receber__link" data-canal="instagram" href="#receber">Instagram</a>
+            <a class="receber__link" data-canal="tiktok" href="#receber">TikTok</a>
+          </div>
         </div>
-        <ul class="regras">
-          <li><strong>Sempre marcado como "Patrocinado"</strong>, fora da lista de notícias.</li>
-          <li><strong>O anunciante não influencia nenhum rótulo.</strong> A análise das notícias segue a mesma metodologia para todos.</li>
-          <li><strong>Sem anúncio político</strong> de governo, partido ou candidato.</li>
-        </ul>
-        <p class="anuncie__contato">Fale com a gente: <strong>ofarolnws@gmail.com</strong>, com "Anuncie" no assunto.</p>
+        <div class="receber__lado receber__lado--claro" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- Anuncie: cupom de recortar -->
+    <section class="secao anuncie" id="anuncie" aria-labelledby="anuncie-titulo">
+      <div class="container">
+        <form class="cupom" id="form-anuncie">
+          <div class="cupom__texto">
+            <h2 id="anuncie-titulo">Anuncie <br>no Farol</h2>
+            <p>Patrocínio sempre marcado, fora da lista de notícias, sem anúncio político e sem nenhuma influência nos rótulos.</p>
+          </div>
+          <div class="cupom__campos">
+            <label class="oculto" for="anuncio-nome">Seu nome</label>
+            <input id="anuncio-nome" name="nome" type="text" placeholder="Seu nome" autocomplete="name" required>
+            <label class="oculto" for="anuncio-empresa">Empresa</label>
+            <input id="anuncio-empresa" name="empresa" type="text" placeholder="Empresa" autocomplete="organization" required>
+            <label class="oculto" for="anuncio-email">E-mail</label>
+            <input id="anuncio-email" name="email" type="email" placeholder="E-mail" autocomplete="email" required>
+            <label class="oculto" for="anuncio-cidade">Cidade onde quer anunciar</label>
+            <input id="anuncio-cidade" name="cidade" type="text" placeholder="Cidade onde quer anunciar" required>
+            <button class="cupom__enviar" type="submit">Montar o e-mail da proposta</button>
+            <p class="cupom__status" id="anuncio-status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
       </div>
     </section>
   </main>
 
   <footer class="rodape">
-    <div class="container rodape__grade">
-      <div class="rodape__marca">
-        <p class="marca marca--rodape"><svg class="marca__simbolo" viewBox="0 0 32 32" aria-hidden="true"><path class="marca__feixe" d="M17 8 31 2.5v11z"/><path class="marca__torre" d="M12.6 11h6.8l2.2 16.4H10.4z"/><path class="marca__luz" d="M12 11h8V8.3L16 5.6l-4 2.7z"/><path class="marca__listra" d="M11.9 16.4h8.2v2.1h-8.2zM11.2 22h9.6v2.1h-9.6z"/><path class="marca__torre" d="M8 27.4h16V29H8z"/></svg><span class="marca__nome">O Farol</span></p>
-        <p class="rodape__lema">As notícias da sua cidade, do seu estado e do mundo, com a fonte à vista.</p>
-        <ul class="redes" aria-label="O Farol nas redes">
-          <li><a class="rede" data-canal="whatsappCanal" href="index.html#receber">WhatsApp</a></li>
-          <li><a class="rede" data-canal="instagram" href="index.html#receber">Instagram</a></li>
-          <li><a class="rede" data-canal="tiktok" href="index.html#receber">TikTok</a></li>
-        </ul>
+    <div class="container">
+      <p class="rodape__marca" aria-label="O Farol"><span class="bloco-letra bloco-letra--0">O</span><span class="bloco-letra bloco-letra--1">F</span><span class="bloco-letra bloco-letra--2">a</span><span class="bloco-letra bloco-letra--3">r</span><span class="bloco-letra bloco-letra--4">o</span><span class="bloco-letra bloco-letra--5">l</span></p>
+      <div class="rodape__grade">
+        <nav aria-label="Produto">
+          <h2>Produto</h2>
+          <ul><li><a href="index.html#ultimas">Últimas notícias</a></li><li><a href="index.html#rotulos">Os rótulos</a></li><li><a href="painel.html">Painel de verificação</a></li></ul>
+        </nav>
+        <nav aria-label="O Farol">
+          <h2>O Farol</h2>
+          <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="index.html#apoie">Apoie</a></li><li><a href="index.html#anuncie">Anuncie</a></li></ul>
+        </nav>
+        <nav aria-label="Confiança">
+          <h2>Confiança</h2>
+          <ul><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
+        </nav>
+        <nav aria-label="Redes">
+          <h2>Redes</h2>
+          <ul><li><a data-canal="whatsappCanal" href="index.html#receber">WhatsApp</a></li><li><a data-canal="instagram" href="index.html#receber">Instagram</a></li><li><a data-canal="tiktok" href="index.html#receber">TikTok</a></li></ul>
+        </nav>
+        <div class="rodape__contato">
+          <p>Contato, imprensa e testes</p>
+          <p><strong>ofarolnws@gmail.com</strong></p>
+          <p>Projeto independente, com piloto em Aracaju (SE)</p>
+        </div>
       </div>
-      <nav aria-label="Produto">
-        <h2>Produto</h2>
-        <ul><li><a href="index.html#ultimas">Últimas notícias</a></li><li><a href="index.html#receber">Receber notícias</a></li><li><a href="painel.html">Painel de verificação</a></li></ul>
-      </nav>
-      <nav aria-label="O Farol">
-        <h2>O Farol</h2>
-        <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="index.html#apoie">Apoie</a></li><li><a href="index.html#anuncie">Anuncie</a></li><li><a href="mailto:ofarolnws@gmail.com">Contato</a></li></ul>
-      </nav>
-      <nav aria-label="Confiança">
-        <h2>Confiança</h2>
-        <ul><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
-      </nav>
-    </div>
-    <div class="container rodape__base">
-      <span>© <span id="ano"></span> O Farol. Projeto independente, em fase de testes.</span>
-      <span>Contato e testes: <strong>ofarolnws@gmail.com</strong></span>
+      <div class="rodape__base">
+        <span>© <span id="ano"></span> O Farol</span>
+        <a class="botao botao--pequeno" href="#conteudo">Voltar ao topo</a>
+      </div>
     </div>
   </footer>
 
@@ -330,5 +229,6 @@
   <script src="js/painel/agentes.js"></script>
   <script src="js/painel/casos.js"></script>
   <script src="js/noticias.js"></script>
+  <script src="js/inicio.js"></script>
 </body>
 </html>

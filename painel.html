@@ -8,7 +8,7 @@
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
@@ -16,12 +16,6 @@
 
   <p class="faixa-teste">Versão de testes: as notícias da página inicial são reais, e os rótulos delas vêm de uma análise automática, ainda em teste. Os casos do painel de verificação são fictícios.</p>
 
-  <div class="faixa-topo">
-    <div class="container faixa-topo__linha">
-      <span id="data-hoje">Edição digital</span>
-      <span><span data-local>Sua cidade</span><span data-atualizado></span></span>
-    </div>
-  </div>
 
   <header class="cabecalho">
     <div class="container cabecalho__linha">
@@ -34,9 +28,8 @@
         <ul class="nav__lista" id="nav-lista">
           <li><a href="index.html#ultimas">Notícias</a></li>
           <li><a href="index.html#como-funciona">Como funciona</a></li>
+          <li><a href="index.html#rotulos">Os rótulos</a></li>
           <li><a href="metodologia.html">Metodologia</a></li>
-          <li><a href="painel.html" aria-current="page">Painel de verificação</a></li>
-          <li><a href="quem-somos.html">Quem somos</a></li>
           <li><a href="index.html#apoie">Apoie</a></li>
         </ul>
       </nav>
@@ -64,32 +57,35 @@
   </main>
 
   <footer class="rodape">
-    <div class="container rodape__grade">
-      <div class="rodape__marca">
-        <p class="marca marca--rodape"><svg class="marca__simbolo" viewBox="0 0 32 32" aria-hidden="true"><path class="marca__feixe" d="M17 8 31 2.5v11z"/><path class="marca__torre" d="M12.6 11h6.8l2.2 16.4H10.4z"/><path class="marca__luz" d="M12 11h8V8.3L16 5.6l-4 2.7z"/><path class="marca__listra" d="M11.9 16.4h8.2v2.1h-8.2zM11.2 22h9.6v2.1h-9.6z"/><path class="marca__torre" d="M8 27.4h16V29H8z"/></svg><span class="marca__nome">O Farol</span></p>
-        <p class="rodape__lema">As notícias da sua cidade, do seu estado e do mundo, com a fonte à vista.</p>
-        <ul class="redes" aria-label="O Farol nas redes">
-          <li><a class="rede" data-canal="whatsappCanal" href="index.html#receber">WhatsApp</a></li>
-          <li><a class="rede" data-canal="instagram" href="index.html#receber">Instagram</a></li>
-          <li><a class="rede" data-canal="tiktok" href="index.html#receber">TikTok</a></li>
-        </ul>
+    <div class="container">
+      <p class="rodape__marca" aria-label="O Farol"><span class="bloco-letra bloco-letra--0">O</span><span class="bloco-letra bloco-letra--1">F</span><span class="bloco-letra bloco-letra--2">a</span><span class="bloco-letra bloco-letra--3">r</span><span class="bloco-letra bloco-letra--4">o</span><span class="bloco-letra bloco-letra--5">l</span></p>
+      <div class="rodape__grade">
+        <nav aria-label="Produto">
+          <h2>Produto</h2>
+          <ul><li><a href="index.html#ultimas">Últimas notícias</a></li><li><a href="index.html#rotulos">Os rótulos</a></li><li><a href="painel.html">Painel de verificação</a></li></ul>
+        </nav>
+        <nav aria-label="O Farol">
+          <h2>O Farol</h2>
+          <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="index.html#apoie">Apoie</a></li><li><a href="index.html#anuncie">Anuncie</a></li></ul>
+        </nav>
+        <nav aria-label="Confiança">
+          <h2>Confiança</h2>
+          <ul><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
+        </nav>
+        <nav aria-label="Redes">
+          <h2>Redes</h2>
+          <ul><li><a data-canal="whatsappCanal" href="index.html#receber">WhatsApp</a></li><li><a data-canal="instagram" href="index.html#receber">Instagram</a></li><li><a data-canal="tiktok" href="index.html#receber">TikTok</a></li></ul>
+        </nav>
+        <div class="rodape__contato">
+          <p>Contato, imprensa e testes</p>
+          <p><strong>ofarolnws@gmail.com</strong></p>
+          <p>Projeto independente, com piloto em Aracaju (SE)</p>
+        </div>
       </div>
-      <nav aria-label="Produto">
-        <h2>Produto</h2>
-        <ul><li><a href="index.html#ultimas">Últimas notícias</a></li><li><a href="index.html#receber">Receber notícias</a></li><li><a href="painel.html">Painel de verificação</a></li></ul>
-      </nav>
-      <nav aria-label="O Farol">
-        <h2>O Farol</h2>
-        <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="index.html#apoie">Apoie</a></li><li><a href="index.html#anuncie">Anuncie</a></li><li><a href="mailto:ofarolnws@gmail.com">Contato</a></li></ul>
-      </nav>
-      <nav aria-label="Confiança">
-        <h2>Confiança</h2>
-        <ul><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
-      </nav>
-    </div>
-    <div class="container rodape__base">
-      <span>© <span id="ano"></span> O Farol. Projeto independente, em fase de testes.</span>
-      <span>Contato e testes: <strong>ofarolnws@gmail.com</strong></span>
+      <div class="rodape__base">
+        <span>© <span id="ano"></span> O Farol</span>
+        <a class="botao botao--pequeno" href="#conteudo">Voltar ao topo</a>
+      </div>
     </div>
   </footer>
 

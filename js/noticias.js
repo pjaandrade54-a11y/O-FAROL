@@ -255,6 +255,7 @@
       lista.replaceChildren.apply(lista, itens);
     }
     preencherCidades(dados.cidades || []);
+    document.dispatchEvent(new CustomEvent('farol:noticias', { detail: dados }));
   }
 
   function mostrarExemplos() {
