@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS noticias (
   uso TEXT NOT NULL DEFAULT 'noticias',
   uf TEXT,
   cidade TEXT,
-  cidades TEXT
+  cidades TEXT,
+  imagem TEXT
 );
 CREATE INDEX IF NOT EXISTS noticias_escala_data ON noticias (uso, escala, publicado_em DESC);
 
@@ -58,4 +59,7 @@ def abrir(arquivo=ARQUIVO):
     colunas = {c["name"] for c in conexao.execute("PRAGMA table_info(noticias)")}
     if "cidades" not in colunas:
         conexao.execute("ALTER TABLE noticias ADD COLUMN cidades TEXT")
+    # A foto anexada à notícia (NULL: ainda não procurada na página; "": a página não tem foto)
+    if "imagem" not in colunas:
+        conexao.execute("ALTER TABLE noticias ADD COLUMN imagem TEXT")
     return conexao

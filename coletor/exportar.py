@@ -35,7 +35,8 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
     }
 
     def item(linha):
-        return {
+        analise = analises.get(linha["link"])
+        saida_item = {
             "id": linha["id"],
             "titulo": linha["titulo"],
             "link": linha["link"],
@@ -45,8 +46,12 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
             "publicado_em": linha["publicado_em"],
             "uf": _da_lista(linha, "uf"),
             "cidade": _da_lista(linha, "cidade"),
-            "analise": analises.get(linha["link"]),
+            "analise": analise,
         }
+        # Só a notícia confirmada leva a foto que o veículo anexou
+        if analise and analise["rotulo"] == "confirmada" and linha["imagem"]:
+            saida_item["imagem"] = linha["imagem"]
+        return saida_item
 
     t = selecao.listas(conexao)
     for escala in GERAIS:

@@ -205,3 +205,44 @@ class TestColeta(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestImagens(unittest.TestCase):
+    def test_media_content_do_feed(self):
+        rss = b"""<rss xmlns:media="http://search.yahoo.com/mrss/"><channel><item>
+          <title>Com foto</title><link>https://exemplo.org/f</link>
+          <media:content url="http://img.exemplo.org/a.jpg" medium="image"/>
+        </item></channel></rss>"""
+        self.assertEqual(feeds.ler(rss)[0]["imagem"], "https://img.exemplo.org/a.jpg")
+
+    def test_enclosure_e_img_no_texto(self):
+        rss = b"""<rss><channel>
+          <item><title>A</title><link>https://exemplo.org/a</link>
+            <enclosure url="https://img.exemplo.org/b.png" type="image/png"/></item>
+          <item><title>B</title><link>https://exemplo.org/b</link>
+            <description>&lt;img src="//img.exemplo.org/c.webp"&gt; texto</description></item>
+          <item><title>C</title><link>https://exemplo.org/c</link><description>sem foto</description></item>
+        </channel></rss>"""
+        self.assertEqual([i["imagem"] for i in feeds.ler(rss)],
+                         ["https://img.exemplo.org/b.png", "https://img.exemplo.org/c.webp", None])
+
+    def test_imagem_da_pagina(self):
+        from coletor import imagens
+        pagina = """<head><meta name="twitter:image" content="https://x.org/t.jpg">
+          <meta content="https://x.org/og.jpg?a=1&amp;b=2" property="og:image"></head>"""
+        self.assertEqual(imagens.imagem_da_pagina(pagina), "https://x.org/og.jpg?a=1&b=2")
+        self.assertIsNone(imagens.imagem_da_pagina("<head><title>nada</title></head>"))
+
+    def test_completar_marca_paginas_sem_foto(self):
+        from coletor import imagens
+        conexao = banco.abrir(":memory:")
+        veiculo = {"id": "v", "abrangencia": "nacional", "uf": None}
+        for n in "abc":
+            coleta.guardar(conexao, veiculo, {"escala": "pais"}, [{"titulo": n, "link": f"https://e.org/{n}", "guid": n,
+                                                                    "resumo": "", "autor": None, "publicado_em": None}])
+        paginas = {"https://e.org/a": '<meta property="og:image" content="https://e.org/a.jpg">',
+                   "https://e.org/b": "<p>sem foto</p>", "https://e.org/c": None}
+        achadas = imagens.completar(conexao, list(paginas), baixar=paginas.get)
+        self.assertEqual(achadas, 1)
+        fotos = dict(conexao.execute("SELECT link, imagem FROM noticias"))
+        self.assertEqual(fotos, {"https://e.org/a": "https://e.org/a.jpg", "https://e.org/b": "", "https://e.org/c": None})
