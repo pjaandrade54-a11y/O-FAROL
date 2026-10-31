@@ -1,5 +1,5 @@
 // O Farol — formulário de contestação (contestar.html)
-// Monta o e-mail para o conselho com os dados da contestação e a avaliação atual do painel.
+// Monta o e-mail da contestação com os dados dela e a avaliação atual do painel.
 
 (function (m, agentes, casos, config) {
   var form = document.getElementById('form-contestacao');
@@ -36,7 +36,7 @@
     if (!caso) { atual.textContent = ''; return; }
     var d = avaliar(caso).decisao;
     atual.textContent = 'Avaliação atual: ' + m.ROTULOS[d.rotulo] + ' (pontuação ' + d.pontuacao.total + ' de 100' +
-      (d.destino === 'conselho' ? ', já em revisão pelo conselho' : '') + ').';
+      (d.destino === 'relator' ? ', decidida pelo Relator de IA' : '') + ').';
   }
   noticia.addEventListener('change', mostrarAtual);
 
@@ -83,7 +83,7 @@
         linhas.push('- ' + nome + ': ' + m.ROTULOS[p.rotuloSugerido] + '. ' + p.motivos.join(' '));
       });
     }
-    linhas.push('', 'Prazo: decisão final por e-mail em até ' + config.prazoConselho + '.');
+    linhas.push('', 'Prazo: nova análise por e-mail em até ' + config.prazoConselho + '.');
 
     var assunto = '[Conselho] Contestação: ' + tituloNoticia;
     var corpo = linhas.join('\r\n');

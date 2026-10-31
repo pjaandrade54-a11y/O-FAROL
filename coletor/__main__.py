@@ -48,10 +48,12 @@ def _numero_do_ambiente(nome, padrao):
 
 
 def _montar_agentes():
-    """Quem executa cada agente de IA, conforme IA_PROVEDOR: "gemini", "github" ou "anthropic".
-    Sem IA_PROVEDOR, usa o Gemini se houver GEMINI_API_KEY, senão o GitHub Models (no GitHub Actions).
-    Sem IA, a análise é feita por regras."""
+    """Quem executa cada agente de IA, conforme IA_PROVEDOR: "groq", "gemini", "github" ou "anthropic".
+    Sem IA_PROVEDOR, usa o primeiro com chave: Groq (GROQ_API_KEY), Gemini (GEMINI_API_KEY) ou, no GitHub
+    Actions, o GitHub Models. Sem IA, a análise é feita por regras."""
     provedor = _provedor()
+    if provedor == "groq":
+        return _agentes_groq()
     if provedor == "gemini":
         return _agentes_gemini()
     if provedor == "github":
@@ -63,9 +65,26 @@ def _montar_agentes():
 
 def _provedor():
     # No GitHub Actions o GITHUB_TOKEN dá acesso gratuito ao GitHub Models, sem chave nem cartão
-    padrao = ("gemini" if os.environ.get("GEMINI_API_KEY")
+    padrao = ("groq" if os.environ.get("GROQ_API_KEY")
+              else "gemini" if os.environ.get("GEMINI_API_KEY")
               else "github" if os.environ.get("GITHUB_TOKEN") else "regras")
     return (os.environ.get("IA_PROVEDOR") or padrao).strip().lower()
+
+
+def _agentes_groq():
+    from . import modelo_groq
+    if not os.environ.get("GROQ_API_KEY"):
+        print("Conselho de IA desligado: cadastre GROQ_API_KEY nos Secrets do repositório "
+              "(chave gratuita em console.groq.com).")
+        return None, []
+    try:
+        print("Modelos gratuitos do Groq:")
+        modelos = modelo_groq.escolher_modelos(modelo_groq.catalogo())
+    except conselho.ErroModelo as e:
+        print(f"Conselho de IA desligado nesta execução: {e}.")
+        return None, []
+    executores = {agente: modelo_groq.AgenteGroq(modelo) for agente, modelo in modelos.items()}
+    return _chamador(executores), list({id(a): a for a in executores.values()}.values())
 
 
 def _agentes_gemini():

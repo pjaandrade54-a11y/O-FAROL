@@ -29,7 +29,7 @@ Farol.metodologia = (function () {
     'imagem-fora-contexto': 'Imagem fora de contexto'
   };
 
-  // Temas em que um rótulo Contestada exige revisão humana antes de publicar
+  // Temas de alto impacto (eleições, saúde, segurança)
   var TEMAS_ALTO_IMPACTO = ['eleicoes', 'saude', 'seguranca'];
 
   // Nota neutra usada quando o veículo ainda está "Em avaliação" (ausência de dados não é penalidade)

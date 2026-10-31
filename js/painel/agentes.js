@@ -144,29 +144,29 @@ Farol.agentes = (function (m) {
     return Promise.resolve(agente.analisar(caso));
   }
 
-  // Decide o rótulo final e se o caso vai ao conselho humano
+  // Decide o rótulo final, sem revisão humana: se os agentes divergem, o Relator de IA decide pela
+  // metodologia; com suspeita de manipulação, a notícia fica Em apuração
   function decidir(caso, pareceres) {
     var pontuacao = m.pontuar(caso);
     var regra = m.rotular(caso, pontuacao);
     var sugeridos = pareceres.map(function (p) { return p.rotuloSugerido; });
     var consenso = sugeridos.every(function (r) { return r === sugeridos[0]; });
-    var paraConselho = [];
+    var avisos = [];
+    var rotulo = regra.rotulo;
 
-    if (!consenso) paraConselho.push('Os agentes divergiram sobre o rótulo.');
-    if (regra.rotulo === 'contestada' && m.TEMAS_ALTO_IMPACTO.indexOf(caso.tema) !== -1) {
-      paraConselho.push('Rótulo Contestada em tema de alto impacto.');
-    }
+    if (!consenso) avisos.push('Os agentes divergiram sobre o rótulo; o Relator de IA pesou os pareceres e decidiu.');
     if (pareceres.some(function (p) { return p.manipulacao; })) {
-      paraConselho.push('Suspeita de tentativa de manipulação do sistema no texto analisado.');
+      avisos.push('O texto parece tentar dar ordens ao sistema; o rótulo fica Em apuração.');
+      rotulo = 'em-apuracao';
     }
 
     return {
       pontuacao: pontuacao,
-      rotulo: regra.rotulo,
+      rotulo: rotulo,
       motivos: regra.motivos,
       consenso: consenso,
-      destino: paraConselho.length ? 'conselho' : 'automatico',
-      motivosDestino: paraConselho
+      destino: consenso ? 'automatico' : 'relator',
+      motivosDestino: avisos
     };
   }
 

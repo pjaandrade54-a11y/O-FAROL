@@ -52,13 +52,18 @@ jobs:
       - name: Coletar notícias
         run: python -m coletor coletar
 
-      # Por padrão usa o GitHub Models gratuito (GITHUB_TOKEN); com GEMINI_API_KEY, o Gemini.
-      # IA_PROVEDOR escolhe outro provedor. Não há revisão humana: os agentes e o Relator decidem.
+      # Usa o primeiro provedor gratuito com chave: Groq (GROQ_API_KEY), Gemini (GEMINI_API_KEY) ou o
+      # GitHub Models. IA_PROVEDOR escolhe outro. Sem revisão humana: os agentes e o Relator decidem.
       - name: Conselho de IA
         run: python -m coletor analisar
         continue-on-error: true   # se a IA falhar, o site é publicado assim mesmo, com as notícias novas
         env:
           IA_PROVEDOR: ${{ vars.IA_PROVEDOR }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_MODELO_ACUSACAO: ${{ vars.GROQ_MODELO_ACUSACAO }}
+          GROQ_MODELO_DEFESA: ${{ vars.GROQ_MODELO_DEFESA }}
+          GROQ_MODELO_FONTES: ${{ vars.GROQ_MODELO_FONTES }}
+          GROQ_MODELO_RELATOR: ${{ vars.GROQ_MODELO_RELATOR }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODELO_ACUSACAO: ${{ vars.GEMINI_MODELO_ACUSACAO }}
           GEMINI_MODELO_DEFESA: ${{ vars.GEMINI_MODELO_DEFESA }}

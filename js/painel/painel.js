@@ -159,50 +159,8 @@
     return agentes.LISTA.filter(function (a) { return a.id === id; })[0].nome;
   }
 
-  // Monta o e-mail do caso para o conselho (até existir um servidor que envie sozinho)
-  function envioConselho(caso, decisao, pareceres) {
-    var endereco = config.emailConselho;
-    if (!endereco || endereco.charAt(0) === '[') {
-      return el('p', { classe: 'decisao__email-pendente', texto: 'Defina o e-mail do conselho em js/painel/config.js para enviar este caso.' });
-    }
-    var linhas = [
-      'Caso: ' + caso.titulo,
-      'Afirmação central: ' + caso.afirmacao,
-      'Rótulo provisório: ' + m.ROTULOS[decisao.rotulo] + ' (pontuação ' + decisao.pontuacao.total + ' de 100)',
-      '',
-      'Por que veio ao conselho:'
-    ].concat(decisao.motivosDestino.map(function (x) { return '- ' + x; }), ['', 'Pareceres:'],
-      pareceres.map(function (p) {
-        return '- ' + nomeAgente(p.agente) + ' (' + config.modelos[p.agente].modelo + '): ' + m.ROTULOS[p.rotuloSugerido] +
-          ', confiança ' + Math.round(p.confianca * 100) + '%. ' + p.motivos.join(' ');
-      }),
-      ['', 'Prazo: decisão final por e-mail em até ' + config.prazoConselho + '.']);
-    var assunto = '[Conselho] ' + caso.titulo;
-    var corpo = linhas.join('\r\n');
-    var href = 'mailto:' + endereco + '?subject=' + encodeURIComponent(assunto) + '&body=' + encodeURIComponent(corpo);
-
-    // O link de e-mail pode não abrir em todo lugar; a mensagem fica visível para copiar
-    var texto = el('textarea', { classe: 'decisao__mensagem', attrs: { rows: '8', readonly: 'readonly', 'aria-label': 'Mensagem para o conselho' } });
-    texto.value = 'Para: ' + endereco + '\r\nAssunto: ' + assunto + '\r\n\r\n' + corpo;
-    var status = el('p', { classe: 'decisao__copia', attrs: { role: 'status' } });
-    var detalhes = el('details', { classe: 'decisao__detalhes' }, el('summary', { texto: 'Ver a mensagem' }), texto);
-    var copiar = el('button', { classe: 'botao botao--escuro', texto: 'Copiar caso para o conselho', attrs: { type: 'button' } });
-    copiar.addEventListener('click', function () {
-      detalhes.open = true;
-      Farol.copiar(texto.value, texto, status);
-    });
-
-    return el('div', { classe: 'decisao__envio' },
-      el('p', { texto: 'Envie o caso para ' + endereco + ':' }),
-      el('div', { classe: 'decisao__botoes' },
-        copiar,
-        el('a', { classe: 'botao botao--contorno decisao__email', texto: 'Abrir no meu e-mail', attrs: { href: href } })),
-      status,
-      detalhes);
-  }
-
   function caixaDecisao(caso, decisao, pareceres) {
-    var conselho = decisao.destino === 'conselho';
+    var relator = decisao.destino === 'relator';
     var consenso = decisao.consenso
       ? 'Os quatro agentes concordaram.'
       : 'Os agentes divergiram: ' + pareceres.map(function (p) {
@@ -211,15 +169,14 @@
 
     return el('section', { classe: 'decisao decisao--' + decisao.destino, attrs: { 'aria-labelledby': 'decisao-titulo' } },
       el('h3', { texto: 'Decisão do painel', attrs: { id: 'decisao-titulo' } }),
-      el('p', { classe: 'decisao__rotulo' }, rotulo(decisao.rotulo), conselho ? el('span', { classe: 'decisao__provisorio', texto: 'provisório' }) : null),
+      el('p', { classe: 'decisao__rotulo' }, rotulo(decisao.rotulo)),
       listaDeTextos(decisao.motivos, 'decisao__motivos'),
       el('p', { classe: 'decisao__consenso', texto: consenso }),
       el('div', { classe: 'decisao__destino' },
-        el('strong', { texto: conselho ? 'Enviado ao conselho humano' : 'Aplicado automaticamente' }),
-        conselho
-          ? listaDeTextos(decisao.motivosDestino.concat(['Até a revisão, o leitor vê o rótulo marcado como provisório.', 'Decisão final por e-mail em até ' + config.prazoConselho + '.']))
-          : el('p', { texto: 'Uma em cada dez decisões automáticas é sorteada para conferência humana.' }),
-        conselho ? envioConselho(caso, decisao, pareceres) : null),
+        el('strong', { texto: relator ? 'Decidido pelo Relator de IA' : 'Aplicado automaticamente' }),
+        decisao.motivosDestino.length
+          ? listaDeTextos(decisao.motivosDestino)
+          : el('p', { texto: 'Todos os agentes concordaram, e o Auditor de regras aceitou as provas.' })),
       el('p', { classe: 'decisao__contestar' },
         'Discorda desta avaliação? ', el('a', { texto: 'Conteste com as suas provas', attrs: { href: 'contestar.html#caso-' + caso.id } }), '.'));
   }

@@ -95,7 +95,7 @@
     var a = n.analise;
     var meta = el('p', 'noticia__meta');
     if (a && m.ROTULOS[a.rotulo]) {
-      var selo = a.destino === 'conselho' ? ' · provisório' : a.destino === 'humano' ? ' · conselho' : '';
+      var selo = a.destino === 'conselho' ? ' · provisório' : '';
       meta.appendChild(el('span', 'rotulo rotulo--' + a.rotulo, m.ROTULOS[a.rotulo] + selo));
     } else {
       meta.appendChild(el('span', 'rotulo rotulo--aguardando', 'Aguardando análise'));
@@ -143,7 +143,7 @@
     caixa.appendChild(el('summary', null, 'Por que este rótulo?'));
     caixa.appendChild(lista('analise__motivos', a.motivos.concat(a.motivosDestino || [])));
     if (a.destino === 'conselho') {
-      caixa.appendChild(el('p', 'analise__nota', 'Rótulo provisório: o caso foi enviado ao conselho humano.'));
+      caixa.appendChild(el('p', 'analise__nota', 'Rótulo provisório, de uma análise anterior: a IA vai analisar esta notícia de novo.'));
     }
     a.pareceres.forEach(function (p) {
       var bloco = el('div', 'analise__parecer');
