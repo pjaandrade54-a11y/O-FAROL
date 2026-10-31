@@ -32,11 +32,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          CORPO='{"model":"openai/gpt-4.1-mini","messages":[{"role":"user","content":"Responda so: funcionando"}]}'
+          echo "== 1. como no código (Accept github+json)"
+          curl -sS -v https://models.github.ai/inference/chat/completions \
+            -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" \
+            -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -d "$CORPO" 2>&1 \
+            | grep -v -i "authorization" | head -c 3000; echo
+          echo "== 2. Accept application/json"
           curl -sS -i https://models.github.ai/inference/chat/completions \
             -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" \
-            -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" \
-            -d '{"model":"openai/gpt-4.1-mini","messages":[{"role":"user","content":"Responda só: funcionando"}]}' \
-            | head -c 1500; echo
+            -H "Accept: application/json" -d "$CORPO" | head -c 1500; echo
+          echo "== 3. pela organização/usuário do repositório"
+          curl -sS -i "https://models.github.ai/orgs/${{ github.repository_owner }}/inference/chat/completions" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" -d "$CORPO" | head -c 1500; echo
+          echo "== 4. catálogo"
+          curl -sS -i https://models.github.ai/catalog/models -H "Authorization: Bearer $GITHUB_TOKEN" | head -c 800; echo
+          echo "== 5. DNS e IP"
+          getent hosts models.github.ai || true
+          env | grep -i -E "^(https?|no)_proxy" || echo "sem proxy"
       - name: Coletar (sem exportar)
         run: python -m coletor coletar --sem-exportar
       - name: Conselho de IA em 3 notícias

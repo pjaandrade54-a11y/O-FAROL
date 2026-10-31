@@ -13,7 +13,6 @@ on:
 
 permissions:
   contents: read
-  issues: write      # o conselho de IA abre um caso (issue) para cada notícia que vai ao conselho humano
   models: read       # o conselho de IA usa os modelos gratuitos do GitHub Models
   pages: write
   id-token: write
@@ -53,7 +52,8 @@ jobs:
       - name: Coletar notícias
         run: python -m coletor coletar
 
-      # Por padrão usa o Gemini gratuito (GEMINI_API_KEY); IA_PROVEDOR escolhe outro provedor
+      # Por padrão usa o GitHub Models gratuito (GITHUB_TOKEN); com GEMINI_API_KEY, o Gemini.
+      # IA_PROVEDOR escolhe outro provedor. Não há revisão humana: os agentes e o Relator decidem.
       - name: Conselho de IA
         run: python -m coletor analisar
         continue-on-error: true   # se a IA falhar, o site é publicado assim mesmo, com as notícias novas
@@ -64,6 +64,7 @@ jobs:
           GEMINI_MODELO_DEFESA: ${{ vars.GEMINI_MODELO_DEFESA }}
           GEMINI_MODELO_FONTES: ${{ vars.GEMINI_MODELO_FONTES }}
           GITHUB_MODELO_ACUSACAO: ${{ vars.GITHUB_MODELO_ACUSACAO }}
+          GITHUB_MODELO_RELATOR: ${{ vars.GITHUB_MODELO_RELATOR }}
           GITHUB_MODELO_DEFESA: ${{ vars.GITHUB_MODELO_DEFESA }}
           GITHUB_MODELO_FONTES: ${{ vars.GITHUB_MODELO_FONTES }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

@@ -23,15 +23,18 @@ ENDERECOS = [
 ]
 
 # Preferência de cada agente. Acusação e Defesa em empresas diferentes, para não errarem do mesmo jeito.
+# Os três primeiros usam modelos da faixa "baixa" da cota gratuita (cerca de 150 pedidos por dia cada um);
+# o Relator, chamado só quando os agentes divergem, usa um modelo maior (cota menor, cerca de 50 por dia).
 # Se nenhum da lista estiver no catálogo, o agente usa outro modelo do catálogo (veja escolher_modelos).
 PREFERENCIAS = {
-    "acusacao": ["openai/gpt-4.1", "openai/gpt-4o"],
-    "defesa": ["meta/llama-4-maverick-17b-128e-instruct-fp8", "mistral-ai/mistral-medium-2505",
-               "deepseek/deepseek-v3-0324", "meta/meta-llama-3.1-405b-instruct"],
-    "auditor-fontes": ["openai/gpt-4.1-mini", "openai/gpt-4o-mini"],
+    "acusacao": ["openai/gpt-4.1-mini", "openai/gpt-4o-mini"],
+    "defesa": ["meta/llama-4-maverick-17b-128e-instruct-fp8", "mistral-ai/mistral-small-2503",
+               "meta/llama-3.3-70b-instruct"],
+    "auditor-fontes": ["openai/gpt-4o-mini", "openai/gpt-4.1-nano"],
+    "relator": ["openai/gpt-4.1", "openai/gpt-4o", "openai/gpt-4.1-mini"],
 }
 VARIAVEIS = {"acusacao": "GITHUB_MODELO_ACUSACAO", "defesa": "GITHUB_MODELO_DEFESA",
-             "auditor-fontes": "GITHUB_MODELO_FONTES"}
+             "auditor-fontes": "GITHUB_MODELO_FONTES", "relator": "GITHUB_MODELO_RELATOR"}
 
 # A cota gratuita também limita pedidos por minuto: uma pausa curta entre chamadas evita estourar
 PAUSA_ENTRE_CHAMADAS = 6

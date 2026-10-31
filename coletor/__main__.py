@@ -49,7 +49,8 @@ def _numero_do_ambiente(nome, padrao):
 
 def _montar_agentes():
     """Quem executa cada agente de IA, conforme IA_PROVEDOR: "gemini", "github" ou "anthropic".
-    Sem IA_PROVEDOR, usa o Gemini se houver GEMINI_API_KEY. Sem IA, a análise é feita por regras."""
+    Sem IA_PROVEDOR, usa o Gemini se houver GEMINI_API_KEY, senão o GitHub Models (no GitHub Actions).
+    Sem IA, a análise é feita por regras."""
     provedor = _provedor()
     if provedor == "gemini":
         return _agentes_gemini()
@@ -61,7 +62,9 @@ def _montar_agentes():
 
 
 def _provedor():
-    padrao = "gemini" if os.environ.get("GEMINI_API_KEY") else "regras"
+    # No GitHub Actions o GITHUB_TOKEN dá acesso gratuito ao GitHub Models, sem chave nem cartão
+    padrao = ("gemini" if os.environ.get("GEMINI_API_KEY")
+              else "github" if os.environ.get("GITHUB_TOKEN") else "regras")
     return (os.environ.get("IA_PROVEDOR") or padrao).strip().lower()
 
 
@@ -78,7 +81,7 @@ def _agentes_gemini():
         print(f"Conselho de IA desligado nesta execução: {e}.")
         return None, []
     executores = {agente: modelo_gemini.AgenteGemini(modelo) for agente, modelo in modelos.items()}
-    return (lambda agente, sistema, conteudo: executores[agente].parecer(sistema, conteudo)), list(executores.values())
+    return _chamador(executores), list(executores.values())
 
 
 def _agentes_github():
@@ -93,7 +96,7 @@ def _agentes_github():
         print(f"Conselho de IA desligado nesta execução: {e}.")
         return None, []
     executores = {agente: modelo_github.AgenteGitHub(modelo) for agente, modelo in modelos.items()}
-    return (lambda agente, sistema, conteudo: executores[agente].parecer(sistema, conteudo)), list(executores.values())
+    return _chamador(executores), list(executores.values())
 
 
 def _agentes_pagos():
@@ -109,57 +112,37 @@ def _agentes_pagos():
         defesa = modelo_openai.AgenteOpenAI(os.environ.get("OPENAI_MODELO") or modelo_openai.MODELO_PADRAO)
     else:
         print("Aviso: sem OPENAI_API_KEY, a Defesa roda no Claude (o site mostra o modelo de cada parecer).")
-    executores = {"acusacao": claude, "defesa": defesa, "auditor-fontes": claude}
-    return (lambda agente, sistema, conteudo: executores[agente].parecer(sistema, conteudo)), [claude, defesa]
+    executores = {"acusacao": claude, "defesa": defesa, "auditor-fontes": claude, "relator": claude}
+    return _chamador(executores), [claude, defesa]
+
+
+def _chamador(executores):
+    """Função que o conselho chama para cada agente; um agente sem modelo próprio usa o da Acusação."""
+    return lambda agente, sistema, conteudo: (executores.get(agente) or executores["acusacao"]).parecer(sistema, conteudo)
 
 
 def cmd_analisar(args):
-    from . import casos_github
     veiculos = cadastro.carregar()
     conexao = banco.abrir()
-
-    casos = None
-    if casos_github.configurado() and not args.sem_casos:
-        try:
-            casos = casos_github.casos_existentes()
-            mudaram = conselho.aplicar_decisoes(conexao, casos_github.decisoes(casos))
-            if mudaram:
-                print(f"{mudaram} decisões do conselho humano aplicadas.")
-        except casos_github.ErroGitHub as e:
-            print(f"Aviso: não foi possível ler os casos do conselho ({e}).")
-            casos = None
 
     chamar, executores = _montar_agentes()
     if _provedor() == "desligado":
         print("IA_PROVEDOR=desligado: as notícias ficam sem análise.")
-        r = None
-    elif chamar:
-        print("Conselho de IA analisando as notícias da página inicial…")
-        r = conselho.analisar(conexao, veiculos, chamar,
-                              por_execucao=_numero_do_ambiente("IA_POR_EXECUCAO", 3),
-                              por_dia=_numero_do_ambiente("IA_POR_DIA", 15))
-        print(f"\n{r['analisadas']} notícias analisadas ({r['conselho']} para o conselho humano), "
-              f"{r['erros']} com erro, {r['pendentes']} pendentes antes desta execução.")
-        for agente in dict.fromkeys(executores):
-            print(f"Tokens {getattr(agente, 'modelo', type(agente).__name__)}: "
-                  f"{agente.tokens[0]} de entrada, {agente.tokens[1]} de saída.")
     else:
-        # Gratuito e sem chave; também é o que roda quando a IA escolhida não está disponível
-        print("Análise automática por regras, sem IA, das notícias da página inicial…")
+        if chamar:
+            print("Conselho de IA analisando as notícias do site (primeiro as da página inicial)…")
+            r = conselho.analisar(conexao, veiculos, chamar,
+                                  por_execucao=_numero_do_ambiente("IA_POR_EXECUCAO", 4),
+                                  por_dia=_numero_do_ambiente("IA_POR_DIA", 120))
+            print(f"\n{r['analisadas']} notícias analisadas por IA ({r['relator']} decididas pelo Relator), "
+                  f"{r['erros']} com erro, {r['pendentes']} pendentes antes desta execução.")
+            for agente in dict.fromkeys(executores):
+                print(f"Tokens {getattr(agente, 'modelo', type(agente).__name__)}: "
+                      f"{agente.tokens[0]} de entrada, {agente.tokens[1]} de saída.")
+        # As notícias que a IA ainda não analisou (cota do dia) recebem um rótulo provisório por regras
+        print("Análise por regras das notícias que a IA ainda não analisou…")
         r = conselho.analisar_regras(conexao, veiculos)
-        print(f"\n{r['analisadas']} notícias analisadas por regras ({r['conselho']} com o conselho humano).")
-
-    if r:
-        if casos is not None and r["novas_conselho"]:
-            try:
-                casos_github.garantir_etiquetas()
-                for analise in r["novas_conselho"]:
-                    link = analise["noticia"]["link"]
-                    numero = casos[link]["numero"] if link in casos else casos_github.abrir_caso(analise)
-                    conselho.registrar_caso(conexao, link, numero)
-                print(f"{len(r['novas_conselho'])} casos enviados ao conselho humano (aba Issues do GitHub).")
-            except casos_github.ErroGitHub as e:
-                print(f"Aviso: não foi possível abrir os casos do conselho ({e}).")
+        print(f"{r['analisadas']} notícias com rótulo por regras.")
 
     # Toda notícia do site aparece com foto: as que vieram sem foto no feed buscam a da página da matéria
     links = [l["link"] for l in selecao.noticias_do_site(conexao)] + [l["link"] for l in selecao.listas(conexao)["checagens"]]
@@ -277,7 +260,7 @@ def montar_parser():
     sub.add_parser("exportar", help="regenera dados/noticias.json").set_defaults(func=cmd_exportar)
 
     n = sub.add_parser("analisar", help="o conselho de IA analisa as notícias novas e atualiza dados/noticias.json")
-    n.add_argument("--sem-casos", action="store_true", help="não abre nem lê os casos do conselho no GitHub")
+    n.add_argument("--sem-casos", action="store_true", help="sem efeito (o conselho humano foi desativado)")
     n.set_defaults(func=cmd_analisar)
 
     v = sub.add_parser("veiculos", help="cadastro de veículos").add_subparsers(dest="acao", required=True)

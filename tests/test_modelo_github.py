@@ -34,9 +34,9 @@ class TestModeloGitHub(unittest.TestCase):
     def test_escolhe_defesa_de_outra_empresa_quando_a_preferida_falta(self):
         with mock.patch.dict("os.environ", {}, clear=True):
             modelos = modelo_github.escolher_modelos(CATALOGO, aviso=lambda *_: None)
-        self.assertEqual(modelos["acusacao"], "openai/gpt-4.1")
-        self.assertEqual(modelos["auditor-fontes"], "openai/gpt-4.1-mini")
+        self.assertEqual(modelos["acusacao"], "openai/gpt-4.1-mini")
         self.assertEqual(modelos["defesa"], "mistral-ai/mistral-small-2503")
+        self.assertEqual(modelos["relator"], "openai/gpt-4.1")
 
     def test_sem_catalogo_usa_a_primeira_preferencia(self):
         with mock.patch.dict("os.environ", {}, clear=True):
