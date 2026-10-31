@@ -306,33 +306,39 @@ body { background: var(--chao); color: var(--tinta-forte); font-size: var(--t-co
 
 /* Celular */
 @media (max-width: 640px) {
-  .secao { padding: 96px 0; }
+  .secao { padding: 64px 0; }
   .abertura { padding-top: 64px; }
-  .abertura__feixe { clip-path: polygon(100% 30%, 74% 0, 100% 0); }
+  .abertura__feixe { clip-path: polygon(100% 13%, 72% 0, 100% 0); animation: none; }
   .abertura h1 { font-size: clamp(3.25rem, 15vw, 4.5rem); }
   .abertura__apoio { font-size: 1.125rem; }
-  .pastas { margin-top: 88px; }
+  .pastas { margin-top: 56px; }
   .pasta .abas { padding: 0 8px; gap: 4px; }
   .pasta .abas button { padding: 0 14px 0 12px; font-size: 0.95rem; min-height: 44px; }
   .etapas__barra { flex-direction: column; }
-  [data-ui] .etapa strong { min-height: 0; padding: 16px; }
-  [data-ui] .etapa--coleta strong, [data-ui] .etapa--compara strong { min-height: 72px; }
-  [data-ui] .etapa--confirma strong { min-height: 140px; }
-  [data-ui] .etapa--conselho strong { min-height: 180px; }
-  [data-ui] .etapa span { max-width: none; }
+  .etapas h2 { margin-bottom: 32px; }
+  .etapas__barra { gap: 20px; }
+  [data-ui].etapas__barra .etapa { gap: 10px; }
+  [data-ui] .etapa strong { min-height: 0; padding: 14px 16px; }
+  [data-ui] .etapa span { max-width: none; padding-right: 0; }
   .rotulos__grade { min-height: 0; }
   .rotulos__lista ul { display: flex; flex-wrap: wrap; gap: 4px 20px; }
   .rotulos__nome { font-size: 1.625rem; }
-  .rotulos__palco { order: -1; min-height: 0; padding: 48px 0 48px 12%; }
+  .rotulos__palco { min-height: 0; padding: 32px 0 32px 12%; }
   [data-ui].exemplo { margin-top: 0; }
   [data-ui] .noticia--foto { grid-template-columns: 1fr; }
   [data-ui] .noticia__foto { grid-column: 1; grid-row: auto; order: -1; margin: 0 0 14px; aspect-ratio: 16 / 9; }
   .independencia { padding-left: 10px; padding-right: 10px; }
   .independencia__painel { padding: 48px 20px 0; gap: 40px; }
-  [data-ui].mensagem { padding: 40px 20px 32px 40px; }
-  .receber__linha { grid-template-columns: 1fr 1fr; margin: 0 max(16px, env(safe-area-inset-left, 0px)); gap: 8px; }
-  .receber__centro { grid-column: 1 / -1; order: -1; min-height: 300px; padding: 28px 20px; }
-  .receber__lado { height: 120px; }
+  [data-ui].mensagem { padding: 40px 20px 48px 28px; clip-path: polygon(0 0, 100% 5%, 100% 95%, 0 100%); }
+  .receber__linha { grid-template-columns: 1fr; margin: 0 16px; gap: 0; }
+  .receber__centro { min-height: 0; padding: 32px 20px; }
+  .receber__lado { display: none; }
+  .receber__acoes { display: grid; gap: 8px; justify-items: start; }
+  .receber__acoes .botao { width: 100%; justify-content: center; text-align: center; white-space: normal; }
+
+  /* No celular, nada espera a rolagem para aparecer: menos movimento, nenhuma área em branco */
+  .js [data-entrada] { opacity: 1; transform: none; transition: none; }
+  .js .etapas__barra[data-entrada] .etapa strong { clip-path: none; transition: none; }
   .cupom::before, .cupom::after { display: none; }
   .cupom__texto, .cupom__campos { padding: 28px 20px; }
   .cupom__campos { border-left: 0; border-top: 5px dotted var(--chao); }

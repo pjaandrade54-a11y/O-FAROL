@@ -81,7 +81,7 @@
   // Enquanto ninguém mexe, os rótulos passam sozinhos, um a cada 4,5 s, só com a seção na tela
   var giro = null;
   function parar() { clearInterval(giro); giro = null; autoplay = false; }
-  var autoplay = !calmo;
+  var autoplay = !calmo && matchMedia('(min-width: 961px)').matches;
   if ('IntersectionObserver' in window && palco) {
     new IntersectionObserver(function (entradas) {
       if (!autoplay) return;
@@ -146,6 +146,7 @@
   barra.setAttribute('aria-hidden', 'true');
   document.body.appendChild(barra);
   var cabecalho = document.querySelector('.cabecalho');
+  var telaGrande = matchMedia('(min-width: 961px) and (hover: hover)');
   var ultimoY = window.scrollY, pedido = null;
   function aoRolar() {
     pedido = null;
@@ -153,7 +154,8 @@
     var total = raiz.scrollHeight - innerHeight;
     barra.style.transform = 'scaleX(' + (total > 0 ? Math.min(1, y / total) : 0) + ')';
     // Desce: o cabeçalho sai do caminho; sobe: volta. Perto do topo ou com o menu aberto, fica sempre
-    var menuAberto = document.querySelector('.nav__lista.aberta');
+    // No celular o cabeçalho fica sempre: escondê-lo briga com a barra do navegador e dá trancos
+    var menuAberto = document.querySelector('.nav__lista.aberta') || !telaGrande.matches;
     if (cabecalho && !menuAberto) cabecalho.classList.toggle('cabecalho--escondido', y > 320 && y > ultimoY + 4);
     if (cabecalho && (y < ultimoY - 4 || y < 320)) cabecalho.classList.remove('cabecalho--escondido');
     if (Math.abs(y - ultimoY) > 4) ultimoY = y;
