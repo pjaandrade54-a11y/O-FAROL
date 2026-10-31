@@ -3251,6 +3251,36 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "jornal-de-brasilia",
+      "nome": "Jornal de Brasília",
+      "site": "https://jornaldebrasilia.com.br",
+      "tipo": "jornal",
+      "abrangencia": "estadual",
+      "uf": "DF",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://jornaldebrasilia.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "jornal-pequeno",
       "nome": "Jornal Pequeno",
       "site": "https://jornalpequeno.com.br",
@@ -4270,6 +4300,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "revista-oeste",
+      "nome": "Revista Oeste",
+      "site": "https://revistaoeste.com",
+      "tipo": "revista",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Editora Oeste",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://revistaoeste.com/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "rfi-brasil",
