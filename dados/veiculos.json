@@ -2,6 +2,66 @@
   "versao": 1,
   "veiculos": [
     {
+      "id": "96fm",
+      "nome": "96 FM",
+      "site": "https://www.96fm.com.br",
+      "tipo": "radio",
+      "abrangencia": "estadual",
+      "uf": "RN",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.96fm.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "a-gazeta-do-acre",
+      "nome": "A Gazeta do Acre",
+      "site": "https://agazetadoacre.com",
+      "tipo": "jornal",
+      "abrangencia": "estadual",
+      "uf": "AC",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://agazetadoacre.com/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "a-gazeta-es",
       "nome": "A Gazeta",
       "site": "https://www.agazeta.com.br",
@@ -152,6 +212,36 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "agencia-bori",
+      "nome": "Agência Bori",
+      "site": "https://abori.com.br",
+      "tipo": "agencia",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://abori.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "agencia-brasil",
       "nome": "Agência Brasil",
       "site": "https://agenciabrasil.ebc.com.br",
@@ -214,6 +304,66 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "agencia-fapesp",
+      "nome": "Agência FAPESP",
+      "site": "https://agencia.fapesp.br",
+      "tipo": "agencia",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "FAPESP",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://agencia.fapesp.br/rss"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "agencia-minas",
+      "nome": "Agência Minas",
+      "site": "https://www.agenciaminas.mg.gov.br",
+      "tipo": "agencia",
+      "abrangencia": "estadual",
+      "uf": "MG",
+      "cidade": null,
+      "grupo": "Governo de Minas Gerais",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.agenciaminas.mg.gov.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "agencia-publica",
@@ -364,6 +514,96 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "alo-alo-bahia",
+      "nome": "Alô Alô Bahia",
+      "site": "https://aloalobahia.com",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "BA",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://aloalobahia.com/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "amazonas-atual",
+      "nome": "Amazonas Atual",
+      "site": "https://amazonasatual.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "AM",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://amazonasatual.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "amazonia-real",
+      "nome": "Amazônia Real",
+      "site": "https://amazoniareal.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "AM",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://amazoniareal.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "aos-fatos",
@@ -698,6 +938,36 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "brasil-247",
+      "nome": "Brasil 247",
+      "site": "https://www.brasil247.com",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Editora 247",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.brasil247.com/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "brasil-de-fato",
       "nome": "Brasil de Fato",
       "site": "https://www.brasildefato.com.br",
@@ -756,6 +1026,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "canaltech",
+      "nome": "Canaltech",
+      "site": "https://canaltech.com.br",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://canaltech.com.br/rss/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "cartacapital",
@@ -846,6 +1146,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "cinform",
+      "nome": "Cinform",
+      "site": "https://cinformonline.com.br",
+      "tipo": "jornal",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://cinformonline.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "clickpb",
@@ -1148,6 +1478,36 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "diario-de-goias",
+      "nome": "Diário de Goiás",
+      "site": "https://diariodegoias.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "GO",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://diariodegoias.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "diario-do-amapa",
       "nome": "Diário do Amapá",
       "site": "https://www.diariodoamapa.com.br",
@@ -1176,6 +1536,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "diario-do-litoral",
+      "nome": "Diário do Litoral",
+      "site": "https://www.diariodolitoral.com.br",
+      "tipo": "jornal",
+      "abrangencia": "estadual",
+      "uf": "SP",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.diariodolitoral.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "diario-do-para",
@@ -1236,6 +1626,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "dn-pt",
+      "nome": "Diário de Notícias",
+      "site": "https://www.dn.pt",
+      "tipo": "jornal",
+      "abrangencia": "internacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Global Media Group",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.dn.pt/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "dw-brasil",
@@ -1357,6 +1777,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "estadao",
+      "nome": "Estadão",
+      "site": "https://www.estadao.com.br",
+      "tipo": "jornal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Grupo Estado",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.estadao.com.br/arc/outboundfeeds/feeds/rss/sections/politica/?body=%7B%22layout%22:%22google-news%22%7D"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "estadao-verifica",
@@ -1629,6 +2079,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "folha-de-londrina",
+      "nome": "Folha de Londrina",
+      "site": "https://www.folhadelondrina.com.br",
+      "tipo": "jornal",
+      "abrangencia": "estadual",
+      "uf": "PR",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.folhadelondrina.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "folha-vitoria",
@@ -2771,6 +3251,66 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "jornal-de-brasilia",
+      "nome": "Jornal de Brasília",
+      "site": "https://jornaldebrasilia.com.br",
+      "tipo": "jornal",
+      "abrangencia": "estadual",
+      "uf": "DF",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://jornaldebrasilia.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "jornal-pequeno",
+      "nome": "Jornal Pequeno",
+      "site": "https://jornalpequeno.com.br",
+      "tipo": "jornal",
+      "abrangencia": "estadual",
+      "uf": "MA",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://jornalpequeno.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "jovem-pan",
       "nome": "Jovem Pan",
       "site": "https://jovempan.com.br",
@@ -2830,6 +3370,66 @@
       },
       "ativo": true,
       "observacoes": "Checador. Confirmar na lista oficial se é signatário da IFCN."
+    },
+    {
+      "id": "mais-pb",
+      "nome": "MaisPB",
+      "site": "https://www.maispb.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "PB",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.maispb.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "mangue-jornalismo",
+      "nome": "Mangue Jornalismo",
+      "site": "https://manguejornalismo.org",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://manguejornalismo.org/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "marco-zero",
@@ -2920,6 +3520,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "mongabay",
+      "nome": "Mongabay Brasil",
+      "site": "https://brasil.mongabay.com",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://brasil.mongabay.com/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "nd-mais",
@@ -3072,6 +3702,36 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "nucleo",
+      "nome": "Núcleo",
+      "site": "https://nucleo.jor.br",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://nucleo.jor.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "o-antagonista",
       "nome": "O Antagonista",
       "site": "https://oantagonista.com.br",
@@ -3100,6 +3760,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "o-dia-pi",
+      "nome": "O Dia",
+      "site": "https://portalodia.com",
+      "tipo": "jornal",
+      "abrangencia": "estadual",
+      "uf": "PI",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://portalodia.com/rss"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "o-imparcial",
@@ -3132,6 +3822,66 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "o-sao-goncalo",
+      "nome": "O São Gonçalo",
+      "site": "https://www.osaogoncalo.com.br",
+      "tipo": "jornal",
+      "abrangencia": "estadual",
+      "uf": "RJ",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.osaogoncalo.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "oaltoacre",
+      "nome": "O Alto Acre",
+      "site": "https://oaltoacre.com",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "AC",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://oaltoacre.com/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "observador-pt",
       "nome": "Observador",
       "site": "https://observador.pt",
@@ -3160,6 +3910,66 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "oeco",
+      "nome": "((o))eco",
+      "site": "https://oeco.org.br",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://oeco.org.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "olhar-digital",
+      "nome": "Olhar Digital",
+      "site": "https://olhardigital.com.br",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://olhardigital.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "onu-news",
@@ -3282,6 +4092,36 @@
       "observacoes": "Dados de transparência ainda não verificados."
     },
     {
+      "id": "ponte",
+      "nome": "Ponte Jornalismo",
+      "site": "https://ponte.org",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://ponte.org/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "portal-correio",
       "nome": "Portal Correio",
       "site": "https://portalcorreio.com.br",
@@ -3340,6 +4180,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "primeira-edicao",
+      "nome": "Primeira Edição",
+      "site": "https://www.primeiraedicao.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "AL",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.primeiraedicao.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "primeira-pagina-ms",
@@ -3430,6 +4300,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "revista-oeste",
+      "nome": "Revista Oeste",
+      "site": "https://revistaoeste.com",
+      "tipo": "revista",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Editora Oeste",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://revistaoeste.com/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "rfi-brasil",
@@ -3582,6 +4482,36 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "scc10",
+      "nome": "SCC10",
+      "site": "https://scc10.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "SC",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://scc10.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "selesnafes",
       "nome": "Portal SN (Seles Nafes)",
       "site": "https://selesnafes.com",
@@ -3612,6 +4542,36 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "so-noticias",
+      "nome": "Só Notícias",
+      "site": "https://www.sonoticias.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "MT",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.sonoticias.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
       "id": "sul21",
       "nome": "Sul21",
       "site": "https://sul21.com.br",
@@ -3640,6 +4600,66 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "tecmundo",
+      "nome": "TecMundo",
+      "site": "https://www.tecmundo.com.br",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "NZN",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://rss.tecmundo.com.br/feed"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "terra",
+      "nome": "Terra",
+      "site": "https://www.terra.com.br",
+      "tipo": "portal",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Terra",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.terra.com.br/rss/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
       "id": "tnh1",
@@ -3820,6 +4840,36 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "voz-das-comunidades",
+      "nome": "Voz das Comunidades",
+      "site": "https://www.vozdascomunidades.com.br",
+      "tipo": "portal",
+      "abrangencia": "estadual",
+      "uf": "RJ",
+      "cidade": null,
+      "grupo": null,
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.vozdascomunidades.com.br/feed/"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     }
   ]
 }

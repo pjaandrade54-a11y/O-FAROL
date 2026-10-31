@@ -1,744 +1,138 @@
 [
- {
-  "id": "uol",
-  "nome": "UOL",
-  "site": "https://noticias.uol.com.br",
-  "tipo": "portal",
-  "abrangencia": "nacional",
-  "grupo": "Grupo Folha",
-  "feeds": [
-   "https://rss.uol.com.br/feed/noticias.xml"
-  ],
-  "adivinhar": true
- },
- {
-  "id": "o-globo",
-  "nome": "O Globo",
-  "site": "https://oglobo.globo.com",
-  "tipo": "jornal",
-  "abrangencia": "nacional",
-  "grupo": "Grupo Globo",
-  "feeds": [
-   "https://oglobo.globo.com/rss/oglobo",
-   "https://oglobo.globo.com/rss.xml"
-  ],
-  "adivinhar": true
- },
- {
-  "id": "r7",
-  "nome": "R7",
-  "site": "https://noticias.r7.com",
-  "tipo": "portal",
-  "abrangencia": "nacional",
-  "grupo": "Grupo Record",
-  "feeds": [
-   "https://noticias.r7.com/feed.xml"
-  ],
-  "adivinhar": true
- },
- {
-  "id": "correio-braziliense",
-  "nome": "Correio Braziliense",
-  "site": "https://www.correiobraziliense.com.br",
-  "tipo": "jornal",
-  "abrangencia": "nacional",
-  "grupo": "Diários Associados",
-  "feeds": [
-   "https://www.correiobraziliense.com.br/feed/"
-  ],
-  "adivinhar": true
- },
- {
-  "id": "band",
-  "nome": "Band Jornalismo",
-  "site": "https://www.band.uol.com.br",
-  "tipo": "tv",
-  "abrangencia": "nacional",
-  "feeds": [
-   "https://www.band.uol.com.br/rss/noticias.xml"
-  ],
-  "adivinhar": true
- },
- {
-  "id": "comprova",
-  "nome": "Projeto Comprova",
-  "site": "https://projetocomprova.com.br",
-  "tipo": "checador",
-  "abrangencia": "nacional",
-  "feeds": [],
-  "uso": "checagens",
-  "adivinhar": true
- },
- {
-  "id": "afp-checamos",
-  "nome": "AFP Checamos",
-  "site": "https://checamos.afp.com",
-  "tipo": "checador",
-  "abrangencia": "nacional",
-  "feeds": [
-   "https://checamos.afp.com/rss"
-  ],
-  "uso": "checagens",
-  "adivinhar": true
- },
- {
-  "id": "cada-minuto",
-  "nome": "Cada Minuto",
-  "site": "https://www.cadaminuto.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "AL",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "tribuna-hoje",
-  "nome": "Tribuna Hoje",
-  "site": "https://tribunahoje.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "AL",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "agencia-amapa",
-  "nome": "Agência Amapá",
-  "site": "https://agenciaamapa.com.br",
-  "tipo": "agencia",
-  "abrangencia": "estadual",
-  "uf": "AP",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "acritica",
-  "nome": "A Crítica",
-  "site": "https://www.acritica.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "AM",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "d24am",
-  "nome": "D24AM",
-  "site": "https://d24am.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "AM",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "correio-ba",
-  "nome": "Correio",
-  "site": "https://www.correio24horas.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "BA",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "o-povo",
-  "nome": "O Povo",
-  "site": "https://www.opovo.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "CE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "diario-do-nordeste",
-  "nome": "Diário do Nordeste",
-  "site": "https://diariodonordeste.verdesmares.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "CE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "tribuna-do-ceara",
-  "nome": "Tribuna do Ceará",
-  "site": "https://tribunadoceara.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "CE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "agencia-brasilia",
-  "nome": "Agência Brasília",
-  "site": "https://www.agenciabrasilia.df.gov.br",
-  "tipo": "agencia",
-  "abrangencia": "estadual",
-  "uf": "DF",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "jornal-de-brasilia",
-  "nome": "Jornal de Brasília",
-  "site": "https://jornaldebrasilia.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "DF",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "mais-goias",
-  "nome": "Mais Goiás",
-  "site": "https://www.maisgoias.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "GO",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "jornal-opcao",
-  "nome": "Jornal Opção",
-  "site": "https://www.jornalopcao.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "GO",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "o-popular",
-  "nome": "O Popular",
-  "site": "https://opopular.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "GO",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "o-estado-ma",
-  "nome": "O Estado do Maranhão",
-  "site": "https://oestadoma.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MA",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "midianews",
-  "nome": "MidiaNews",
-  "site": "https://www.midianews.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MT",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "olhar-direto",
-  "nome": "Olhar Direto",
-  "site": "https://www.olhardireto.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MT",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "gazeta-digital",
-  "nome": "Gazeta Digital",
-  "site": "https://www.gazetadigital.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MT",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "rdnews",
-  "nome": "RDNews",
-  "site": "https://www.rdnews.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MT",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "folhamax",
-  "nome": "FolhaMax",
-  "site": "https://www.folhamax.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MT",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "midiamax",
-  "nome": "Midiamax",
-  "site": "https://midiamax.uol.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MS",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "correio-do-estado",
-  "nome": "Correio do Estado",
-  "site": "https://correiodoestado.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MS",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "o-tempo",
-  "nome": "O Tempo",
-  "site": "https://www.otempo.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MG",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "itatiaia",
-  "nome": "Itatiaia",
-  "site": "https://www.itatiaia.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MG",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "hoje-em-dia",
-  "nome": "Hoje em Dia",
-  "site": "https://www.hojeemdia.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "MG",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "o-liberal",
-  "nome": "O Liberal",
-  "site": "https://www.oliberal.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PA",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "roma-news",
-  "nome": "Roma News",
-  "site": "https://romanews.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PA",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "agencia-para",
-  "nome": "Agência Pará",
-  "site": "https://agenciapara.com.br",
-  "tipo": "agencia",
-  "abrangencia": "estadual",
-  "uf": "PA",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "wscom",
-  "nome": "WSCOM",
-  "site": "https://www.wscom.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PB",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "plural",
-  "nome": "Plural",
-  "site": "https://www.plural.jor.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PR",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "aen-pr",
-  "nome": "Agência Estadual de Notícias (PR)",
-  "site": "https://www.aen.pr.gov.br",
-  "tipo": "agencia",
-  "abrangencia": "estadual",
-  "uf": "PR",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "jc",
-  "nome": "Jornal do Commercio",
-  "site": "https://jc.uol.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "diario-de-pernambuco",
-  "nome": "Diario de Pernambuco",
-  "site": "https://www.diariodepernambuco.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "folha-pe",
-  "nome": "Folha de Pernambuco",
-  "site": "https://www.folhape.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "180graus",
-  "nome": "180graus",
-  "site": "https://180graus.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PI",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "meio-norte",
-  "nome": "Meio Norte",
-  "site": "https://www.meionorte.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PI",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "gp1",
-  "nome": "GP1",
-  "site": "https://www.gp1.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PI",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "portal-o-dia",
-  "nome": "Portal O Dia",
-  "site": "https://www.portalodia.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "PI",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "o-dia",
-  "nome": "O Dia",
-  "site": "https://odia.ig.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RJ",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "extra",
-  "nome": "Extra",
-  "site": "https://extra.globo.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RJ",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "jornal-do-brasil",
-  "nome": "Jornal do Brasil",
-  "site": "https://www.jb.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RJ",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "rio-on-watch",
-  "nome": "RioOnWatch",
-  "site": "https://rioonwatch.org.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RJ",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "saiba-mais",
-  "nome": "Saiba Mais",
-  "site": "https://saibamais.jor.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RN",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "novo-noticias",
-  "nome": "Novo Notícias",
-  "site": "https://novonoticias.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RN",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "gzh",
-  "nome": "GZH",
-  "site": "https://gauchazh.clicrbs.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RS",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "correio-do-povo",
-  "nome": "Correio do Povo",
-  "site": "https://www.correiodopovo.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RS",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "jornal-do-comercio-rs",
-  "nome": "Jornal do Comércio",
-  "site": "https://www.jornaldocomercio.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RS",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "matinal",
-  "nome": "Matinal",
-  "site": "https://www.matinaljornalismo.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RS",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "rondoniaovivo",
-  "nome": "Rondoniaovivo",
-  "site": "https://rondoniaovivo.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RO",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "rondonia-dinamica",
-  "nome": "Rondônia Dinâmica",
-  "site": "https://www.rondoniadinamica.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RO",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "tudo-rondonia",
-  "nome": "Tudo Rondônia",
-  "site": "https://www.tudorondonia.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RO",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "roraima-em-tempo",
-  "nome": "Roraima em Tempo",
-  "site": "https://roraimaemtempo.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "RR",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "agencia-sc",
-  "nome": "Agência de Notícias SC",
-  "site": "https://estado.sc.gov.br/noticias",
-  "tipo": "agencia",
-  "abrangencia": "estadual",
-  "uf": "SC",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "acidade-on",
-  "nome": "ACidade ON",
-  "site": "https://www.acidadeon.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SP",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "spressosp",
-  "nome": "Spresso SP",
-  "site": "https://spressosp.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SP",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "f5-news",
-  "nome": "F5 News",
-  "site": "https://www.f5news.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "jl-politica",
-  "nome": "JL Política",
-  "site": "https://jlpolitica.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "se-noticias",
-  "nome": "SE Notícias",
-  "site": "https://senoticias.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "itnet",
-  "nome": "Portal Itnet",
-  "site": "https://www.itnet.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "agencia-sergipe",
-  "nome": "Agência Sergipe de Notícias",
-  "site": "https://www.se.gov.br/noticias",
-  "tipo": "agencia",
-  "abrangencia": "estadual",
-  "uf": "SE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "universo-politico",
-  "nome": "Universo Político",
-  "site": "https://universopolitico.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "prefeitura-aracaju",
-  "nome": "Agência Aracaju de Notícias",
-  "site": "https://www.aracaju.se.gov.br/noticias",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "portal-alo-sergipe",
-  "nome": "Alô Sergipe",
-  "site": "https://alosergipe.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "emsergipe",
-  "nome": "EmSergipe",
-  "site": "https://www.emsergipe.com",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "SE",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "t1-noticias",
-  "nome": "T1 Notícias",
-  "site": "https://www.t1noticias.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "TO",
-  "feeds": [],
-  "adivinhar": true
- },
- {
-  "id": "jornal-do-tocantins",
-  "nome": "Jornal do Tocantins",
-  "site": "https://www.jornaldotocantins.com.br",
-  "tipo": "portal",
-  "abrangencia": "estadual",
-  "uf": "TO",
-  "feeds": [],
-  "adivinhar": true
- }
+  {
+    "id": "jornal-de-brasilia",
+    "nome": "Jornal de Brasília",
+    "site": "https://jornaldebrasilia.com.br",
+    "tipo": "jornal",
+    "abrangencia": "estadual",
+    "grupo": null,
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "DF"
+  },
+  {
+    "id": "rondonia-dinamica",
+    "nome": "Rondônia Dinâmica",
+    "site": "https://www.rondoniadinamica.com",
+    "tipo": "portal",
+    "abrangencia": "estadual",
+    "grupo": null,
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "RO"
+  },
+  {
+    "id": "diario-do-nordeste",
+    "nome": "Diário do Nordeste",
+    "site": "https://diariodonordeste.verdesmares.com.br",
+    "tipo": "jornal",
+    "abrangencia": "estadual",
+    "grupo": "Sistema Verdes Mares",
+    "feeds": [
+      "https://diariodonordeste.verdesmares.com.br/rss"
+    ],
+    "adivinhar": true,
+    "uf": "CE"
+  },
+  {
+    "id": "revista-oeste",
+    "nome": "Revista Oeste",
+    "site": "https://revistaoeste.com",
+    "tipo": "revista",
+    "abrangencia": "nacional",
+    "grupo": "Editora Oeste",
+    "feeds": [],
+    "adivinhar": true
+  },
+  {
+    "id": "noticias-ao-minuto",
+    "nome": "Notícias ao Minuto",
+    "site": "https://www.noticiasaominuto.com.br",
+    "tipo": "portal",
+    "abrangencia": "nacional",
+    "grupo": null,
+    "feeds": [],
+    "adivinhar": true
+  },
+  {
+    "id": "o-povo",
+    "nome": "O Povo",
+    "site": "https://www.opovo.com.br",
+    "tipo": "jornal",
+    "abrangencia": "estadual",
+    "grupo": "Grupo de Comunicação O Povo",
+    "feeds": [
+      "https://www.opovo.com.br/rss.xml"
+    ],
+    "adivinhar": true,
+    "uf": "CE"
+  },
+  {
+    "id": "rondoniaovivo",
+    "nome": "Rondoniaovivo",
+    "site": "https://rondoniaovivo.com",
+    "tipo": "portal",
+    "abrangencia": "estadual",
+    "grupo": null,
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "RO"
+  },
+  {
+    "id": "novo-noticias",
+    "nome": "Novo Notícias",
+    "site": "https://novonoticias.com",
+    "tipo": "portal",
+    "abrangencia": "estadual",
+    "grupo": null,
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "RN"
+  },
+  {
+    "id": "tribuna-da-bahia",
+    "nome": "Tribuna da Bahia",
+    "site": "https://www.trbn.com.br",
+    "tipo": "jornal",
+    "abrangencia": "estadual",
+    "grupo": null,
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "BA"
+  },
+  {
+    "id": "gzh",
+    "nome": "GZH",
+    "site": "https://gauchazh.clicrbs.com.br",
+    "tipo": "portal",
+    "abrangencia": "estadual",
+    "grupo": "Grupo RBS",
+    "feeds": [
+      "https://gauchazh.clicrbs.com.br/ultimas-noticias/rss/"
+    ],
+    "adivinhar": true,
+    "uf": "RS"
+  },
+  {
+    "id": "jornal-do-comercio-rs",
+    "nome": "Jornal do Comércio",
+    "site": "https://www.jornaldocomercio.com",
+    "tipo": "jornal",
+    "abrangencia": "estadual",
+    "grupo": null,
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "RS"
+  },
+  {
+    "id": "acidadeon",
+    "nome": "ACidadeON",
+    "site": "https://www.acidadeon.com",
+    "tipo": "portal",
+    "abrangencia": "estadual",
+    "grupo": "EPTV",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "SP"
+  }
 ]

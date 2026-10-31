@@ -174,7 +174,7 @@
     abertura.addEventListener('pointerleave', function () { feixe.classList.remove('feixe--guiado'); });
   }
 
-  // 127 conta de 0 até o número real quando aparece
+  // O número de veículos conta de 0 até o número real quando aparece
   document.querySelectorAll('[data-contar]').forEach(function (n) {
     var alvo = parseInt(n.textContent, 10);
     if (calmo || !alvo) return;

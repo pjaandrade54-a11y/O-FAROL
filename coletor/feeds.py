@@ -77,12 +77,53 @@ def baixar(url, etag=None, modificado=None, tempo_limite=20):
         raise ErroFeed(f"falha de conexão: {getattr(e, 'reason', e)}") from e
 
 
+# Prefixos que os feeds usam sem declarar, ou que somem quando lemos item por item
+PREFIXOS = {"content": CONTENT[1:-1], "dc": DC[1:-1], "media": MEDIA[1:-1], "atom": ATOM[1:-1],
+            "wfw": "http://wellformedweb.org/CommentAPI/", "slash": "http://purl.org/rss/1.0/modules/slash/",
+            "sy": "http://purl.org/rss/1.0/modules/syndication/"}
+ENTIDADE = re.compile(rb"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)([A-Za-z][A-Za-z0-9]*;)?")
+ITEM = re.compile(rb"<item\b.*?</item>", re.DOTALL)
+
+
+def _consertar(conteudo):
+    """Defeitos comuns de feeds de sites brasileiros: espaço antes do <?xml, entidades do HTML (&ocirc;)
+    e & solto no texto."""
+    conteudo = conteudo.lstrip(b"\xef\xbb\xbf \t\r\n")
+
+    def entidade(m):
+        if m.group(1):
+            letra = html.unescape("&" + m.group(1).decode("ascii"))
+            if letra != "&" + m.group(1).decode("ascii"):
+                return "".join(f"&#{ord(c)};" for c in letra).encode("ascii")
+        return b"&amp;" + (m.group(1) or b"")
+    return ENTIDADE.sub(entidade, conteudo)
+
+
+def _item_por_item(conteudo):
+    """Último recurso: lê cada <item> sozinho e descarta só os que estão quebrados."""
+    declaracoes = " ".join(f'xmlns:{p}="{u}"' for p, u in PREFIXOS.items())
+    itens = []
+    for bloco in ITEM.findall(conteudo):
+        try:
+            itens.append(ET.fromstring(f"<rss {declaracoes}>".encode() + bloco + b"</rss>").find("item"))
+        except ET.ParseError:
+            continue
+    return itens
+
+
 def ler(conteudo):
     """Transforma o XML do feed em uma lista de notícias."""
     try:
         raiz = ET.fromstring(conteudo)
     except ET.ParseError as e:
-        raise ErroFeed(f"o feed não é um XML válido ({e})") from e
+        consertado = _consertar(conteudo)
+        try:
+            raiz = ET.fromstring(consertado)
+        except ET.ParseError:
+            itens = [i for i in (_item_rss(x) for x in _item_por_item(consertado)) if i]
+            if not itens:
+                raise ErroFeed(f"o feed não é um XML válido ({e})") from e
+            return itens
     if raiz.tag == ATOM + "feed":
         itens = (_item_atom(e) for e in raiz.iter(ATOM + "entry"))
     else:
