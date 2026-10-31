@@ -1,0 +1,47 @@
+# Testa o conselho de IA sem publicar nada: roda quando o código do coletor muda numa branch de trabalho.
+# Usa uma cópia do banco da última coleta e não guarda o resultado (o site não muda).
+name: Testar o conselho de IA
+
+on:
+  push:
+    branches: ["claude/**"]
+    paths: ["coletor/**", ".github/workflows/testar-ia.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  models: read
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Recuperar o banco da última coleta
+        uses: actions/cache/restore@v4
+        with:
+          path: dados/farol.db
+          key: farol-db-teste-${{ github.run_id }}
+          restore-keys: farol-db-
+      - run: python -m unittest discover -s tests
+      - name: O GitHub Models responde?
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sS -i https://models.github.ai/inference/chat/completions \
+            -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" \
+            -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" \
+            -d '{"model":"openai/gpt-4.1-mini","messages":[{"role":"user","content":"Responda só: funcionando"}]}' \
+            | head -c 1500; echo
+      - name: Coletar (sem exportar)
+        run: python -m coletor coletar --sem-exportar
+      - name: Conselho de IA em 3 notícias
+        env:
+          IA_PROVEDOR: github
+          IA_POR_EXECUCAO: "3"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m coletor analisar --sem-casos
