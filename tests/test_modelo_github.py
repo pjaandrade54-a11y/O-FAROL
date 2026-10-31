@@ -34,9 +34,9 @@ class TestModeloGitHub(unittest.TestCase):
     def test_escolhe_defesa_de_outra_empresa_quando_a_preferida_falta(self):
         with mock.patch.dict("os.environ", {}, clear=True):
             modelos = modelo_github.escolher_modelos(CATALOGO, aviso=lambda *_: None)
-        self.assertEqual(modelos["acusacao"], "openai/gpt-4.1")
-        self.assertEqual(modelos["auditor-fontes"], "openai/gpt-4.1-mini")
+        self.assertEqual(modelos["acusacao"], "openai/gpt-4.1-mini")
         self.assertEqual(modelos["defesa"], "mistral-ai/mistral-small-2503")
+        self.assertEqual(modelos["relator"], "openai/gpt-4.1")
 
     def test_sem_catalogo_usa_a_primeira_preferencia(self):
         with mock.patch.dict("os.environ", {}, clear=True):
@@ -57,17 +57,6 @@ class TestModeloGitHub(unittest.TestCase):
         self.assertEqual(pedir.call_args.args[1]["response_format"], {"type": "json_object"})
         self.assertEqual(agente.tokens, [10, 5])
         self.assertIn("GitHub Models", modelo)
-
-    def test_endereco_sem_json_passa_para_o_proximo(self):
-        enderecos = list(modelo_github.ENDERECOS)
-        self.addCleanup(lambda: modelo_github.ENDERECOS.__setitem__(slice(None), enderecos))
-        respostas = [modelo_github.RespostaInvalida("OK"), resposta(json.dumps(PARECER))]
-        with mock.patch.object(modelo_github, "_pedir", side_effect=respostas) as pedir, \
-                mock.patch("builtins.print"):
-            parecer, _ = modelo_github.AgenteGitHub("openai/gpt-4.1").parecer("sistema", "conteudo")
-        self.assertEqual(parecer["rotuloSugerido"], "em-apuracao")
-        self.assertEqual(pedir.call_args.args[0], "https://models.inference.ai.azure.com/chat/completions")
-        self.assertEqual(pedir.call_args.args[1]["model"], "gpt-4.1")
 
     def test_nenhum_endereco_valido_para_a_execucao(self):
         enderecos = list(modelo_github.ENDERECOS)

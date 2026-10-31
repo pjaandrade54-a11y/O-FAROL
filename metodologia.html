@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Metodologia — O Farol</title>
-  <meta name="description" content="Como o Farol classifica a confiabilidade de notícias e veículos: critérios, pesos, rótulos, painel de verificação e conselho humano.">
+  <meta name="description" content="Como o Farol classifica a confiabilidade de notícias e veículos: critérios, pesos, rótulos e o painel de agentes de IA que decide cada rótulo.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="O Farol">
   <meta property="og:locale" content="pt_BR">
   <meta property="og:title" content="Metodologia — O Farol">
-  <meta property="og:description" content="Como o Farol classifica a confiabilidade de notícias e veículos: critérios, pesos, rótulos, painel de verificação e conselho humano.">
+  <meta property="og:description" content="Como o Farol classifica a confiabilidade de notícias e veículos: critérios, pesos, rótulos e o painel de agentes de IA que decide cada rótulo.">
   <meta property="og:url" content="https://pjaandrade54-a11y.github.io/O-FAROL/metodologia.html">
   <meta property="og:image" content="https://pjaandrade54-a11y.github.io/O-FAROL/img/compartilhar.png">
   <meta property="og:image:width" content="1200">
@@ -80,7 +80,7 @@
           <li><strong>Mesma régua para todos.</strong> Os mesmos critérios valem para grandes e pequenos veículos, de qualquer região.</li>
           <li><strong>Transparência total.</strong> Cada rótulo mostra os seus motivos.</li>
           <li><strong>Falta de dados não é culpa.</strong> Com poucos sinais, mostramos “dados insuficientes”, nunca uma nota baixa.</li>
-          <li><strong>Pessoas revisam a máquina.</strong> Casos sensíveis e contestações passam por revisão humana.</li>
+          <li><strong>Regras acima da máquina.</strong> A IA decide os rótulos, mas só com provas que o Auditor de regras confere; sem prova, a notícia fica “Em apuração”.</li>
         </ul>
       </section>
 
@@ -158,18 +158,18 @@
         </div>
         <ul class="lista-marcada">
           <li><strong>Prova ou nada.</strong> Cada parecer traz o rótulo sugerido, os motivos e as provas. Conclusão sem prova citada é descartada.</li>
-          <li><strong>Concordância aplica, divergência sobe.</strong> Se os agentes concordam, o rótulo é aplicado e uma amostra é conferida por pessoas. Se divergem, o caso vai ao conselho humano.</li>
-          <li><strong>Texto é dado, não ordem.</strong> Instruções escondidas em uma notícia são ignoradas e o caso é enviado para revisão.</li>
+          <li><strong>Concordância aplica, divergência vai ao Relator.</strong> Se os agentes concordam, o rótulo é aplicado. Se divergem, um quarto agente, o Relator, pesa os pareceres e decide, também sob o Auditor de regras. Não há revisão humana.</li>
+          <li><strong>Texto é dado, não ordem.</strong> Instruções escondidas em uma notícia são ignoradas, e a notícia fica “Em apuração”.</li>
           <li><strong>Modelos de empresas diferentes.</strong> Acusação e Defesa rodam em empresas diferentes, para que os dois lados não errem do mesmo jeito. O Auditor de regras é o código desta metodologia: regras exatas, que nenhum texto consegue manipular.</li>
-          <li><strong>Mudar a IA é mudar a metodologia.</strong> Toda alteração nos agentes é testada contra casos já decididos por pessoas, auditada quanto a viés, aprovada pelo conselho e publicada aqui.</li>
+          <li><strong>Mudar a IA é mudar a metodologia.</strong> Toda alteração nos agentes é testada contra casos de exemplo, auditada quanto a viés e publicada aqui.</li>
         </ul>
         <h3 class="subtitulo" id="conselho-ia">Nas notícias reais (fase de testes)</h3>
         <ul class="lista-marcada">
-          <li><strong>O que os agentes leem.</strong> A cada coleta, as notícias da página inicial ainda sem rótulo são analisadas. Os agentes leem o título e o resumo da notícia e um dossiê com o que outros veículos e checadores acompanhados publicaram sobre o assunto nos três dias anteriores. O texto completo das notícias não é copiado.</li>
+          <li><strong>O que os agentes leem.</strong> A cada coleta, as notícias ainda não analisadas são analisadas, primeiro as da página inicial. Os agentes leem o título e o resumo da notícia e um dossiê com o que outros veículos e checadores acompanhados publicaram sobre o assunto nos três dias anteriores. O texto completo das notícias não é copiado.</li>
           <li><strong>O Auditor de regras confere as provas.</strong> Um parecer que cita fonte fora do dossiê é descartado, assim como “Confirmada” sem dois grupos de mídia diferentes do original e “Desmentida” sem checagem.</li>
-          <li><strong>Rótulo provisório.</strong> Se os agentes divergem, um parecer é descartado, o tema é sensível ou há suspeita de manipulação, a notícia aparece como “Em apuração · provisório” e o caso vai ao conselho humano. Quando o conselho decide, o site passa a mostrar a decisão dele.</li>
+          <li><strong>O Relator decide as divergências.</strong> Se os agentes divergem ou um parecer é descartado, o Relator de IA decide. Sem uma decisão com provas válidas, ou com suspeita de manipulação, a notícia fica “Em apuração”.</li>
           <li><strong>Tudo à vista.</strong> Em cada notícia, “Por que este rótulo?” mostra o parecer de cada agente, o modelo que o produziu e as provas, com link para a fonte.</li>
-          <li><strong>Análise por regras nesta fase.</strong> Enquanto os agentes de IA não estão ligados, cada notícia é rotulada só pelo Auditor de regras, sem IA: <em>Confirmada</em> quando dois veículos de grupos diferentes publicam o mesmo fato (títulos com ao menos três palavras raras em comum), nenhum rótulo de <em>Desmentida</em> sem pessoa: quando um checador publica algo falso sobre o mesmo assunto, a notícia fica <em>Em apuração</em> e o caso vai ao conselho humano, <em>Opinião</em> quando o título ou o endereço indicam coluna ou artigo, e <em>Em apuração</em> nos demais casos. A análise é refeita a cada coleta, então o rótulo muda quando surgem novas coberturas. Por comparar palavras, e não ler o texto, ela é mais cautelosa que a análise por IA. Com a IA ligada (plano gratuito do Google Gemini), cada parecer mostra o modelo que o produziu.</li>
+          <li><strong>Antes da IA, as regras.</strong> Enquanto a IA não analisa uma notícia (por exemplo, quando a cota gratuita do dia acaba), ela recebe um rótulo do Auditor de regras, sem IA: <em>Confirmada</em> quando dois veículos de grupos diferentes publicam o mesmo fato (títulos com ao menos três palavras raras em comum), <em>Opinião</em> quando o título ou o endereço indicam coluna ou artigo, e <em>Em apuração</em> nos demais casos, inclusive quando um checador publica algo falso sobre o mesmo assunto (só a IA, lendo os dois textos, pode dizer se a checagem desmente esta notícia). Esse rótulo é refeito a cada coleta até a IA analisar a notícia.</li>
           <li><strong>Limite de testes.</strong> Nesta fase, o número de notícias analisadas por dia é limitado, e algumas ficam “Aguardando análise”. Como os agentes só veem título e resumo, os rótulos são mais cautelosos do que serão com o texto completo.</li>
         </ul>
         <p><a class="link-seta" href="painel.html">Veja o painel funcionando com casos de exemplo</a></p>
@@ -180,8 +180,8 @@
         <p><strong>Nunca entram no cálculo:</strong> posição política, tema ou tom do texto; audiência ou fama do veículo; se o conteúdo agrada ou desagrada a governos, empresas ou ao próprio Farol.</p>
         <ul class="lista-marcada">
           <li><strong>Auditoria de viés trimestral.</strong> Comparamos as notas médias de veículos de linhas editoriais diferentes. Uma diferença grande obriga a revisar os critérios, e o resultado é publicado.</li>
-          <li><strong>Revisão às cegas.</strong> Sempre que possível, o revisor humano avalia o texto sem ver o nome do veículo.</li>
-          <li><strong>Conselho plural.</strong> Revisões sensíveis são decididas por pessoas de formações e visões diferentes, e cada decisão fica registrada.</li>
+          <li><strong>Análise às cegas.</strong> Os agentes julgam as provas do dossiê, e as regras valem igual para todos os veículos.</li>
+          <li><strong>Nenhum rótulo à mão.</strong> Nenhuma pessoa muda um rótulo; ele só muda quando a IA analisa a notícia de novo, com provas.</li>
           <li><strong>Metodologia versionada.</strong> Pesos e regras são públicos, e cada mudança é registrada com data e motivo.</li>
         </ul>
       </section>
@@ -192,8 +192,8 @@
         <ol class="lista-numerada">
           <li>Envie a contestação pelo formulário, com as provas e um e-mail para resposta.</li>
           <li>O painel de verificação reanalisa o caso com as provas novas.</li>
-          <li>Se os agentes concordam e o caso não é sensível, a resposta sai <strong>na hora</strong>, com os motivos.</li>
-          <li>Se os agentes divergem, o caso é sensível ou você discorda da resposta automática, o caso vai por e-mail ao conselho humano (<a href="mailto:ofarolnws@gmail.com">ofarolnws@gmail.com</a>). A <strong>decisão final</strong> chega por e-mail em até <strong>3 dias úteis</strong>.</li>
+          <li>A contestação chega por e-mail (<a href="mailto:ofarolnws@gmail.com">ofarolnws@gmail.com</a>), e as provas novas entram no dossiê da notícia.</li>
+          <li>Os agentes de IA analisam a notícia de novo; se divergirem, o Relator decide. A resposta chega por e-mail em até <strong>3 dias úteis</strong>.</li>
           <li>Toda decisão é publicada com os motivos, seja ela qual for.</li>
           <li>Se o Farol errou, o rótulo é corrigido e a correção fica registrada, com data.</li>
           <li>O veículo avaliado pode publicar uma nota de resposta ao lado da avaliação.</li>
@@ -210,7 +210,7 @@
           <li>Em cidades com poucos veículos, a confirmação independente é mais rara.</li>
           <li>As agências de checagem focam em temas nacionais e virais.</li>
           <li>Textos com acesso fechado podem ficar com “Dados insuficientes”.</li>
-          <li>A IA pode errar ao agrupar notícias e extrair afirmações; por isso há conferência humana por amostra.</li>
+          <li>A IA pode errar ao agrupar notícias e extrair afirmações; por isso toda conclusão precisa citar provas, e qualquer leitor pode contestar.</li>
         </ul>
       </section>
     </div>

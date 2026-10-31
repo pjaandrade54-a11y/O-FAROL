@@ -15,30 +15,31 @@ import urllib.request
 from .conselho import ESQUEMA_PARECER, ErroModelo
 
 CATALOGO = "https://models.github.ai/catalog/models"
-# Endereços de inferência, na ordem em que são tentados. O segundo é o endereço antigo do GitHub Models,
-# que usa o nome do modelo sem a empresa ("gpt-4.1" em vez de "openai/gpt-4.1").
-ENDERECOS = [
-    ("https://models.github.ai/inference/chat/completions", lambda modelo: modelo),
-    ("https://models.inference.ai.azure.com/chat/completions", lambda modelo: modelo.split("/", 1)[-1]),
-]
+ENDERECOS = [("https://models.github.ai/inference/chat/completions", lambda modelo: modelo)]
 
 # Preferência de cada agente. Acusação e Defesa em empresas diferentes, para não errarem do mesmo jeito.
+# Os três primeiros usam modelos da faixa "baixa" da cota gratuita (cerca de 150 pedidos por dia cada um);
+# o Relator, chamado só quando os agentes divergem, usa um modelo maior (cota menor, cerca de 50 por dia).
 # Se nenhum da lista estiver no catálogo, o agente usa outro modelo do catálogo (veja escolher_modelos).
 PREFERENCIAS = {
-    "acusacao": ["openai/gpt-4.1", "openai/gpt-4o"],
-    "defesa": ["meta/llama-4-maverick-17b-128e-instruct-fp8", "mistral-ai/mistral-medium-2505",
-               "deepseek/deepseek-v3-0324", "meta/meta-llama-3.1-405b-instruct"],
-    "auditor-fontes": ["openai/gpt-4.1-mini", "openai/gpt-4o-mini"],
+    "acusacao": ["openai/gpt-4.1-mini", "openai/gpt-4o-mini"],
+    "defesa": ["meta/llama-4-maverick-17b-128e-instruct-fp8", "mistral-ai/mistral-small-2503",
+               "meta/llama-3.3-70b-instruct"],
+    "auditor-fontes": ["openai/gpt-4o-mini", "openai/gpt-4.1-nano"],
+    "relator": ["openai/gpt-4.1", "openai/gpt-4o", "openai/gpt-4.1-mini"],
 }
 VARIAVEIS = {"acusacao": "GITHUB_MODELO_ACUSACAO", "defesa": "GITHUB_MODELO_DEFESA",
-             "auditor-fontes": "GITHUB_MODELO_FONTES"}
+             "auditor-fontes": "GITHUB_MODELO_FONTES", "relator": "GITHUB_MODELO_RELATOR"}
 
 # A cota gratuita também limita pedidos por minuto: uma pausa curta entre chamadas evita estourar
 PAUSA_ENTRE_CHAMADAS = 6
 
 
 class RespostaInvalida(ErroModelo):
-    """O endereço respondeu, mas sem JSON: provavelmente não é (mais) o endereço do serviço."""
+    """O endereço respondeu, mas sem JSON (em 10/2026, um "OK" em texto para qualquer pedido): o serviço
+    não está atendendo esta conta, e não adianta tentar as outras notícias."""
+
+    parar = True
 
 
 class CotaEsgotada(ErroModelo):
@@ -173,14 +174,6 @@ class AgenteGitHub:
                     self.formatos.pop(0)  # tenta um formato de resposta mais simples
                     continue
                 raise ErroModelo(f"o GitHub Models respondeu {e.code} para {self.modelo}: {detalhe}") from e
-            except RespostaInvalida as e:
-                # Endereço que não serve: passa para o próximo, para todos os agentes
-                if len(ENDERECOS) > 1:
-                    print(f"  Aviso: {e}; tentando {ENDERECOS[1][0]}")
-                    ENDERECOS.pop(0)
-                    continue
-                e.parar = True
-                raise
             except urllib.error.URLError as e:
                 raise ErroModelo(f"sem conexão com o GitHub Models ({e.reason})") from e
 

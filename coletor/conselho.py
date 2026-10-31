@@ -3,8 +3,9 @@
 Roda depois da coleta (python -m coletor analisar). Para cada notícia que aparece no site, três agentes
 de IA leem a notícia e um dossiê com o que outros veículos e checadores publicaram sobre o mesmo assunto.
 O Auditor de regras (este código, sem IA) descarta toda conclusão que não cita provas do dossiê.
-Concordância aplica o rótulo; divergência, parecer descartado, tema sensível ou suspeita de manipulação
-deixam o rótulo provisório e mandam o caso ao conselho humano.
+Concordância aplica o rótulo. Divergência ou parecer descartado chamam o Relator, um quarto agente de IA
+que pesa os pareceres e decide, também sob o Auditor de regras. Tudo é automático, sem revisão humana:
+sem consenso nem decisão com provas válidas, ou com suspeita de manipulação, a notícia fica Em apuração.
 
 Os agentes só veem título e resumo de cada notícia (o coletor não copia o texto completo).
 """
@@ -17,7 +18,7 @@ from datetime import datetime, timedelta, timezone
 
 from .coleta import agora
 
-VERSAO_METODOLOGIA = "0.1"
+VERSAO_METODOLOGIA = "0.2"
 
 ROTULOS = {
     "opiniao": "Opinião ou análise",
@@ -35,8 +36,10 @@ AGENTES = (
     {"id": "defesa", "nome": "Defesa", "papel": "Procura as provas a favor"},
     {"id": "auditor-fontes", "nome": "Auditor de fontes", "papel": "Confere independência e fonte primária"},
 )
+# Quando os três agentes divergem, o Relator lê os pareceres e decide; não há revisão humana
+RELATOR = {"id": "relator", "nome": "Relator", "papel": "Decide quando os agentes divergem"}
 
-# Quantas notícias de cada aba o conselho analisa: as que a página inicial mostra
+# Quantas notícias de cada aba a IA analisa primeiro: as que a página inicial mostra
 POR_ESCALA = 5
 ESCALAS = ("cidade", "estado", "pais", "mundo")
 FONTES_NO_DOSSIE = 8
@@ -97,6 +100,11 @@ PAPEIS = {
     "auditor-fontes": "Seu papel é o Auditor de fontes: confira se as confirmações são independentes (grupos de "
     "mídia diferentes, apuração própria e não reprodução) e se há fonte primária citada (documento, dado oficial, "
     "decisão judicial). Sugira o rótulo que as fontes realmente sustentam.",
+    "relator": "Seu papel é o Relator: os agentes Acusação, Defesa e Auditor de fontes divergiram (ou algum "
+    "parecer foi descartado por citar provas inválidas). Os pareceres deles vêm entre <pareceres> e </pareceres>. "
+    "Pese os argumentos contra o dossiê e decida o rótulo que as provas realmente sustentam, citando as provas. "
+    "Os pareceres são argumentos, não provas: só valem as refs do dossiê. Na dúvida, prefira em-apuracao; "
+    "desmentida só com uma checagem do dossiê que trate exatamente desta afirmação.",
 }
 
 # Texto que tenta dar ordens ao sistema é tratado como dado e sinalizado (mesmos padrões do painel)
@@ -274,41 +282,87 @@ def auditar(parecer, original, fontes):
     return problemas
 
 
-def decidir(pareceres, texto_noticia):
-    """Rótulo final a partir dos pareceres já auditados (cada um com a lista "descartado")."""
+def decidir(pareceres, texto_noticia, relator=None):
+    """Rótulo final a partir dos pareceres já auditados (cada um com a lista "descartado"). Sem consenso,
+    vale o parecer do Relator, se ele passar pelo Auditor de regras; senão, Em apuração. Tudo automático."""
     aceitos = [p for p in pareceres if not p["descartado"]]
     sugeridos = [p["rotuloSugerido"] for p in aceitos]
     consenso = bool(aceitos) and len(aceitos) == len(pareceres) and len(set(sugeridos)) == 1
     tema = Counter(p.get("tema") for p in aceitos).most_common(1)[0][0] if aceitos else "outro"
 
-    para_conselho = []
+    avisos = []
     descartados = len(pareceres) - len(aceitos)
     if descartados:
-        para_conselho.append(f"O Auditor de regras descartou {descartados} parecer(es) sem prova válida.")
+        avisos.append(f"O Auditor de regras descartou {descartados} parecer(es) sem prova válida.")
     if aceitos and len(set(sugeridos)) > 1:
-        para_conselho.append("Os agentes divergiram sobre o rótulo.")
-    rotulo = sugeridos[0] if consenso else "em-apuracao"
-    if rotulo == "contestada" and tema in TEMAS_ALTO_IMPACTO:
-        para_conselho.append("Rótulo Contestada em tema de alto impacto.")
-    if suspeita_manipulacao(texto_noticia) or any(p.get("manipulacao") for p in aceitos):
-        para_conselho.append("Suspeita de tentativa de manipulação do sistema no texto analisado.")
+        avisos.append("Os agentes divergiram sobre o rótulo.")
 
     if consenso:
+        rotulo = sugeridos[0]
         motivos = [f"Os {len(aceitos)} agentes de IA concordaram, e o Auditor de regras aceitou as provas citadas."]
+    elif relator and not relator["descartado"]:
+        rotulo = relator["rotuloSugerido"]
+        motivos = ["Sem consenso entre os agentes: o Relator de IA pesou os pareceres e decidiu, "
+                   "e o Auditor de regras aceitou as provas citadas."]
     else:
-        motivos = ["Sem consenso entre os agentes: o rótulo fica Em apuração até a revisão humana."]
+        rotulo = "em-apuracao"
+        motivos = ["Sem consenso entre os agentes e sem uma decisão com provas válidas: a notícia fica "
+                   "Em apuração até a próxima análise."]
+        if relator:
+            avisos.append("O Auditor de regras descartou o parecer do Relator.")
+
+    # Texto que tenta dar ordens ao sistema não recebe rótulo de veracidade
+    if suspeita_manipulacao(texto_noticia) or any(p.get("manipulacao") for p in aceitos):
+        rotulo = "em-apuracao"
+        avisos.append("O texto parece tentar dar ordens ao sistema; o rótulo fica Em apuração.")
     return {
         "rotulo": rotulo,
         "tema": tema,
         "consenso": consenso,
-        "destino": "conselho" if para_conselho else "automatico",
+        "destino": "automatico",
         "motivos": motivos,
-        "motivosDestino": para_conselho,
+        "motivosDestino": avisos,
     }
 
 
+def _parecer(agente, bruto, modelo, original, fontes, por_ref):
+    problemas = auditar(bruto, original, fontes)
+    provas = []
+    for p in bruto.get("provas", []) if isinstance(bruto, dict) else []:
+        f = por_ref.get(p.get("ref")) if isinstance(p, dict) else None
+        if f:
+            provas.append({"veiculo": f["veiculo"], "titulo": f["titulo"], "link": f["link"],
+                           "explicacao": str(p.get("explicacao", ""))})
+    ok = isinstance(bruto, dict)
+    return {
+        "agente": agente["id"],
+        "nome": agente["nome"],
+        "modelo": modelo,
+        "rotuloSugerido": bruto.get("rotuloSugerido") if ok else None,
+        "confianca": bruto.get("confianca") if ok else None,
+        "tema": bruto.get("tema") if ok else None,
+        "afirmacao": bruto.get("afirmacao") if ok else None,
+        "manipulacao": bool(bruto.get("manipulacao")) if ok else False,
+        "motivos": [str(m) for m in bruto.get("motivos", [])] if ok else [],
+        "provas": provas,
+        "descartado": problemas,
+    }
+
+
+def resumo_pareceres(pareceres):
+    """Os pareceres como texto para o Relator, com as refs do dossiê que cada um citou."""
+    linhas = []
+    for p in pareceres:
+        refs = ", ".join(f"{x['veiculo']}: {x['explicacao']}" for x in p["provas"]) or "nenhuma"
+        linhas.append(f"- {p['nome']}: sugeriu {p['rotuloSugerido']} (confiança {p['confianca']}). "
+                      f"Motivos: {' '.join(p['motivos'])} Provas: {refs}."
+                      + (f" Descartado pelo Auditor de regras: {' '.join(p['descartado'])}" if p["descartado"] else ""))
+    return "<pareceres>\n" + "\n".join(linhas) + "\n</pareceres>"
+
+
 def analisar_noticia(noticia, veiculos_por_id, conexao, chamar, indice=None):
-    """Roda os três agentes e o Auditor de regras. Levanta ErroModelo se algum agente não responder."""
+    """Roda os três agentes, o Relator quando eles divergem e o Auditor de regras.
+    Levanta ErroModelo se algum agente não responder."""
     original = descrever_noticia(noticia, veiculos_por_id.get(noticia["veiculo_id"]))
     fontes = montar_dossie(conexao, noticia, veiculos_por_id, indice=indice)
     conteudo = mensagem(original, fontes)
@@ -318,28 +372,16 @@ def analisar_noticia(noticia, veiculos_por_id, conexao, chamar, indice=None):
     pareceres = []
     for agente in AGENTES:
         bruto, modelo = chamar(agente["id"], instrucoes(agente["id"]), conteudo)
-        problemas = auditar(bruto, original, fontes)
-        provas = []
-        for p in bruto.get("provas", []) if isinstance(bruto, dict) else []:
-            f = por_ref.get(p.get("ref")) if isinstance(p, dict) else None
-            if f:
-                provas.append({"veiculo": f["veiculo"], "titulo": f["titulo"], "link": f["link"],
-                               "explicacao": str(p.get("explicacao", ""))})
-        pareceres.append({
-            "agente": agente["id"],
-            "nome": agente["nome"],
-            "modelo": modelo,
-            "rotuloSugerido": bruto.get("rotuloSugerido") if isinstance(bruto, dict) else None,
-            "confianca": bruto.get("confianca") if isinstance(bruto, dict) else None,
-            "tema": bruto.get("tema") if isinstance(bruto, dict) else None,
-            "afirmacao": bruto.get("afirmacao") if isinstance(bruto, dict) else None,
-            "manipulacao": bool(bruto.get("manipulacao")) if isinstance(bruto, dict) else False,
-            "motivos": [str(m) for m in bruto.get("motivos", [])] if isinstance(bruto, dict) else [],
-            "provas": provas,
-            "descartado": problemas,
-        })
+        pareceres.append(_parecer(agente, bruto, modelo, original, fontes, por_ref))
 
-    decisao = decidir(pareceres, noticia["titulo"] + "\n" + (noticia["resumo"] or ""))
+    relator = None
+    aceitos = [p for p in pareceres if not p["descartado"]]
+    if not (aceitos and len(aceitos) == len(pareceres) and len({p["rotuloSugerido"] for p in aceitos}) == 1):
+        bruto, modelo = chamar(RELATOR["id"], instrucoes(RELATOR["id"]), conteudo + "\n\n" + resumo_pareceres(pareceres))
+        relator = _parecer(RELATOR, bruto, modelo, original, fontes, por_ref)
+        pareceres.append(relator)
+
+    decisao = decidir(pareceres[:len(AGENTES)], noticia["titulo"] + "\n" + (noticia["resumo"] or ""), relator)
     return {
         "versaoMetodologia": VERSAO_METODOLOGIA,
         "noticia": {"titulo": noticia["titulo"], "link": noticia["link"], "veiculo": original["veiculo"]},
@@ -362,21 +404,30 @@ def pendentes(conexao, por_escala=POR_ESCALA, incluir_analisadas=False):
     analisados = set() if incluir_analisadas else {l for (l,) in conexao.execute(
         "SELECT link FROM analises WHERE destino = 'humano' OR json_extract(dados, '$.metodo') IS NOT 'regras'")}
     # Intercala as abas para que nenhuma fique sem análise quando o limite da execução é pequeno
-    fila = []
+    fila, vistos = [], set(analisados)
     for i in range(por_escala):
         for aba in abas:
-            if i < len(aba) and aba[i]["link"] not in analisados:
+            if i < len(aba) and aba[i]["link"] not in vistos:
                 fila.append(aba[i])
+                vistos.add(aba[i]["link"])
+    # Depois, as demais notícias do site (abas de cada cidade e estado), das mais novas para as mais antigas
+    from .selecao import noticias_do_site  # importado aqui: selecao não depende do conselho
+    for noticia in noticias_do_site(conexao):
+        if noticia["link"] not in vistos:
+            fila.append(noticia)
+            vistos.add(noticia["link"])
     return fila
 
 
 def analisadas_hoje(conexao):
     inicio = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0).isoformat(timespec="seconds")
-    return conexao.execute("SELECT COUNT(*) FROM analises WHERE analisado_em >= ?", (inicio,)).fetchone()[0]
+    # Só contam as análises por IA: as por regras são refeitas a cada coleta e não gastam cota
+    return conexao.execute("SELECT COUNT(*) FROM analises WHERE analisado_em >= ? "
+                           "AND json_extract(dados, '$.metodo') IS NOT 'regras'", (inicio,)).fetchone()[0]
 
 
 def guardar(conexao, analise):
-    # Atualiza sem apagar o número do caso do conselho, se já houver
+    # Atualiza sem apagar o número de um caso antigo do conselho humano, se houver
     conexao.execute(
         "INSERT INTO analises (link, analisado_em, rotulo, destino, dados) VALUES (?, ?, ?, ?, ?) "
         "ON CONFLICT(link) DO UPDATE SET analisado_em = excluded.analisado_em, rotulo = excluded.rotulo, "
@@ -400,7 +451,7 @@ def analisar(conexao, veiculos, chamar, por_execucao, por_dia, aviso=print):
     veiculos_por_id = {v["id"]: v for v in veiculos}
     vagas = max(0, min(por_execucao, por_dia - analisadas_hoje(conexao)))
     fila = pendentes(conexao)
-    r = {"pendentes": len(fila), "analisadas": 0, "conselho": 0, "erros": 0, "novas_conselho": []}
+    r = {"pendentes": len(fila), "analisadas": 0, "relator": 0, "erros": 0}
     indice = Indice(conexao) if fila[:vagas] else None
     for noticia in fila[:vagas]:
         try:
@@ -413,11 +464,9 @@ def analisar(conexao, veiculos, chamar, por_execucao, por_dia, aviso=print):
             continue
         guardar(conexao, analise)
         r["analisadas"] += 1
-        selo = " (provisório, vai ao conselho)" if analise["destino"] == "conselho" else ""
-        aviso(f"  {ROTULOS[analise['rotulo']]}{selo}: {noticia['titulo'][:70]}")
-        if analise["destino"] == "conselho":
-            r["conselho"] += 1
-            r["novas_conselho"].append(analise)
+        decidiu = len(analise["pareceres"]) > len(AGENTES)
+        r["relator"] += decidiu
+        aviso(f"  {ROTULOS[analise['rotulo']]}{' (decidido pelo Relator)' if decidiu else ''}: {noticia['titulo'][:70]}")
     if len(fila) > vagas:
         aviso(f"  {len(fila) - vagas} notícias ficaram para a próxima execução (limite de custo).")
     return r
@@ -435,7 +484,7 @@ CHECAGEM_FALSO = re.compile(r"\b(fals[oa]s?|enganos[oa]s?|fake|sem provas|boato|
 
 
 def regras(noticia, original, fontes):
-    """Rótulo pela metodologia, só com o que o dossiê mostra. Devolve (rótulo, motivos, provas, conselho)."""
+    """Rótulo pela metodologia, só com o que o dossiê mostra. Devolve (rótulo, motivos, provas, avisos)."""
     if OPINIAO_TITULO.search(noticia["titulo"]) or OPINIAO_LINK.search(noticia["link"]):
         return "opiniao", ["O título ou o endereço indicam texto de opinião; não recebe rótulo de veracidade."], [], []
 
@@ -443,12 +492,12 @@ def regras(noticia, original, fontes):
     checagens = [f for f in mesmo_fato if f["checador"] and CHECAGEM_FALSO.search(f["titulo"])]
     if checagens:
         # Comparando palavras não dá para saber se a checagem desmente esta notícia ou outra coisa sobre o
-        # mesmo assunto (por exemplo, uma fala de quem aparece nela): quem decide é o conselho humano
+        # mesmo assunto (por exemplo, uma fala de quem aparece nela): fica Em apuração até a análise por IA
         return ("em-apuracao",
                 [f"Um checador publicou uma checagem sobre o mesmo assunto ({checagens[0]['veiculo']}).",
-                 "Uma pessoa do conselho vai conferir se a checagem trata desta notícia."],
+                 "A análise por IA confere se a checagem trata desta notícia."],
                 [{"f": f, "explicacao": "Checagem sobre o assunto"} for f in checagens],
-                ["Checagem relacionada encontrada por comparação de títulos: o conselho decide se desmente a notícia."])
+                ["Checagem relacionada encontrada por comparação de títulos."])
 
     grupos = {}
     for f in mesmo_fato:
@@ -470,9 +519,10 @@ def regras(noticia, original, fontes):
 def analisar_por_regras(noticia, veiculos_por_id, conexao, indice=None):
     original = descrever_noticia(noticia, veiculos_por_id.get(noticia["veiculo_id"]))
     fontes = montar_dossie(conexao, noticia, veiculos_por_id, indice=indice)
-    rotulo, motivos, provas, para_conselho = regras(noticia, original, fontes)
+    rotulo, motivos, provas, avisos = regras(noticia, original, fontes)
     if suspeita_manipulacao(noticia["titulo"] + "\n" + (noticia["resumo"] or "")):
-        para_conselho.append("Suspeita de tentativa de manipulação do sistema no texto analisado.")
+        rotulo = "em-apuracao"
+        avisos.append("O texto parece tentar dar ordens ao sistema; o rótulo fica Em apuração.")
     parecer = {
         "agente": "auditor-regras", "nome": "Auditor de regras", "modelo": "regras da metodologia, sem IA",
         "rotuloSugerido": rotulo, "confianca": None, "tema": None, "afirmacao": None, "manipulacao": False,
@@ -490,38 +540,33 @@ def analisar_por_regras(noticia, veiculos_por_id, conexao, indice=None):
         "rotulo": rotulo,
         "tema": None,
         "consenso": True,
-        "destino": "conselho" if para_conselho else "automatico",
-        "motivos": ["Análise automática por regras, sem IA: compara a notícia com o que os outros veículos "
+        "destino": "automatico",
+        "motivos": ["Análise automática por regras, enquanto a IA não analisa esta notícia: compara a notícia com o que os outros veículos "
                     "acompanhados publicaram nos últimos três dias."],
-        "motivosDestino": para_conselho,
+        "motivosDestino": avisos,
     }
 
 
 def analisar_regras(conexao, veiculos, aviso=print):
-    """Analisa de novo, a cada coleta, todas as notícias que vão para o site (exceto as já decididas pelo
-    conselho humano): uma notícia em apuração vira confirmada quando outros veículos publicam o mesmo fato."""
+    """Analisa de novo, a cada coleta, todas as notícias que vão para o site e ainda não passaram pela IA:
+    uma notícia em apuração vira confirmada quando outros veículos publicam o mesmo fato."""
     remover_orfas(conexao)
     veiculos_por_id = {v["id"]: v for v in veiculos}
     anteriores = {l["link"]: (l["rotulo"], l["destino"], l["metodo"]) for l in conexao.execute(
         "SELECT link, rotulo, destino, json_extract(dados, '$.metodo') AS metodo FROM analises")}
-    r = {"pendentes": 0, "analisadas": 0, "conselho": 0, "erros": 0, "novas_conselho": []}
+    r = {"pendentes": 0, "analisadas": 0, "erros": 0}
     from .selecao import noticias_do_site  # importado aqui: selecao não depende do conselho
     indice = Indice(conexao)
     for noticia in noticias_do_site(conexao):
         antes = anteriores.get(noticia["link"])
-        # Não mexe no que o conselho humano decidiu nem no que a IA já analisou
+        # Não mexe no que a IA já analisou (nem nas decisões antigas do conselho humano)
         if antes and (antes[1] == "humano" or antes[2] != "regras"):
             continue
         analise = analisar_por_regras(noticia, veiculos_por_id, conexao, indice)
         guardar(conexao, analise)
         r["analisadas"] += 1
-        if not antes or (analise["rotulo"], analise["destino"]) != antes[:2]:
-            selo = " (provisório, vai ao conselho)" if analise["destino"] == "conselho" else ""
-            aviso(f"  {ROTULOS[analise['rotulo']]}{selo}: {noticia['titulo'][:70]}")
-        if analise["destino"] == "conselho":
-            r["conselho"] += 1
-            if not antes or antes[1] != "conselho":
-                r["novas_conselho"].append(analise)
+        if not antes or analise["rotulo"] != antes[0]:
+            aviso(f"  {ROTULOS[analise['rotulo']]}: {noticia['titulo'][:70]}")
     return r
 
 
@@ -543,52 +588,3 @@ def carregar_analises(conexao):
             ],
         }
     return saida
-
-
-def texto_para_conselho(analise):
-    """Corpo da mensagem (Markdown) que leva o caso ao conselho humano."""
-    n = analise["noticia"]
-    linhas = [
-        f"<!-- farol-link: {n['link']} -->",
-        f"**Notícia:** [{n['titulo']}]({n['link']}) ({n['veiculo']})",
-        f"**Rótulo provisório:** {ROTULOS[analise['rotulo']]}",
-        "",
-        "**Por que veio ao conselho:**",
-        *[f"- {m}" for m in analise["motivosDestino"]],
-        "",
-        "**Pareceres:**",
-    ]
-    for p in analise["pareceres"]:
-        sugestao = ROTULOS.get(p["rotuloSugerido"], p["rotuloSugerido"])
-        confianca = f", confiança {round(p['confianca'] * 100)}%" if isinstance(p["confianca"], (int, float)) else ""
-        linhas.append(f"- **{p['nome']}** ({p['modelo']}): {sugestao}{confianca}. " + " ".join(p["motivos"]))
-        for prova in p["provas"]:
-            linhas.append(f"  - {prova['veiculo']}: {prova['explicacao']}")
-        for problema in p["descartado"]:
-            linhas.append(f"  - Descartado pelo Auditor de regras: {problema}")
-    linhas += ["", "**Para decidir:** comente o motivo, aplique a este caso uma etiqueta com o rótulo final "
-               "(" + ", ".join(f"`{r}`" for r in ROTULOS) + ") e feche o caso. "
-               "O site mostra a decisão do conselho na próxima coleta."]
-    return "\n".join(linhas)
-
-
-def registrar_caso(conexao, link, numero):
-    conexao.execute("UPDATE analises SET issue = ? WHERE link = ?", (numero, link))
-    conexao.commit()
-
-
-def aplicar_decisoes(conexao, decisoes):
-    """Aplica as decisões do conselho humano ({link: (número do caso, rótulo)}). Devolve quantas mudaram."""
-    mudaram = 0
-    for link, (numero, rotulo) in decisoes.items():
-        linha = conexao.execute("SELECT dados, destino, rotulo FROM analises WHERE link = ?", (link,)).fetchone()
-        if not linha or rotulo not in ROTULOS or (linha["destino"] == "humano" and linha["rotulo"] == rotulo):
-            continue
-        a = json.loads(linha["dados"])
-        a.update(rotulo=rotulo, destino="humano",
-                 motivos=[f"Decisão do conselho humano (caso nº {numero})."] + a["motivos"])
-        conexao.execute("UPDATE analises SET rotulo = ?, destino = 'humano', dados = ?, issue = ? WHERE link = ?",
-                        (rotulo, json.dumps(a, ensure_ascii=False), numero, link))
-        mudaram += 1
-    conexao.commit()
-    return mudaram
