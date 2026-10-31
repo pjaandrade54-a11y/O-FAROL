@@ -246,3 +246,20 @@ class TestImagens(unittest.TestCase):
         self.assertEqual(achadas, 1)
         fotos = dict(conexao.execute("SELECT link, imagem FROM noticias"))
         self.assertEqual(fotos, {"https://e.org/a": "https://e.org/a.jpg", "https://e.org/b": "", "https://e.org/c": None})
+
+
+class TestFeedsComDefeito(unittest.TestCase):
+    def test_espaco_antes_e_entidades_html(self):
+        rss = b"""
+  <?xml version="1.0"?><rss><channel><item><title>Rond&ocirc;nia &amp; Acre & cia</title>
+  <link>https://e.org/a</link></item></channel></rss>"""
+        self.assertEqual(feeds.ler(rss)[0]["titulo"], "Rondônia & Acre & cia")
+
+    def test_item_quebrado_nao_derruba_o_feed(self):
+        rss = b"""<rss><channel>
+          <item><title>Boa</title><link>https://e.org/a</link><dc:creator>Ana</dc:creator></item>
+          <item><title>Quebrada<b></title><link>https://e.org/b</link></item>
+        </channel></rss>"""
+        itens = feeds.ler(rss)
+        self.assertEqual([i["titulo"] for i in itens], ["Boa"])
+        self.assertEqual(itens[0]["autor"], "Ana")
