@@ -124,7 +124,9 @@ Farol.copiar = function (texto, campo, status) {
     aba.addEventListener('keydown', function (e) {
       var passo = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
       if (!passo) return;
-      var proxima = abas[(i + passo + abas.length) % abas.length];
+      var visiveis = abas.filter(function (a) { return !a.hidden; });
+      var j = visiveis.indexOf(aba);
+      var proxima = visiveis[(j + passo + visiveis.length) % visiveis.length];
       selecionar(proxima);
       proxima.focus();
     });

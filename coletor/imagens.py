@@ -1,4 +1,4 @@
-"""Foto das notícias confirmadas que vieram sem foto no feed: lê a página da matéria e usa a imagem
+"""Foto das notícias do site que vieram sem foto no feed: lê a página da matéria e usa a imagem
 de compartilhamento que o próprio veículo declarou (og:image ou twitter:image).
 
 Cada página é lida uma vez só: sem foto, a notícia fica marcada com "" e não é procurada de novo.
@@ -37,7 +37,7 @@ def imagem_da_pagina(texto):
     return None
 
 
-def _baixar_pagina(link, tempo_limite=12):
+def _baixar_pagina(link, tempo_limite=8):
     pedido = urllib.request.Request(link, headers={"User-Agent": feeds.AGENTE, "Accept": "text/html"})
     try:
         with urllib.request.urlopen(pedido, timeout=tempo_limite, context=feeds._TLS) as r:
@@ -47,13 +47,15 @@ def _baixar_pagina(link, tempo_limite=12):
         return None
 
 
-def completar(conexao, links, limite=40, simultaneos=8, baixar=_baixar_pagina):
-    """Procura a foto das notícias (pelos links) que ainda não têm. Devolve quantas fotos achou."""
+def completar(conexao, links, limite=150, simultaneos=12, baixar=_baixar_pagina):
+    """Procura a foto das notícias (pelos links) que ainda não têm, das mais novas para as mais antigas.
+    Devolve quantas fotos achou."""
     if not links:
         return 0
     marcas = ",".join("?" * len(links))
     faltam = [l["link"] for l in conexao.execute(
-        f"SELECT link FROM noticias WHERE imagem IS NULL AND link IN ({marcas}) LIMIT ?", (*links, limite))]
+        f"SELECT link FROM noticias WHERE imagem IS NULL AND link IN ({marcas}) "
+        "ORDER BY COALESCE(publicado_em, coletado_em) DESC LIMIT ?", (*links, limite))]
 
     def procurar(link):
         pagina = baixar(link)

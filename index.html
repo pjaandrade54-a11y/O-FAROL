@@ -55,12 +55,13 @@
             <button role="tab" id="aba-estado" aria-controls="lista-estado" aria-selected="false" tabindex="-1">Estado</button>
             <button role="tab" id="aba-pais" aria-controls="lista-pais" aria-selected="false" tabindex="-1">País</button>
             <button role="tab" id="aba-mundo" aria-controls="lista-mundo" aria-selected="false" tabindex="-1">Mundo</button>
+            <button role="tab" id="aba-busca" aria-controls="lista-busca" aria-selected="false" tabindex="-1" hidden>Busca</button>
           </div>
           <div class="pasta__corpo">
             <form class="local" id="form-local" autocomplete="off">
               <label class="local__rotulo" for="campo-local">Notícias de <span data-local>Aracaju (SE)</span></label>
               <div class="local__campo">
-                <input id="campo-local" name="local" type="text" list="lista-cidades" placeholder="Outra cidade ou estado" autocomplete="off" required>
+                <input id="campo-local" name="local" type="text" list="lista-cidades" placeholder="Cidade, estado, Mundo ou um assunto" autocomplete="off" required>
                 <datalist id="lista-cidades"></datalist>
                 <button class="botao botao--luz" type="submit">Ver notícias</button>
               </div>
@@ -72,6 +73,7 @@
               <ul class="painel__lista" role="tabpanel" id="lista-estado" aria-labelledby="aba-estado" hidden></ul>
               <ul class="painel__lista" role="tabpanel" id="lista-pais" aria-labelledby="aba-pais" hidden></ul>
               <ul class="painel__lista" role="tabpanel" id="lista-mundo" aria-labelledby="aba-mundo" hidden></ul>
+              <ul class="painel__lista" role="tabpanel" id="lista-busca" aria-labelledby="aba-busca" hidden></ul>
               <p class="painel__legenda" id="painel-legenda">Carregando notícias… <a href="metodologia.html#rotulos">Entenda os rótulos</a></p>
             </div>
           </div>

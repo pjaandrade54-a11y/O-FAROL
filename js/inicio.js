@@ -204,7 +204,7 @@
       var dx = e.changedTouches[0].clientX - toque.x, dy = e.changedTouches[0].clientY - toque.y;
       toque = null;
       if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-      var abas = Array.prototype.slice.call(document.querySelectorAll('.abas [role="tab"]'));
+      var abas = Array.prototype.slice.call(document.querySelectorAll('.abas [role="tab"]:not([hidden])'));
       var atual = abas.findIndex(function (a) { return a.getAttribute('aria-selected') === 'true'; });
       var proxima = atual + (dx < 0 ? 1 : -1);
       if (proxima >= 0 && proxima < abas.length) {
