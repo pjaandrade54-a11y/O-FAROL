@@ -226,10 +226,70 @@ body { background: var(--chao); color: var(--tinta-forte); font-size: var(--t-co
 .abertura__feixe { animation: varrer 9s var(--ease-out) infinite alternate; transform-origin: 97% 64%; }
 @keyframes varrer { from { transform: rotate(-3deg); } to { transform: rotate(4deg); } }
 
+/* Fluidez */
+.progresso {
+  position: fixed; inset: 0 0 auto; z-index: 30; height: 4px; background: var(--luz-farol);
+  transform: scaleX(0); transform-origin: 0 50%; pointer-events: none;
+}
+.feixe--guiado { animation: none; transform: rotate(var(--giro, 0deg)); transition: transform 1.2s var(--ease-out); }
+
+/* As notícias: ao trocar de aba, a lista entra deslizando e cada notícia vem logo atrás da anterior */
+.painel__lista:not([hidden]) { animation: aba-entra 480ms var(--ease-expo); }
+[data-direcao="volta"] .painel__lista:not([hidden]) { animation-name: aba-volta; }
+.painel__lista:not([hidden]) > .noticia { animation: noticia-entra 600ms var(--ease-expo) backwards; }
+.painel__lista > .noticia:nth-child(2) { animation-delay: 50ms; }
+.painel__lista > .noticia:nth-child(3) { animation-delay: 100ms; }
+.painel__lista > .noticia:nth-child(4) { animation-delay: 150ms; }
+.painel__lista > .noticia:nth-child(5) { animation-delay: 200ms; }
+@keyframes aba-entra { from { opacity: 0; transform: translateX(28px); } }
+@keyframes aba-volta { from { opacity: 0; transform: translateX(-28px); } }
+@keyframes noticia-entra { from { opacity: 0; transform: translateY(14px); } }
+[data-ui] .noticia { transition: background-color 240ms var(--ease-out); }
+[data-ui] .noticia:hover { background: #f6f8fc; }
+
+/* Enquanto as notícias carregam: três cartões vazios com um brilho passando */
+[data-ui] .painel__lista:empty { min-height: 360px; background:
+  linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.7) 50%, transparent 70%) 0 0 / 200% 100% no-repeat,
+  linear-gradient(var(--chao-2), var(--chao-2)) 24px 28px / 40% 14px no-repeat,
+  linear-gradient(var(--chao-2), var(--chao-2)) 24px 56px / 80% 20px no-repeat,
+  linear-gradient(var(--chao-2), var(--chao-2)) 24px 148px / 40% 14px no-repeat,
+  linear-gradient(var(--chao-2), var(--chao-2)) 24px 176px / 70% 20px no-repeat,
+  linear-gradient(var(--chao-2), var(--chao-2)) 24px 268px / 40% 14px no-repeat,
+  linear-gradient(var(--chao-2), var(--chao-2)) 24px 296px / 75% 20px no-repeat,
+  var(--branco);
+  animation: carregando 1.4s linear infinite; }
+@keyframes carregando { from { background-position: 150% 0, 24px 28px, 24px 56px, 24px 148px, 24px 176px, 24px 268px, 24px 296px, 0 0; }
+  to { background-position: -50% 0, 24px 28px, 24px 56px, 24px 148px, 24px 176px, 24px 268px, 24px 296px, 0 0; } }
+
+/* Notícia confirmada com a foto do veículo, à direita do texto */
+[data-ui] .noticia--foto { display: grid; grid-template-columns: minmax(0, 1fr) 168px; column-gap: 24px; align-items: start; }
+[data-ui] .noticia--foto > :not(.noticia__foto) { grid-column: 1; }
+[data-ui] .noticia__foto { grid-column: 2; grid-row: 1 / span 4; margin: 4px 0 0; aspect-ratio: 4 / 3; overflow: hidden; background: var(--chao-2); }
+[data-ui] .noticia__foto img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.06);
+  transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-expo); }
+[data-ui] .noticia__foto.carregou img { opacity: 1; transform: none; }
+[data-ui] .noticia--foto:hover .noticia__foto img { transform: scale(1.05); }
+[data-ui] .exemplo__foto { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--chao-2); }
+
+/* As etapas crescem da esquerda para a direita, uma depois da outra */
+.js .etapas__barra[data-entrada] .etapa strong { clip-path: inset(0 100% 0 0); transition: clip-path 1s var(--ease-expo); }
+.js .etapas__barra[data-entrada].entrou .etapa strong { clip-path: inset(0); }
+.js .etapas__barra .etapa--compara strong { transition-delay: 180ms; }
+.js .etapas__barra .etapa--confirma strong { transition-delay: 360ms; }
+.js .etapas__barra .etapa--conselho strong { transition-delay: 540ms; }
+
+/* Botões respondem ao toque */
+.botao, .rotulos__nome, .abas [role="tab"] { transition: transform 160ms var(--ease-out), background-color 200ms ease, color 200ms ease; }
+.botao:active, .abas [role="tab"]:active { transform: scale(0.97); }
+
 @media (prefers-reduced-motion: reduce) {
   .js [data-entrada] { transform: none; transition: opacity 400ms ease; }
   .abertura__feixe { animation: none; }
   .rotulos__nome, [data-ui].exemplo { transition: none; }
+  .painel__lista:not([hidden]), .painel__lista:not([hidden]) > .noticia, [data-ui] .painel__lista:empty { animation: none; }
+  .js .etapas__barra[data-entrada] .etapa strong { clip-path: none; transition: none; }
+  [data-ui] .noticia__foto img { transition: none; transform: none; }
+  .progresso { display: none; }
 }
 
 /* Tablet */
@@ -265,6 +325,8 @@ body { background: var(--chao); color: var(--tinta-forte); font-size: var(--t-co
   .rotulos__nome { font-size: 1.625rem; }
   .rotulos__palco { order: -1; min-height: 0; padding: 48px 0 48px 12%; }
   [data-ui].exemplo { margin-top: 0; }
+  [data-ui] .noticia--foto { grid-template-columns: 1fr; }
+  [data-ui] .noticia__foto { grid-column: 1; grid-row: auto; order: -1; margin: 0 0 14px; aspect-ratio: 16 / 9; }
   .independencia { padding-left: 10px; padding-right: 10px; }
   .independencia__painel { padding: 48px 20px 0; gap: 40px; }
   [data-ui].mensagem { padding: 40px 20px 32px 40px; }

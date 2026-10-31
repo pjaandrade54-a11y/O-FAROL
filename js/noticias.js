@@ -62,6 +62,21 @@
   function noticiaReal(n, escala) {
     var nomes = { cidade: 'Cidade · ' + (n.cidade || n.uf || ''), estado: 'Estado · ' + (ESTADOS[n.uf] || n.uf || ''), pais: 'País', mundo: 'Mundo' };
     var li = el('li', 'noticia');
+    // Notícia confirmada vem com a foto que o veículo anexou; se a foto não carregar, o cartão fica sem ela
+    if (n.imagem && /^https:\/\//i.test(n.imagem)) {
+      li.classList.add('noticia--foto');
+      var foto = el('figure', 'noticia__foto');
+      var img = el('img');
+      img.src = n.imagem;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.referrerPolicy = 'no-referrer';
+      img.addEventListener('load', function () { foto.classList.add('carregou'); });
+      img.addEventListener('error', function () { li.classList.remove('noticia--foto'); foto.remove(); });
+      foto.appendChild(img);
+      li.appendChild(foto);
+    }
     li.appendChild(el('p', 'noticia__escala', nomes[escala]));
 
     var titulo = el('h3');

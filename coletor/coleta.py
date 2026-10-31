@@ -107,11 +107,11 @@ def guardar(conexao, veiculo, feed, itens, cidades=()):
                     escala = "cidade"
         cursor = conexao.execute(
             """INSERT OR IGNORE INTO noticias
-               (veiculo_id, titulo, link, guid, resumo, autor, publicado_em, coletado_em, escala, uso, uf, cidade, cidades)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               (veiculo_id, titulo, link, guid, resumo, autor, publicado_em, coletado_em, escala, uso, uf, cidade, cidades, imagem)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (veiculo["id"], item["titulo"], item["link"], item["guid"], item["resumo"], item["autor"],
              data_confiavel(item["publicado_em"], momento), momento, escala, uso, uf, cidade,
-             json.dumps(lista, ensure_ascii=False) if lista else None),
+             json.dumps(lista, ensure_ascii=False) if lista else None, item.get("imagem")),
         )
         novas += cursor.rowcount
     return novas

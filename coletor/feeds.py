@@ -18,12 +18,15 @@ from datetime import datetime, timezone
 ATOM = "{http://www.w3.org/2005/Atom}"
 CONTENT = "{http://purl.org/rss/1.0/modules/content/}"
 DC = "{http://purl.org/dc/elements/1.1/}"
+MEDIA = "{http://search.yahoo.com/mrss/}"
 
 AGENTE = "OFarolColetor/0.1 (agregador de noticias em teste)"
 LIMITE_BYTES = 5_000_000
 TAMANHO_RESUMO = 280
 TAGS = re.compile(r"<[^>]+>")
 REDIRECIONAMENTO = re.compile(r"\*(https?://.+)$")
+IMG = re.compile(r"""<img\b[^>]*?\bsrc\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
+EXTENSAO_IMAGEM = re.compile(r"\.(jpe?g|png|webp|gif|avif)(\?|$)", re.IGNORECASE)
 
 
 class ErroFeed(Exception):
@@ -99,6 +102,7 @@ def _item_rss(e):
         "resumo": resumir(e.findtext("description") or e.findtext(CONTENT + "encoded")),
         "autor": limpar(e.findtext(DC + "creator") or e.findtext("author")) or None,
         "publicado_em": data_iso(e.findtext("pubDate") or e.findtext(DC + "date")),
+        "imagem": imagem_do_item(e, e.findtext(CONTENT + "encoded"), e.findtext("description")),
     }
 
 
@@ -118,7 +122,34 @@ def _item_atom(e):
         "resumo": resumir(e.findtext(ATOM + "summary") or e.findtext(ATOM + "content")),
         "autor": limpar(e.findtext(f"{ATOM}author/{ATOM}name")) or None,
         "publicado_em": data_iso(e.findtext(ATOM + "published") or e.findtext(ATOM + "updated")),
+        "imagem": imagem_do_item(e, e.findtext(ATOM + "content"), e.findtext(ATOM + "summary")),
     }
+
+
+def imagem_do_item(e, *textos):
+    """A foto que o veículo anexou à notícia: media:content, media:thumbnail, enclosure ou o primeiro <img>
+    do texto. Só endereços web; http vira https, porque o site é servido em https."""
+    candidatos = []
+    for m in list(e.iter(MEDIA + "content")) + list(e.iter(MEDIA + "thumbnail")):
+        tipo = (m.get("type") or "") + (m.get("medium") or "")
+        if m.tag == MEDIA + "thumbnail" or "image" in tipo or EXTENSAO_IMAGEM.search(m.get("url") or ""):
+            candidatos.append(m.get("url"))
+    for anexo in e.findall("enclosure") + [l for l in e.findall(ATOM + "link") if l.get("rel") == "enclosure"]:
+        if (anexo.get("type") or "").startswith("image") or EXTENSAO_IMAGEM.search(anexo.get("url") or anexo.get("href") or ""):
+            candidatos.append(anexo.get("url") or anexo.get("href"))
+    for texto in textos:
+        achado = IMG.search(html.unescape(texto or ""))
+        if achado:
+            candidatos.append(achado.group(1))
+    for url in candidatos:
+        url = html.unescape((url or "").strip())
+        if url.startswith("//"):
+            url = "https:" + url
+        if url.startswith("http://"):
+            url = "https://" + url[7:]
+        if url.startswith("https://") and len(url) < 1000:
+            return url
+    return None
 
 
 def normalizar_link(link):
