@@ -13,21 +13,10 @@ permissions:
   models: read
 
 jobs:
-  testar:
+  diagnostico:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Recuperar o banco da última coleta
-        uses: actions/cache/restore@v4
-        with:
-          path: dados/farol.db
-          key: farol-db-teste-${{ github.run_id }}
-          restore-keys: farol-db-
-      - run: python -m unittest discover -s tests
       - name: O GitHub Models responde?
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,6 +39,22 @@ jobs:
           echo "== 5. DNS e IP"
           getent hosts models.github.ai || true
           env | grep -i -E "^(https?|no)_proxy" || echo "sem proxy"
+
+  testar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Recuperar o banco da última coleta
+        uses: actions/cache/restore@v4
+        with:
+          path: dados/farol.db
+          key: farol-db-teste-${{ github.run_id }}
+          restore-keys: farol-db-
+      - run: python -m unittest discover -s tests
       - name: Coletar (sem exportar)
         run: python -m coletor coletar --sem-exportar
       - name: Conselho de IA em 3 notícias
