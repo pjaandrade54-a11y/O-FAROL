@@ -48,8 +48,8 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
             "cidade": _da_lista(linha, "cidade"),
             "analise": analise,
         }
-        # Só a notícia confirmada leva a foto que o veículo anexou
-        if analise and analise["rotulo"] == "confirmada" and linha["imagem"]:
+        # A foto que o veículo anexou (ou a de compartilhamento da página da matéria)
+        if linha["imagem"]:
             saida_item["imagem"] = linha["imagem"]
         return saida_item
 

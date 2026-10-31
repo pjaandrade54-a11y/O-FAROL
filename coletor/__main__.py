@@ -15,7 +15,7 @@ import argparse
 import os
 import sys
 
-from . import banco, cadastro, coleta, conselho, exportar, imagens
+from . import banco, cadastro, coleta, conselho, exportar, imagens, selecao
 from . import feeds as leitor
 from .cadastro import ABRANGENCIAS, TIPOS, UFS, ErroCadastro
 
@@ -161,11 +161,11 @@ def cmd_analisar(args):
             except casos_github.ErroGitHub as e:
                 print(f"Aviso: não foi possível abrir os casos do conselho ({e}).")
 
-    # Notícia confirmada aparece com foto: as que vieram sem foto no feed buscam a da página da matéria
-    confirmadas = [l for l, a in conselho.carregar_analises(conexao).items() if a["rotulo"] == "confirmada"]
-    achadas = imagens.completar(conexao, confirmadas)
+    # Toda notícia do site aparece com foto: as que vieram sem foto no feed buscam a da página da matéria
+    links = [l["link"] for l in selecao.noticias_do_site(conexao)] + [l["link"] for l in selecao.listas(conexao)["checagens"]]
+    achadas = imagens.completar(conexao, links)
     if achadas:
-        print(f"{achadas} fotos de notícias confirmadas encontradas nas páginas das matérias.")
+        print(f"{achadas} fotos encontradas nas páginas das matérias.")
 
     _exportar(conexao, veiculos)
     return 0

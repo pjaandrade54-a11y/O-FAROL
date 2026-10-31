@@ -60,7 +60,8 @@
 
   // Notícias reais: o link leva ao site do veículo; o painel ainda não analisa estas notícias
   function noticiaReal(n, escala) {
-    var nomes = { cidade: 'Cidade · ' + (n.cidade || n.uf || ''), estado: 'Estado · ' + (ESTADOS[n.uf] || n.uf || ''), pais: 'País', mundo: 'Mundo' };
+    var nomes = { cidade: 'Cidade · ' + (n.cidade || n.uf || ''), estado: 'Estado · ' + (ESTADOS[n.uf] || n.uf || ''), pais: 'País', mundo: 'Mundo',
+      checagem: 'Checagem de fatos' };
     var li = el('li', 'noticia');
     // Notícia confirmada vem com a foto que o veículo anexou; se a foto não carregar, o cartão fica sem ela
     if (n.imagem && /^https:\/\//i.test(n.imagem)) {
@@ -77,7 +78,7 @@
       foto.appendChild(img);
       li.appendChild(foto);
     }
-    li.appendChild(el('p', 'noticia__escala', nomes[escala]));
+    li.appendChild(el('p', 'noticia__escala', nomes[escala] || ''));
 
     var titulo = el('h3');
     if (/^https?:\/\//i.test(n.link)) {
@@ -300,13 +301,86 @@
     status.classList.toggle('erro', !!erro);
   }
 
+  // Mundo e Brasil vêm primeiro na lista; depois as cidades
+  var ATALHOS = ['Mundo (notícias globais)', 'Brasil (notícias do país)'];
   function preencherCidades(cidades) {
-    if (!opcoes || opcoes.childElementCount === cidades.length) return;
-    opcoes.replaceChildren.apply(opcoes, cidades.map(function (c) {
+    if (!opcoes || opcoes.childElementCount === cidades.length + ATALHOS.length) return;
+    var valores = ATALHOS.concat(cidades.map(function (c) { return c.nome + ' (' + c.uf + ')'; }));
+    opcoes.replaceChildren.apply(opcoes, valores.map(function (v) {
       var o = document.createElement('option');
-      o.value = c.nome + ' (' + c.uf + ')';
+      o.value = v;
       return o;
     }));
+  }
+
+  // "Mundo", "notícias globais", "internacional"… vão para a aba Mundo; "Brasil", "nacional"… para a aba País
+  var PALAVRAS_MUNDO = ['mundo', 'global', 'globais', 'noticias globais', 'internacional', 'internacionais', 'exterior'];
+  var PALAVRAS_PAIS = ['brasil', 'pais', 'nacional', 'nacionais', 'noticias do brasil', 'noticias do pais'];
+  function atalho(texto) {
+    var t = normalizar(texto.replace(/\(.*\)\s*$/, ''));
+    if (PALAVRAS_MUNDO.indexOf(t) >= 0) return 'mundo';
+    if (PALAVRAS_PAIS.indexOf(t) >= 0) return 'pais';
+    return null;
+  }
+
+  // Busca por assunto em todas as notícias: país, mundo, checagens e as cidades e estados de todo o Brasil
+  var abaBusca = document.getElementById('aba-busca');
+  var listaBusca = document.getElementById('lista-busca');
+  var todosEstados = null;
+  function carregarTodosEstados() {
+    if (!todosEstados) {
+      todosEstados = ultimosDados && ultimosDados.escalas.cidade ? Promise.resolve([]) : Promise.all(Object.keys(ESTADOS).map(function (uf) {
+        return fetch('dados/estados/' + uf + '.json')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .catch(function () { return null; });
+      }));
+    }
+    return todosEstados;
+  }
+
+  function palavras(texto) {
+    return ' ' + normalizar(texto).replace(/[^a-z0-9]+/g, ' ') + ' ';
+  }
+
+  function pesquisar(texto) {
+    var termos = palavras(texto).trim().split(' ').filter(function (t) { return t.length > 1; });
+    if (!termos.length || !ultimosDados || !listaBusca) {
+      avisar('A busca fica disponível quando as notícias carregarem.', true);
+      return;
+    }
+    avisar('Procurando “' + texto + '” em todas as notícias…');
+    carregarTodosEstados().then(function (estados) {
+      var vistos = {}, achadas = [];
+      function olhar(n, escala) {
+        if (vistos[n.link]) return;
+        var alvo = palavras([n.titulo, n.resumo, n.cidade, ESTADOS[n.uf], n.veiculo].join(' '));
+        // Cada palavra digitada precisa aparecer no começo de alguma palavra da notícia
+        if (termos.every(function (t) { return alvo.indexOf(' ' + t) >= 0; })) {
+          vistos[n.link] = true;
+          achadas.push({ n: n, escala: escala });
+        }
+      }
+      var fontes = [ultimosDados.escalas].concat(estados.filter(Boolean).map(function (e) { return e.escalas; }));
+      fontes.forEach(function (escalas) {
+        Object.keys(escalas).forEach(function (e) { (escalas[e] || []).forEach(function (n) { olhar(n, e); }); });
+      });
+      (ultimosDados.checagens || []).forEach(function (n) { olhar(n, 'checagem'); });
+      achadas.sort(function (a, b) { return (b.n.publicado_em || '').localeCompare(a.n.publicado_em || ''); });
+
+      listaBusca.replaceChildren();
+      if (!achadas.length) {
+        var vazio = el('li', 'noticia');
+        vazio.appendChild(el('p', 'noticia__vazia', 'Nenhuma notícia recente com “' + texto + '”. Tente outra palavra.'));
+        listaBusca.appendChild(vazio);
+      }
+      achadas.slice(0, 20).forEach(function (a) { listaBusca.appendChild(noticiaReal(a.n, a.escala)); });
+      abaBusca.hidden = false;
+      if (Farol.selecionarAba) Farol.selecionarAba(4);
+      avisar(achadas.length
+        ? achadas.length + (achadas.length === 1 ? ' notícia' : ' notícias') + ' com “' + texto + '”' +
+          (achadas.length > 20 ? '; mostrando as 20 mais recentes.' : '.')
+        : 'Nada encontrado para “' + texto + '”.');
+    });
   }
 
   // Aceita "Recife", "Recife (PE)", "Recife - PE", "Recife/PE", e também só o estado ("PE", "Pernambuco")
@@ -323,6 +397,7 @@
   }
 
   function escolher(local, mensagem) {
+    if (abaBusca) abaBusca.hidden = true;
     Farol.local.guardar(local);
     if (Farol.selecionarAba) Farol.selecionarAba(local.nome ? 0 : 1);
     avisar(mensagem);
@@ -353,9 +428,18 @@
       e.preventDefault();
       var texto = campo.value.trim();
       if (!texto) return;
+      var escala = atalho(texto);
+      if (escala) {
+        if (abaBusca) abaBusca.hidden = true;
+        if (Farol.selecionarAba) Farol.selecionarAba(escala === 'mundo' ? 3 : 2);
+        avisar(escala === 'mundo' ? 'Mostrando as notícias do mundo.' : 'Mostrando as notícias do Brasil.');
+        campo.value = '';
+        return;
+      }
       var local = encontrar(texto, (ultimosDados && ultimosDados.cidades) || []);
       if (!local) {
-        avisar('Ainda não acompanhamos “' + texto + '”. Escolha uma cidade da lista ou digite o seu estado.', true);
+        // Não é cidade nem estado: procura o assunto em todas as notícias
+        pesquisar(texto);
         return;
       }
       escolher(local, local.nome
