@@ -8,7 +8,12 @@
 3. Cada grupo de mídia diferente do original que publicou o mesmo fato é uma confirmação independente, com
    força p = peso do tipo de veículo × (0,6 + 0,4 × quanto a similaridade passa do limiar).
 4. As confirmações se somam como evidências independentes: confiança C = 1 − Π(1 − p).
-5. Confirmada exige ao menos dois grupos independentes e C ≥ CONFIANCA_CONFIRMADA.
+5. Sinais da própria notícia ajustam a confiança como numa atualização bayesiana: a confiança vira
+   chances (C ÷ (1 − C)), cada sinal multiplica as chances (fonte oficial citada × 1,5, autor × 1,15,
+   confirmação por tipos diferentes de veículo × 1,15, atribuição vaga × 0,7, sensacionalismo × 0,75,
+   sem data × 0,9) e o resultado volta a ser porcentagem. Uma confirmação com texto quase idêntico ao
+   original (90% ou mais) é provável reprodução e vale 60% da força.
+6. Confirmada exige ao menos dois grupos independentes e confiança final ≥ CONFIANCA_CONFIRMADA.
 
 Tudo é determinístico: a mesma entrada dá sempre o mesmo resultado, e cada número aparece no site.
 """
@@ -27,6 +32,32 @@ NUMEROS_DIFERENTES = 0.5    # as duas trazem números e nenhum coincide (concurs
 HORAS = 72
 MINIMO_DE_PALAVRAS = 4      # menos que isso, não há texto para comparar
 COMUM_DEMAIS = 0.05         # palavra em mais de 5% das notícias não serve para achar o mesmo fato
+
+REPRODUCAO = 0.90          # texto quase idêntico: provável reprodução do mesmo texto, não apuração própria
+FATOR_REPRODUCAO = 0.6
+
+# Sinais da própria notícia: (fator que multiplica as chances, explicação)
+FATOR_FONTE_OFICIAL = 1.5
+FATOR_AUTOR = 1.15
+FATOR_TIPOS_DIFERENTES = 1.15
+FATOR_ATRIBUICAO_VAGA = 0.7
+FATOR_SENSACIONALISMO = 0.75   # por sinal, até dois
+FATOR_SEM_DATA = 0.9
+FONTE_OFICIAL_NOME = re.compile(
+    r"\b(pol[ií]cia (militar|civil|federal|rodovi[aá]ria federal)|corpo de bombeiros|bombeiros|defesa civil|"
+    r"prefeitura|governo (federal|do estado|estadual)|minist[eé]rio|secretaria|tribunal|justi[cç]a eleitoral|"
+    r"c[aâ]mara (municipal|dos deputados)|senado|assembleia legislativa|banco central|receita federal|"
+    r"di[aá]rio oficial|caixa econ[oô]mica|instituto nacional)\b", re.I)
+FONTE_OFICIAL_SIGLA = re.compile(
+    r"\b(PM|PF|PRF|IBGE|Ipea|Inmet|Anvisa|Fiocruz|STF|STJ|TSE|TRE|TCU|TJ[A-Z]{0,2}|MPF|MP[A-Z]{2}|INSS|DOU|"
+    r"OMS|ONU|Ibama|ICMBio|Detran|SUS|Petrobras|Aneel|Anatel|Datafolha|Quaest)\b")
+ATRIBUICAO_VAGA = re.compile(
+    r"\b(fontes? (dizem|afirmam|apontam|ouvidas)|segundo rumores|rumores?|circula(m)? nas redes|viraliza|"
+    r"nas redes sociais|teria(m)? (sido|dito|feito)|supostamente|suposto|boato|dizem que)\b", re.I)
+SENSACIONALISMO = re.compile(
+    r"\b(chocante|urgente|bomba|inacredit[aá]vel|absurdo|esc[aâ]ndalo|bizarro|voc[eê] n[aã]o vai acreditar|"
+    r"surpreende|revoltante|assustador|imperd[ií]vel|polêmica|pol[eê]mica)\b", re.I)
+CAIXA_ALTA_PERMITIDA = {"VIDEO", "VÍDEO", "FOTOS", "PODCAST", "AO", "VIVO", "AGORA"}
 
 # Quanto vale a confirmação de cada tipo de veículo (checador não confirma fato: ele verifica)
 PESO_TIPO = {"agencia": 0.85, "jornal": 0.9, "tv": 0.9, "radio": 0.85, "revista": 0.85,
@@ -137,6 +168,54 @@ def _grupo(veiculo, veiculo_id):
     return veiculo.get("grupo") or (veiculo.get("transparencia") or {}).get("dono") or veiculo["id"]
 
 
+def sinais_da_noticia(noticia, tipos_diferentes=False):
+    """Sinais do texto e dos dados da própria notícia: [(descrição, fator)]."""
+    titulo, resumo = noticia["titulo"] or "", noticia["resumo"] or ""
+    texto = f"{titulo} {resumo}"
+    sinais = []
+    oficial = FONTE_OFICIAL_NOME.search(texto) or FONTE_OFICIAL_SIGLA.search(texto)
+    if oficial:
+        sinais.append((f"cita fonte oficial ({oficial.group(0)})", FATOR_FONTE_OFICIAL))
+    if _campo(noticia, "autor"):
+        sinais.append(("autor identificado", FATOR_AUTOR))
+    if tipos_diferentes:
+        sinais.append(("confirmada por tipos diferentes de veículo", FATOR_TIPOS_DIFERENTES))
+    vaga = ATRIBUICAO_VAGA.search(texto)
+    if vaga:
+        sinais.append((f"atribuição vaga (“{vaga.group(0)}”)", FATOR_ATRIBUICAO_VAGA))
+    alarmes = []
+    if "!" in titulo:
+        alarmes.append("exclamação no título")
+    gritos = [p for p in re.findall(r"\b[A-ZÀ-Ý]{5,}\b", titulo) if p not in CAIXA_ALTA_PERMITIDA]
+    if gritos:
+        alarmes.append("palavra em caixa alta no título")
+    termo = SENSACIONALISMO.search(titulo)
+    if termo:
+        alarmes.append(f"termo sensacionalista (“{termo.group(0)}”)")
+    for alarme in alarmes[:2]:
+        sinais.append((alarme, FATOR_SENSACIONALISMO))
+    if not _campo(noticia, "publicado_em"):
+        sinais.append(("sem data de publicação", FATOR_SEM_DATA))
+    return sinais
+
+
+def _campo(noticia, nome):
+    try:
+        return noticia[nome]
+    except (KeyError, IndexError):
+        return None
+
+
+def ajustar(base, sinais):
+    """Atualização bayesiana: as chances da confiança base são multiplicadas pelos fatores dos sinais."""
+    if base <= 0:
+        return 0.0
+    chances = min(base, 0.999) / (1 - min(base, 0.999))
+    for _, fator in sinais:
+        chances *= fator
+    return chances / (1 + chances)
+
+
 def classificar(noticia, corpus, veiculos_por_id):
     """Rótulo, confiança (0 a 1), motivos, provas e avisos, todos calculados."""
     if OPINIAO_TITULO.search(noticia["titulo"]) or OPINIAO_LINK.search(noticia["link"]):
@@ -165,14 +244,25 @@ def classificar(noticia, corpus, veiculos_por_id):
             continue  # o mesmo grupo de mídia conta uma vez só, e o do original não conta
         forca = min(1.0, (similaridade - LIMIAR_FATO) / (SIMILARIDADE_FORTE - LIMIAR_FATO))
         p = PESO_TIPO.get(veiculo.get("tipo"), PESO_PADRAO) * (0.6 + 0.4 * forca)
+        if similaridade >= REPRODUCAO:
+            p *= FATOR_REPRODUCAO  # texto quase idêntico: mais provável que reproduza, não que confirme
         por_grupo[grupo] = (p, similaridade, outra, veiculo)
 
-    confianca = 1 - math.prod(1 - p for p, *_ in por_grupo.values())
+    base = 1 - math.prod(1 - p for p, *_ in por_grupo.values())
+    tipos = {(v.get("tipo") or "") for _, _, _, v in por_grupo.values()}
+    sinais = sinais_da_noticia(noticia, len({t for t in tipos if t}) >= 2)
+    confianca = ajustar(base, sinais)
     provas = [{"linha": outra, "veiculo": veiculo.get("nome") or outra["veiculo_id"],
-               "explicacao": f"Mesmo fato (similaridade {round(s * 100)}%, peso da confirmação {round(p * 100)}%)"}
+               "explicacao": f"Mesmo fato (similaridade {round(s * 100)}%, peso da confirmação {round(p * 100)}%"
+                             + (", texto quase idêntico: provável reprodução" if s >= REPRODUCAO else "") + ")"}
               for p, s, outra, veiculo in sorted(por_grupo.values(), key=lambda x: x[0], reverse=True)]
-    conta = (f"Confiança calculada: {round(confianca * 100)}% "
-             f"(1 − Π(1 − p) sobre {len(por_grupo)} grupo(s) de mídia independente(s)).")
+    conta = (f"Confirmações: {round(base * 100)}% (1 − Π(1 − p) sobre {len(por_grupo)} grupo(s) de mídia "
+             f"independente(s)).")
+    if sinais and por_grupo:
+        conta += (" Sinais da notícia: " + "; ".join(f"{t} (× {str(f).replace('.', ',')})" for t, f in sinais)
+                  + f". Confiança final: {round(confianca * 100)}%.")
+    if not por_grupo:
+        conta = ("Sinais da notícia: " + "; ".join(t for t, _ in sinais) + ".") if sinais else None
     avisos = []
     for s, outra, veiculo in checagens[:1]:
         avisos.append(f"Checagem parecida encontrada ({veiculo.get('nome') or outra['veiculo_id']}, "
@@ -191,4 +281,4 @@ def classificar(noticia, corpus, veiculos_por_id):
     else:
         motivo = "Nenhum outro veículo acompanhado publicou este fato até agora."
     return {"rotulo": "em-apuracao", "confianca": confianca, "provas": provas, "avisos": avisos,
-            "motivos": [motivo, conta]}
+            "motivos": [motivo] + ([conta] if conta else [])}
