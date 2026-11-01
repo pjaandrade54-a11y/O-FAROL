@@ -161,7 +161,7 @@ def cmd_analisar(args):
         # As notícias que a IA ainda não analisou (cota do dia) recebem um rótulo provisório por regras
         print("Análise por regras das notícias que a IA ainda não analisou…")
         r = conselho.analisar_regras(conexao, veiculos)
-        print(f"{r['analisadas']} notícias com rótulo por regras.")
+        print(f"{r['analisadas']} notícias com rótulo por regras ({r.get('mudaram', 0)} mudaram).")
 
     # Toda notícia do site aparece com foto: as que vieram sem foto no feed buscam a da página da matéria
     links = [l["link"] for l in selecao.noticias_do_site(conexao)] + [l["link"] for l in selecao.listas(conexao)["checagens"]]

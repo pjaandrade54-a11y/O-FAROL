@@ -566,7 +566,7 @@ def analisar_regras(conexao, veiculos, aviso=print):
         guardar(conexao, analise)
         r["analisadas"] += 1
         if not antes or analise["rotulo"] != antes[0]:
-            aviso(f"  {ROTULOS[analise['rotulo']]}: {noticia['titulo'][:70]}")
+            r["mudaram"] = r.get("mudaram", 0) + 1
     return r
 
 
