@@ -136,8 +136,21 @@ def _agentes_pagos():
 
 
 def _chamador(executores):
-    """Função que o conselho chama para cada agente; um agente sem modelo próprio usa o da Acusação."""
-    return lambda agente, sistema, conteudo: (executores.get(agente) or executores["acusacao"]).parecer(sistema, conteudo)
+    """Função que o conselho chama para cada agente; um agente sem modelo próprio usa o da Acusação.
+    Se o modelo do agente falhar (sem ser o fim da cota), o parecer é pedido ao modelo do Relator ou da Acusação."""
+    def chamar(agente, sistema, conteudo):
+        principal = executores.get(agente) or executores["acusacao"]
+        try:
+            return principal.parecer(sistema, conteudo)
+        except conselho.ErroModelo as e:
+            reserva = next((executores[a] for a in ("relator", "acusacao") if a in executores
+                            and executores[a] is not principal), None)
+            if e.parar or reserva is None:
+                raise
+            print(f"  Aviso: {getattr(principal, 'modelo', agente)} falhou ({str(e)[:120]}); "
+                  f"o parecer de {agente} vai para {getattr(reserva, 'modelo', 'outro modelo')}.")
+            return reserva.parecer(sistema, conteudo)
+    return chamar
 
 
 def cmd_analisar(args):

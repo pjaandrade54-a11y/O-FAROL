@@ -61,3 +61,13 @@ class TestModeloGroq(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestEscolhaForaDaLista(unittest.TestCase):
+    def test_prefere_familia_conhecida_e_modelo_maior(self):
+        catalogo = [{"id": "openai/gpt-oss-120b"}, {"id": "allam-2-7b"}, {"id": "qwen/qwen3-32b"},
+                    {"id": "llama-3.1-8b-instant"}, {"id": "groq/compound"}]
+        with mock.patch.dict("os.environ", {}, clear=True):
+            modelos = modelo_groq.escolher_modelos(catalogo, aviso=lambda *_: None)
+        self.assertEqual(modelos["defesa"], "qwen/qwen3-32b")
+        self.assertNotIn("allam-2-7b", modelos.values())
