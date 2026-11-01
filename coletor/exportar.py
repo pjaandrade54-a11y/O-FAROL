@@ -24,7 +24,8 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
     saida = {
         "gerado_em": agora(),
         "veiculos": [
-            {"id": v["id"], "nome": v["nome"], "tipo": v["tipo"], "abrangencia": v["abrangencia"], "uf": v.get("uf")}
+            {"id": v["id"], "nome": v["nome"], "tipo": v["tipo"], "abrangencia": v["abrangencia"], "uf": v.get("uf"),
+             "grupo": v.get("grupo") or (v.get("transparencia") or {}).get("dono") or v["id"]}
             for v in veiculos if v.get("ativo", True)
         ],
         # Cidades que o leitor pode escolher (com coordenadas, para "Usar minha localização")

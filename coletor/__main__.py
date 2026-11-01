@@ -49,8 +49,7 @@ def _numero_do_ambiente(nome, padrao):
 
 def _montar_agentes():
     """Quem executa cada agente de IA, conforme IA_PROVEDOR: "groq", "gemini", "github" ou "anthropic".
-    Sem IA_PROVEDOR, usa o primeiro com chave: Groq (GROQ_API_KEY), Gemini (GEMINI_API_KEY) ou, no GitHub
-    Actions, o GitHub Models. Sem IA, a análise é feita por regras."""
+    Sem IA_PROVEDOR (o padrão), não há IA: as notícias são classificadas pelo Cálculo de evidências."""
     provedor = _provedor()
     if provedor == "groq":
         return _agentes_groq()
@@ -64,11 +63,9 @@ def _montar_agentes():
 
 
 def _provedor():
-    # No GitHub Actions o GITHUB_TOKEN dá acesso gratuito ao GitHub Models, sem chave nem cartão
-    padrao = ("groq" if os.environ.get("GROQ_API_KEY")
-              else "gemini" if os.environ.get("GEMINI_API_KEY")
-              else "github" if os.environ.get("GITHUB_TOKEN") else "regras")
-    return (os.environ.get("IA_PROVEDOR") or padrao).strip().lower()
+    # Por padrão, só o Cálculo de evidências (sem IA): mais barato, mais rápido e reproduzível.
+    # A IA só roda se a variável IA_PROVEDOR do repositório pedir (groq, gemini, github ou anthropic).
+    return (os.environ.get("IA_PROVEDOR") or "regras").strip().lower()
 
 
 def _agentes_groq():
@@ -175,10 +172,10 @@ def cmd_analisar(args):
             for agente in dict.fromkeys(executores):
                 print(f"Tokens {getattr(agente, 'modelo', type(agente).__name__)}: "
                       f"{agente.tokens[0]} de entrada, {agente.tokens[1]} de saída.")
-        # As notícias que a IA ainda não analisou (cota do dia) recebem um rótulo provisório por regras
-        print("Análise por regras das notícias que a IA ainda não analisou…")
-        r = conselho.analisar_regras(conexao, veiculos)
-        print(f"{r['analisadas']} notícias com rótulo por regras ({r.get('mudaram', 0)} mudaram).")
+        # Cálculo de evidências: todas as notícias do site (com IA ligada, só as que ela ainda não analisou)
+        print("Cálculo de evidências, sem IA…")
+        r = conselho.analisar_regras(conexao, veiculos, manter_ia=bool(chamar))
+        print(f"{r['analisadas']} notícias classificadas pelo cálculo ({r.get('mudaram', 0)} mudaram de rótulo).")
 
     # Toda notícia do site aparece com foto: as que vieram sem foto no feed buscam a da página da matéria
     links = [l["link"] for l in selecao.noticias_do_site(conexao)] + [l["link"] for l in selecao.listas(conexao)["checagens"]]

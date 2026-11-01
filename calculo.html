@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>O cálculo — O Farol</title>
+  <meta name="description" content="Como o Farol classifica cada notícia sem IA: similaridade de texto (TF-IDF e cosseno), confirmações independentes e uma confiança calculada que qualquer pessoa pode conferir.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="O Farol">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="O cálculo — O Farol">
+  <meta property="og:description" content="Como o Farol classifica cada notícia sem IA: similaridade de texto (TF-IDF e cosseno), confirmações independentes e uma confiança calculada que qualquer pessoa pode conferir.">
+  <meta property="og:url" content="https://pjaandrade54-a11y.github.io/O-FAROL/calculo.html">
+  <meta property="og:image" content="https://pjaandrade54-a11y.github.io/O-FAROL/img/compartilhar.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="O Farol: Notícias, conferidas.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0e1a36">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+
+  <header class="cabecalho">
+    <div class="container cabecalho__linha">
+      <a class="marca" href="index.html" aria-label="O Farol, página inicial">
+        <svg class="marca__simbolo" viewBox="0 0 32 32" aria-hidden="true"><path class="marca__feixe" d="M17 8 31 2.5v11z"/><path class="marca__torre" d="M12.6 11h6.8l2.2 16.4H10.4z"/><path class="marca__luz" d="M12 11h8V8.3L16 5.6l-4 2.7z"/><path class="marca__listra" d="M11.9 16.4h8.2v2.1h-8.2zM11.2 22h9.6v2.1h-9.6z"/><path class="marca__torre" d="M8 27.4h16V29H8z"/></svg>
+        <span class="marca__nome">O Farol</span>
+      </a>
+      <nav class="nav" aria-label="Principal">
+        <button class="nav__alternar" type="button" aria-expanded="false" aria-controls="nav-lista">Menu</button>
+        <ul class="nav__lista" id="nav-lista">
+          <li><a href="index.html#ultimas">Notícias</a></li>
+          <li><a href="index.html#como-funciona">Como funciona</a></li>
+          <li><a href="index.html#rotulos">Os rótulos</a></li>
+          <li><a href="calculo.html">O cálculo</a></li>
+          <li><a href="metodologia.html">Metodologia</a></li>
+          <li><a href="index.html#apoie">Apoie</a></li>
+        </ul>
+      </nav>
+      <a class="botao botao--luz cabecalho__acao" href="index.html#receber">Receber notícias</a>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="pagina-topo">
+      <div class="container">
+        <p class="sobretitulo">O cálculo</p>
+        <h1>Como o Farol confere uma notícia, sem IA</h1>
+        <p class="pagina-topo__intro">Cada rótulo sai de uma conta: o Farol compara a notícia com o que os outros 161 veículos publicaram e soma as confirmações de grupos de mídia independentes. A mesma notícia dá sempre o mesmo resultado, e você pode refazer a conta aqui embaixo.</p>
+      </div>
+    </section>
+
+    <div class="container texto-longo">
+      <section id="por-que">
+        <h2>Por que um cálculo, e não IA</h2>
+        <ul class="lista-marcada">
+          <li><strong>Grátis e rápido.</strong> O cálculo confere as mais de mil notícias do site a cada 30 minutos, em segundos, sem pagar nenhum serviço. A IA gratuita só dava conta de cerca de 120 por dia.</li>
+          <li><strong>Sempre igual.</strong> A mesma notícia dá sempre o mesmo resultado. Um modelo de IA pode responder diferente a cada vez.</li>
+          <li><strong>Conta aberta.</strong> Cada rótulo mostra a similaridade com cada veículo, o peso de cada confirmação e a confiança final. Nada fica numa caixa-preta.</li>
+          <li><strong>Sem opinião.</strong> O cálculo não lê tom, lado político nem tema: só mede se veículos independentes publicaram o mesmo fato.</li>
+        </ul>
+      </section>
+
+      <section id="passos">
+        <h2>O cálculo em cinco passos</h2>
+        <ol class="lista-numerada">
+          <li><strong>A notícia vira números.</strong> O título (peso 2) e o resumo (peso 1) são separados em palavras, sem acento e sem plural simples. Palavras como “de”, “para” e “veja” são ignoradas. Nomes próprios e números valem 1,5 vez mais.</li>
+          <li><strong>Palavras raras valem mais (TF-IDF).</strong> Cada palavra ganha o peso <code>(1 + log n) × idf</code>, em que <code>n</code> é quantas vezes ela aparece na notícia e <code>idf = log((N + 1) / (d + 1)) + 1</code>, com <code>N</code> notícias no período e <code>d</code> notícias que usam a palavra. “Aracaju” aparece em muitas notícias e pesa pouco; “Badyally” aparece em poucas e pesa muito.</li>
+          <li><strong>Mesmo fato (similaridade de cosseno).</strong> A similaridade entre duas notícias é o cosseno entre os dois vetores de palavras: 0% quando não têm nada em comum, 100% quando são iguais. Duas notícias tratam do mesmo fato com <strong>48% ou mais</strong>, publicadas com até 72 horas de diferença. Se as duas trazem números e nenhum coincide (o concurso 3079 e o 3080, por exemplo), a similaridade cai pela metade.</li>
+          <li><strong>Força de cada confirmação.</strong> Só conta um veículo por grupo de mídia, e o grupo do veículo original não conta. A força é <code>p = peso do tipo × (0,6 + 0,4 × f)</code>, em que <code>f</code> vai de 0 (similaridade de 48%) a 1 (80% ou mais).</li>
+          <li><strong>Confiança.</strong> As confirmações se somam como evidências independentes: <code>C = 1 − (1 − p₁) × (1 − p₂) × …</code>. A notícia é <strong>Confirmada</strong> com pelo menos dois grupos independentes e <strong>C ≥ 70%</strong>. Abaixo disso, fica <strong>Em apuração</strong> e é recalculada a cada coleta.</li>
+        </ol>
+        <h3 class="subtitulo">Peso de cada tipo de veículo</h3>
+        <div class="tabela-rolagem">
+          <table class="tabela">
+            <thead><tr><th scope="col">Tipo</th><th scope="col">Peso</th></tr></thead>
+            <tbody>
+              <tr><td>Jornal, TV</td><td>0,90</td></tr>
+              <tr><td>Rádio, revista, agência</td><td>0,85</td></tr>
+              <tr><td>Portal</td><td>0,75</td></tr>
+              <tr><td>Veículo sem tipo cadastrado</td><td>0,70</td></tr>
+              <tr><td>Blog</td><td>0,55</td></tr>
+              <tr><td>Checador de fatos</td><td>não confirma fato: verifica</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3 class="subtitulo">Os outros rótulos</h3>
+        <ul class="lista-marcada">
+          <li><strong>Opinião ou análise:</strong> o título ou o endereço indicam coluna, artigo ou editorial.</li>
+          <li><strong>Dados insuficientes:</strong> o título e o resumo têm menos de quatro palavras que permitam comparar.</li>
+          <li><strong>Checagem parecida:</strong> se um checador publicou algo “falso” ou “enganoso” com 50% ou mais de similaridade, a notícia não pode ser Confirmada e aparece um aviso. O cálculo não lê o texto para saber se a checagem desmente exatamente esta notícia, por isso ele nunca marca “Desmentida” sozinho.</li>
+        </ul>
+      </section>
+
+      <section id="exemplo">
+        <h2>Um exemplo resolvido</h2>
+        <p>Um jornal publica “Ataque a tiros deixa dois mortos e seis feridos em Cariacica”. Na mesma tarde:</p>
+        <ul class="lista-marcada">
+          <li>Um portal de outro grupo publica “Homem e mulher são mortos e seis ficam feridos em ataque a tiros em Cariacica”: similaridade de 70%, então <code>f = (0,70 − 0,48) / (0,80 − 0,48) = 0,69</code> e <code>p = 0,75 × (0,6 + 0,4 × 0,69) = 0,66</code>.</li>
+          <li>Uma rádio de um terceiro grupo publica um título quase igual ao original: similaridade de 90%, <code>f = 1</code> e <code>p = 0,85</code>.</li>
+        </ul>
+        <p>Confiança: <code>C = 1 − (1 − 0,66) × (1 − 0,85) = 1 − 0,34 × 0,15 = 95%</code>. São dois grupos independentes e mais de 70%: <strong>Confirmada</strong>.</p>
+      </section>
+
+      <section id="calcule">
+        <h2>Calcule você mesmo</h2>
+        <p>Escolha uma notícia do site ou digite um título. A conta é feita aqui, no seu navegador, com as notícias que o site publica agora. No servidor, a comparação é com todas as notícias das últimas 72 horas, então os números podem diferir um pouco.</p>
+        <div class="formulario calc">
+          <div class="campo">
+            <label for="calc-noticia">Notícia do site</label>
+            <select id="calc-noticia" disabled><option>Carregando as notícias…</option></select>
+          </div>
+          <form class="campo" id="calc-form">
+            <label for="calc-titulo">Ou digite um título</label>
+            <input id="calc-titulo" type="text" placeholder="Ex.: Prefeitura de Aracaju anuncia reforma de escolas">
+            <button class="botao botao--escuro" type="submit">Calcular</button>
+          </form>
+          <p class="formulario__nota" id="calc-estado" role="status"></p>
+          <div id="calc-resultado" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section id="limites">
+        <h2>Limitações</h2>
+        <ul class="lista-marcada">
+          <li>O cálculo mede se veículos independentes publicaram o mesmo fato. Isso é evidência, não prova de verdade: várias redações podem repetir o mesmo erro de uma fonte oficial.</li>
+          <li>Ele compara palavras, não sentidos. Duas notícias sobre o mesmo fato com palavras muito diferentes podem não se encontrar, e a notícia fica Em apuração. O cálculo erra para o lado seguro.</li>
+          <li>Uma apuração exclusiva e correta fica Em apuração até outro grupo publicar o mesmo fato.</li>
+          <li>Discorda de um rótulo? <a href="contestar.html">Conteste com as suas provas</a>.</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <div class="container">
+      <p class="rodape__marca" aria-label="O Farol"><span class="bloco-letra bloco-letra--0">O</span><span class="bloco-letra bloco-letra--1">F</span><span class="bloco-letra bloco-letra--2">a</span><span class="bloco-letra bloco-letra--3">r</span><span class="bloco-letra bloco-letra--4">o</span><span class="bloco-letra bloco-letra--5">l</span></p>
+      <div class="rodape__grade">
+        <nav aria-label="Produto">
+          <h2>Produto</h2>
+          <ul><li><a href="index.html#ultimas">Últimas notícias</a></li><li><a href="index.html#rotulos">Os rótulos</a></li><li><a href="painel.html">Painel de verificação (demonstração)</a></li></ul>
+        </nav>
+        <nav aria-label="O Farol">
+          <h2>O Farol</h2>
+          <ul><li><a href="quem-somos.html">Quem somos</a></li><li><a href="index.html#apoie">Apoie</a></li><li><a href="index.html#anuncie">Anuncie</a></li></ul>
+        </nav>
+        <nav aria-label="Confiança">
+          <h2>Confiança</h2>
+          <ul><li><a href="calculo.html">O cálculo</a></li><li><a href="metodologia.html">Metodologia</a></li><li><a href="contestar.html">Contestar uma avaliação</a></li><li><a href="privacidade.html">Privacidade</a></li></ul>
+        </nav>
+        <nav aria-label="Redes">
+          <h2>Redes</h2>
+          <ul><li><a data-canal="whatsappCanal" href="index.html#receber">WhatsApp</a></li><li><a data-canal="instagram" href="index.html#receber">Instagram</a></li><li><a data-canal="tiktok" href="index.html#receber">TikTok</a></li></ul>
+        </nav>
+        <div class="rodape__contato">
+          <p>Contato, imprensa e testes</p>
+          <p><strong>ofarolnws@gmail.com</strong></p>
+          <p>Projeto independente, com piloto em Aracaju (SE)</p>
+        </div>
+      </div>
+      <div class="rodape__base">
+        <span>© <span id="ano"></span> O Farol</span>
+        <a class="botao botao--pequeno" href="#conteudo">Voltar ao topo</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/site.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/calculo.js"></script>
+</body>
+</html>
