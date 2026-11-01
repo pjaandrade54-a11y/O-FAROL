@@ -34,14 +34,13 @@
 
   // 2. Os rótulos
   var REGRAS = {
-    'confirmada': 'Dois veículos de grupos diferentes do original publicaram o mesmo fato.',
-    'em-apuracao': 'Só um veículo publicou, ou ainda falta a confirmação de um segundo grupo de mídia.',
+    'confirmada': 'Dois ou mais grupos de mídia independentes publicaram o mesmo fato, e a confiança calculada chegou a 70%.',
+    'em-apuracao': 'Ainda falta um segundo grupo independente, ou a confiança não chegou a 70%. A conta é refeita a cada coleta.',
     'opiniao': 'Coluna, artigo ou editorial: não recebe rótulo de verdadeiro ou falso.',
-    'desmentida': 'Só com uma checagem que desminta esta afirmação. O cálculo avisa quando há checagem parecida, mas não marca Desmentida sozinho.',
-    'aguardando': 'A notícia acabou de chegar e entra na próxima rodada de análise.'
+    'dados-insuficientes': 'O título e o resumo têm poucas palavras para comparar com outros veículos.'
   };
   var NOMES = { 'confirmada': 'Confirmada', 'em-apuracao': 'Em apuração', 'opiniao': 'Opinião ou análise',
-    'desmentida': 'Desmentida', 'aguardando': 'Aguardando análise' };
+    'dados-insuficientes': 'Dados insuficientes' };
   var ESCALAS = { cidade: 'Cidade', estado: 'Estado', pais: 'País', mundo: 'Mundo' };
   var exemplos = {};
   var palco = document.querySelector('.rotulos__palco');
@@ -104,21 +103,17 @@
       (dados.escalas[escala] || []).forEach(function (n) {
         var r = n.analise ? n.analise.rotulo : 'aguardando';
         if (!NOMES[r] || (exemplos[r] && (exemplos[r].imagem || !n.imagem))) return;
-        var motivo = n.analise && n.analise.pareceres && n.analise.pareceres[0] && n.analise.pareceres[0].motivos[0];
+        var parecer = n.analise && n.analise.pareceres && n.analise.pareceres[0];
+        var motivo = parecer && parecer.motivos[0];
+        var conf = parecer && typeof parecer.confianca === 'number' && (r === 'confirmada' || r === 'em-apuracao')
+          ? ' · ' + Math.round(parecer.confianca * 100) + '%' : '';
         exemplos[r] = {
           escala: ESCALAS[escala] + (n.cidade && escala === 'cidade' ? ' · ' + n.cidade : ''),
-          titulo: n.titulo, chip: NOMES[r] + (n.analise && n.analise.destino === 'conselho' ? ' · provisório' : ''),
+          titulo: n.titulo, chip: NOMES[r] + conf,
           classe: r, veiculo: n.veiculo, porque: motivo || REGRAS[r], imagem: n.imagem
         };
       });
     });
-    var checagem = (dados.checagens || [])[0];
-    if (checagem && !exemplos.desmentida) {
-      exemplos.desmentida = {
-        escala: 'Checagem', titulo: checagem.titulo, chip: 'Checagem', classe: 'desmentida', veiculo: checagem.veiculo,
-        porque: 'Uma checagem parecida impede a notícia de ser Confirmada; o cálculo não marca Desmentida sozinho.'
-      };
-    }
     var atual = document.querySelector('.rotulos__nome[aria-pressed="true"]');
     if (atual) mostrar(atual.getAttribute('data-rotulo'));
   });

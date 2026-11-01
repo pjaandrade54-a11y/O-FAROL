@@ -51,7 +51,7 @@
   <main id="conteudo">
     <section class="pagina-topo">
       <div class="container">
-        <p class="sobretitulo">Metodologia · versão 0.1</p>
+        <p class="sobretitulo">Metodologia · versão 0.2</p>
         <h1>Como decidimos o que é confiável</h1>
         <p class="pagina-topo__intro">Classificamos a confiabilidade pelo que dá para verificar — quem afirma, com que provas, quantas fontes independentes confirmam —, nunca pela opinião política do conteúdo ou do veículo.</p>
         <p class="aviso"><strong>Proposta em discussão.</strong> Os pesos abaixo são a primeira versão e serão ajustados com dados reais. Cada mudança será publicada aqui, com data e motivo.</p>
@@ -64,7 +64,7 @@
         <ol>
           <li><a href="#principios">Princípios</a></li>
           <li><a href="#rotulos">Rótulos</a></li>
-          <li><a href="#sinais">Como pontuamos uma notícia</a></li>
+          <li><a href="#sinais">Como calculamos a confiança</a></li>
           <li><a href="#veiculos">Como avaliamos um veículo</a></li>
           <li><a href="#painel">Como cada notícia é classificada</a></li>
           <li><a href="#imparcialidade">Salvaguardas de imparcialidade</a></li>
@@ -87,40 +87,42 @@
 
       <section id="rotulos">
         <h2>Rótulos</h2>
-        <p>Cada notícia recebe um de seis rótulos, sempre com a lista de motivos ao lado. As regras são aplicadas nesta ordem: uma checagem que desmente vale mais que qualquer soma de pontos.</p>
+        <p>Cada notícia recebe um de quatro rótulos, sempre com a conta ao lado. As regras são aplicadas nesta ordem.</p>
         <div class="tabela-rolagem">
           <table class="tabela">
             <thead><tr><th scope="col">Rótulo</th><th scope="col">Quando aparece</th></tr></thead>
             <tbody>
-              <tr><td><span class="rotulo rotulo--opiniao">Opinião ou análise</span></td><td>O próprio veículo marca o texto como opinião, coluna ou análise. Não há rótulo de veracidade.</td></tr>
-              <tr><td><span class="rotulo rotulo--desmentida">Desmentida</span></td><td>Uma checagem de signatário da IFCN classificou a afirmação central como falsa.</td></tr>
-              <tr><td><span class="rotulo rotulo--contestada">Contestada</span></td><td>Fontes independentes divergem sobre a afirmação central. Mostramos as versões lado a lado.</td></tr>
-              <tr><td><span class="rotulo rotulo--confirmada">Confirmada</span></td><td>Pontuação 70 ou mais e ao menos dois grupos independentes além do original. Em temas políticos, ao menos uma confirmação de linha editorial diferente.</td></tr>
-              <tr><td><span class="rotulo rotulo--em-apuracao">Em apuração</span></td><td>Uma fonte só, ou pontuação entre 40 e 69, sem contradição. Não é acusação: exclusivas legítimas começam assim.</td></tr>
-              <tr><td><span class="rotulo rotulo--dados-insuficientes">Dados insuficientes</span></td><td>Pontuação abaixo de 40 sem checagem contrária, ou texto que não pôde ser lido.</td></tr>
+              <tr><td><span class="rotulo rotulo--opiniao">Opinião ou análise</span></td><td>O título ou o endereço indicam coluna, artigo, crônica ou editorial. Não há rótulo de veracidade.</td></tr>
+              <tr><td><span class="rotulo rotulo--dados-insuficientes">Dados insuficientes</span></td><td>O título e o resumo têm menos de quatro palavras que permitam comparar com outros veículos.</td></tr>
+              <tr><td><span class="rotulo rotulo--confirmada">Confirmada</span></td><td>Pelo menos dois grupos de mídia independentes do original publicaram o mesmo fato, a confiança calculada é de 70% ou mais e não há checagem parecida.</td></tr>
+              <tr><td><span class="rotulo rotulo--em-apuracao">Em apuração</span></td><td>Todos os outros casos: um grupo só, confiança abaixo de 70% ou checagem parecida. Não é acusação: exclusivas legítimas começam assim.</td></tr>
             </tbody>
           </table>
         </div>
-        <p>O Farol nunca cria sozinho um rótulo de “falsa”: esse julgamento vem sempre de uma checagem independente.</p>
+        <p>O Farol nunca cria sozinho um rótulo de “falsa”: esse julgamento só pode vir de uma checagem independente que desminta exatamente a afirmação.</p>
       </section>
 
       <section id="sinais">
-        <h2>Como pontuamos uma notícia</h2>
-        <p>A pontuação vai de 0 a 100. O sinal mais forte é a confirmação por fontes independentes com apuração própria.</p>
+        <h2>Como calculamos a confiança</h2>
+        <p>A confiança vai de 0 a 100% e mede quanto veículos independentes confirmaram o mesmo fato. Os parâmetros abaixo são os mesmos do código que roda a cada coleta; o passo a passo, com exemplo e calculadora, está em <a href="calculo.html">O cálculo</a>.</p>
         <div class="tabela-rolagem">
           <table class="tabela">
-            <thead><tr><th scope="col">Sinal</th><th scope="col">Como medimos</th><th scope="col">Pontos</th></tr></thead>
+            <thead><tr><th scope="col">Parâmetro</th><th scope="col">Valor</th></tr></thead>
             <tbody>
-              <tr><td>Corroboração independente</td><td>Grupos de mídia distintos que confirmam a afirmação com apuração própria. Reproduções contam como a fonte original.</td><td>1 grupo: 15 · 2: 25 · 3 ou mais: 35</td></tr>
-              <tr><td>Fonte primária</td><td>Documento, dado oficial ou decisão judicial (20), entrevistado identificado (12), link verificável (8)</td><td>até 20</td></tr>
-              <tr><td>Confiabilidade do veículo</td><td>Nota do veículo, em escala. Veículo em avaliação recebe valor neutro.</td><td>até 20</td></tr>
-              <tr><td>Checagem independente</td><td>Checagem de signatário da IFCN que confirma a afirmação</td><td>15</td></tr>
-              <tr><td>Atribuição</td><td>Autor identificado (5), data de publicação (3), data de atualização (2)</td><td>até 10</td></tr>
-              <tr><td>Sinais de alerta</td><td>Título que contradiz o texto, notícia antiga apresentada como nova, imagem fora de contexto</td><td>−10 cada</td></tr>
+              <tr><td>Peso do título e do resumo</td><td>2 e 1; nomes próprios e números valem 1,5×</td></tr>
+              <tr><td>Similaridade mínima para ser o mesmo fato</td><td>48% (cosseno entre os vetores TF-IDF)</td></tr>
+              <tr><td>Similaridade de força máxima</td><td>80%</td></tr>
+              <tr><td>Janela de comparação</td><td>72 horas</td></tr>
+              <tr><td>Números diferentes nas duas notícias</td><td>similaridade cai pela metade</td></tr>
+              <tr><td>Força de uma confirmação</td><td>p = peso do tipo × (0,6 + 0,4 × f), com f de 0 (48%) a 1 (80%)</td></tr>
+              <tr><td>Peso do tipo de veículo</td><td>jornal e TV 0,90 · rádio, revista e agência 0,85 · portal 0,75 · sem tipo 0,70 · blog 0,55 · checador não confirma</td></tr>
+              <tr><td>Confiança</td><td>C = 1 − Π(1 − p), um veículo por grupo de mídia, sem o grupo do original</td></tr>
+              <tr><td>Confirmada</td><td>2 grupos ou mais e C ≥ 70%</td></tr>
+              <tr><td>Checagem parecida</td><td>similaridade de 50% ou mais com “falso”, “enganoso”, “boato”… no título: impede Confirmada</td></tr>
             </tbody>
           </table>
         </div>
-        <p>A nota do veículo vale no máximo 20 pontos de propósito: um bom veículo pode errar, e um veículo pequeno pode acertar. Dois veículos do mesmo grupo empresarial contam como uma fonte só.</p>
+        <p>Dois veículos do mesmo grupo empresarial contam como uma fonte só. A nota de cada veículo, descrita abaixo, ainda está em construção e não entra na confiança.</p>
       </section>
 
       <section id="veiculos">
@@ -152,7 +154,6 @@
           <li><strong>Sem rótulo de falso.</strong> O cálculo não lê o texto para saber se uma checagem desmente esta notícia: uma checagem parecida só impede a Confirmada e gera um aviso.</li>
         </ul>
         <p><a class="link-seta" href="calculo.html">Veja o cálculo passo a passo e faça a conta você mesmo</a></p>
-        <p>O <a href="painel.html">painel de demonstração</a> mostra como seria uma análise com agentes de IA, com casos fictícios.</p>
       </section>
 
       <section id="imparcialidade">
@@ -202,7 +203,7 @@
       <div class="rodape__grade">
         <nav aria-label="Produto">
           <h2>Produto</h2>
-          <ul><li><a href="index.html#ultimas">Últimas notícias</a></li><li><a href="index.html#rotulos">Os rótulos</a></li><li><a href="painel.html">Painel de verificação (demonstração)</a></li></ul>
+          <ul><li><a href="index.html#ultimas">Últimas notícias</a></li><li><a href="index.html#rotulos">Os rótulos</a></li><li><a href="calculo.html#calcule">Calcule você mesmo</a></li></ul>
         </nav>
         <nav aria-label="O Farol">
           <h2>O Farol</h2>
