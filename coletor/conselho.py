@@ -517,39 +517,47 @@ def regras(noticia, original, fontes):
 
 
 def analisar_por_regras(noticia, veiculos_por_id, conexao, indice=None):
-    original = descrever_noticia(noticia, veiculos_por_id.get(noticia["veiculo_id"]))
-    fontes = montar_dossie(conexao, noticia, veiculos_por_id, indice=indice)
-    rotulo, motivos, provas, avisos = regras(noticia, original, fontes)
+    """Classificação sem IA, pelo Cálculo de evidências (coletor/calculo.py)."""
+    from . import calculo
+    indice = indice or Indice(conexao)
+    if not hasattr(indice, "corpus"):
+        indice.corpus = calculo.Corpus(indice.linhas)
+    original = veiculos_por_id.get(noticia["veiculo_id"]) or {"nome": noticia["veiculo_id"]}
+    r = calculo.classificar(noticia, indice.corpus, veiculos_por_id)
+    avisos = list(r["avisos"])
+    rotulo = r["rotulo"]
     if suspeita_manipulacao(noticia["titulo"] + "\n" + (noticia["resumo"] or "")):
         rotulo = "em-apuracao"
         avisos.append("O texto parece tentar dar ordens ao sistema; o rótulo fica Em apuração.")
     parecer = {
-        "agente": "auditor-regras", "nome": "Auditor de regras", "modelo": "regras da metodologia, sem IA",
-        "rotuloSugerido": rotulo, "confianca": None, "tema": None, "afirmacao": None, "manipulacao": False,
-        "motivos": motivos,
-        "provas": [{"veiculo": p["f"]["veiculo"], "titulo": p["f"]["titulo"], "link": p["f"]["link"],
-                    "explicacao": p["explicacao"]} for p in provas],
+        "agente": "calculo", "nome": "Cálculo de evidências",
+        "modelo": "similaridade de texto (TF-IDF e cosseno) e soma de evidências independentes, sem IA",
+        "rotuloSugerido": rotulo, "confianca": r["confianca"], "tema": None, "afirmacao": None,
+        "manipulacao": False, "motivos": r["motivos"],
+        "provas": [{"veiculo": p["veiculo"], "titulo": p["linha"]["titulo"], "link": p["linha"]["link"],
+                    "explicacao": p["explicacao"]} for p in r["provas"]],
         "descartado": [],
     }
     return {
         "versaoMetodologia": VERSAO_METODOLOGIA,
         "metodo": "regras",
-        "noticia": {"titulo": noticia["titulo"], "link": noticia["link"], "veiculo": original["veiculo"]},
-        "fontesNoDossie": len(fontes),
+        "noticia": {"titulo": noticia["titulo"], "link": noticia["link"], "veiculo": original.get("nome")},
+        "fontesNoDossie": len(r["provas"]),
         "pareceres": [parecer],
         "rotulo": rotulo,
         "tema": None,
         "consenso": True,
         "destino": "automatico",
-        "motivos": ["Análise automática por regras, enquanto a IA não analisa esta notícia: compara a notícia com o que os outros veículos "
-                    "acompanhados publicaram nos últimos três dias."],
+        "motivos": ["Classificação sem IA, pelo Cálculo de evidências: compara o texto da notícia com o que os "
+                    "outros veículos publicaram em 72 horas e soma as confirmações independentes."],
         "motivosDestino": avisos,
     }
 
 
-def analisar_regras(conexao, veiculos, aviso=print):
-    """Analisa de novo, a cada coleta, todas as notícias que vão para o site e ainda não passaram pela IA:
-    uma notícia em apuração vira confirmada quando outros veículos publicam o mesmo fato."""
+def analisar_regras(conexao, veiculos, aviso=print, manter_ia=True):
+    """Classifica de novo, a cada coleta, todas as notícias do site pelo Cálculo de evidências: uma notícia em
+    apuração vira confirmada quando outros veículos publicam o mesmo fato. Com manter_ia, não mexe nas que a
+    IA já analisou."""
     remover_orfas(conexao)
     veiculos_por_id = {v["id"]: v for v in veiculos}
     anteriores = {l["link"]: (l["rotulo"], l["destino"], l["metodo"]) for l in conexao.execute(
@@ -560,7 +568,7 @@ def analisar_regras(conexao, veiculos, aviso=print):
     for noticia in noticias_do_site(conexao):
         antes = anteriores.get(noticia["link"])
         # Não mexe no que a IA já analisou (nem nas decisões antigas do conselho humano)
-        if antes and (antes[1] == "humano" or antes[2] != "regras"):
+        if antes and (antes[1] == "humano" or (manter_ia and antes[2] != "regras")):
             continue
         analise = analisar_por_regras(noticia, veiculos_por_id, conexao, indice)
         guardar(conexao, analise)

@@ -183,7 +183,7 @@ class TestRegras(unittest.TestCase):
     def test_sem_outra_fonte_fica_em_apuracao(self):
         a = self.analise()
         self.assertEqual((a["rotulo"], a["destino"]), ("em-apuracao", "automatico"))
-        self.assertEqual(a["pareceres"][0]["modelo"], "regras da metodologia, sem IA")
+        self.assertIn("sem IA", a["pareceres"][0]["modelo"])
 
     def test_vira_confirmada_quando_dois_grupos_publicam_o_mesmo_fato(self):
         self.assertEqual(self.analise()["rotulo"], "em-apuracao")

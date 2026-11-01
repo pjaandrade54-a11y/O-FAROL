@@ -37,7 +37,7 @@
     'confirmada': 'Dois veículos de grupos diferentes do original publicaram o mesmo fato.',
     'em-apuracao': 'Só um veículo publicou, ou ainda falta a confirmação de um segundo grupo de mídia.',
     'opiniao': 'Coluna, artigo ou editorial: não recebe rótulo de verdadeiro ou falso.',
-    'desmentida': 'Um checador desmentiu a afirmação central, e os agentes de IA conferiram que a checagem trata desta notícia.',
+    'desmentida': 'Só com uma checagem que desminta esta afirmação. O cálculo avisa quando há checagem parecida, mas não marca Desmentida sozinho.',
     'aguardando': 'A notícia acabou de chegar e entra na próxima rodada de análise.'
   };
   var NOMES = { 'confirmada': 'Confirmada', 'em-apuracao': 'Em apuração', 'opiniao': 'Opinião ou análise',
@@ -116,7 +116,7 @@
     if (checagem && !exemplos.desmentida) {
       exemplos.desmentida = {
         escala: 'Checagem', titulo: checagem.titulo, chip: 'Checagem', classe: 'desmentida', veiculo: checagem.veiculo,
-        porque: 'Uma notícia sobre o mesmo assunto só vira Desmentida quando os agentes de IA conferem que a checagem trata dela.'
+        porque: 'Uma checagem parecida impede a notícia de ser Confirmada; o cálculo não marca Desmentida sozinho.'
       };
     }
     var atual = document.querySelector('.rotulos__nome[aria-pressed="true"]');

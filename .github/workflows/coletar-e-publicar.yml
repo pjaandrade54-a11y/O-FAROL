@@ -52,9 +52,9 @@ jobs:
       - name: Coletar notícias
         run: python -m coletor coletar
 
-      # Usa o primeiro provedor gratuito com chave: Groq (GROQ_API_KEY), Gemini (GEMINI_API_KEY) ou o
-      # GitHub Models. IA_PROVEDOR escolhe outro. Sem revisão humana: os agentes e o Relator decidem.
-      - name: Conselho de IA
+      # Classifica as notícias pelo Cálculo de evidências (coletor/calculo.py), sem IA. A IA só roda se a
+      # variável IA_PROVEDOR do repositório pedir (groq, gemini, github ou anthropic).
+      - name: Classificar as notícias
         run: python -m coletor analisar
         continue-on-error: true   # se a IA falhar, o site é publicado assim mesmo, com as notícias novas
         env:
