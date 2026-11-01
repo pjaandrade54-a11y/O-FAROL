@@ -143,6 +143,10 @@ def _chamador(executores):
 def cmd_analisar(args):
     veiculos = cadastro.carregar()
     conexao = banco.abrir()
+    # Quais chaves de IA esta execução recebeu (só se existem e o tamanho, nunca o valor)
+    print("Chaves de IA: " + ", ".join(
+        f"{nome} {'presente (' + str(len(os.environ[nome].strip())) + ' caracteres)' if (os.environ.get(nome) or '').strip() else 'ausente'}"
+        for nome in ("GROQ_API_KEY", "GEMINI_API_KEY")))
 
     chamar, executores = _montar_agentes()
     if _provedor() == "desligado":
