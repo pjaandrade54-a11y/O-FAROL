@@ -143,6 +143,10 @@ def _chamador(executores):
 def cmd_analisar(args):
     veiculos = cadastro.carregar()
     conexao = banco.abrir()
+    # Quais chaves de IA esta execução recebeu (só se existem e o tamanho, nunca o valor)
+    print("Chaves de IA: " + ", ".join(
+        f"{nome} {'presente (' + str(len(os.environ[nome].strip())) + ' caracteres)' if (os.environ.get(nome) or '').strip() else 'ausente'}"
+        for nome in ("GROQ_API_KEY", "GEMINI_API_KEY")))
 
     chamar, executores = _montar_agentes()
     if _provedor() == "desligado":
@@ -161,7 +165,7 @@ def cmd_analisar(args):
         # As notícias que a IA ainda não analisou (cota do dia) recebem um rótulo provisório por regras
         print("Análise por regras das notícias que a IA ainda não analisou…")
         r = conselho.analisar_regras(conexao, veiculos)
-        print(f"{r['analisadas']} notícias com rótulo por regras.")
+        print(f"{r['analisadas']} notícias com rótulo por regras ({r.get('mudaram', 0)} mudaram).")
 
     # Toda notícia do site aparece com foto: as que vieram sem foto no feed buscam a da página da matéria
     links = [l["link"] for l in selecao.noticias_do_site(conexao)] + [l["link"] for l in selecao.listas(conexao)["checagens"]]
