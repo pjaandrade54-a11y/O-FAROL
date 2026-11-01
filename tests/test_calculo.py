@@ -12,7 +12,8 @@ VEICULOS = {"a": {"id": "a", "nome": "Gazeta", "tipo": "jornal", "grupo": "G1"},
             "b": {"id": "b", "nome": "Portal B", "tipo": "portal", "grupo": "G2"},
             "c": {"id": "c", "nome": "Rádio C", "tipo": "radio", "grupo": "G3"},
             "d": {"id": "d", "nome": "Gazeta Online", "tipo": "portal", "grupo": "G1"},
-            "x": {"id": "x", "nome": "Checa", "tipo": "checador", "grupo": "GX"}}
+            "x": {"id": "x", "nome": "Checa", "tipo": "checador", "grupo": "GX"},
+            "pm": {"id": "pm", "nome": "Polícia Militar", "tipo": "oficial", "grupo": "PM"}}
 
 
 def linha(link, veiculo, titulo, uso="noticias"):
@@ -76,6 +77,48 @@ class TestCalculo(unittest.TestCase):
     def test_vetores_tem_norma_um(self):
         c = corpus(ORIGINAL)
         self.assertAlmostEqual(math.sqrt(sum(v * v for v in c.vetor(ORIGINAL).values())), 1.0)
+
+
+class TestVerificacaoOficial(unittest.TestCase):
+    NOTICIA = linha("o", "a", "Ataque a tiros deixa 2 mortos e 6 feridos em Cariacica na noite de sábado 14")
+
+    def test_nota_oficial_confirma_e_dados_conferem(self):
+        c = corpus(self.NOTICIA, linha("n", "pm", "Polícia Militar registra ataque a tiros com 2 mortos e 6 feridos em Cariacica no sábado 14", "oficial"))
+        r = calculo.classificar(self.NOTICIA, c, VEICULOS)
+        self.assertEqual(r["rotulo"], "confirmada")
+        self.assertTrue(r["oficial"])
+        self.assertIn("números conferem", r["motivos"][-1])
+
+    def test_numeros_diferentes_da_fonte_oficial_impedem_confirmada(self):
+        c = corpus(self.NOTICIA, linha("n", "pm", "Polícia Militar registra ataque a tiros com 3 mortos e 9 feridos em Cariacica no sábado 15", "oficial"),
+                   linha("1", "b", "Ataque a tiros deixa 2 mortos e 6 feridos em Cariacica na noite de sábado 14"),
+                   linha("2", "c", "Ataque a tiros deixa 2 mortos e 6 feridos em Cariacica no sábado 14 à noite"))
+        r = calculo.classificar(self.NOTICIA, c, VEICULOS)
+        self.assertEqual(r["rotulo"], "em-apuracao")
+        self.assertTrue(any("números da notícia são diferentes" in a for a in r["avisos"]))
+
+    def test_assunto_diferente_nao_confirma(self):
+        c = corpus(self.NOTICIA, linha("n", "pm", "Polícia Militar abre inscrições para concurso de soldados", "oficial"))
+        r = calculo.classificar(self.NOTICIA, c, VEICULOS)
+        self.assertEqual(r["rotulo"], "em-apuracao")
+        self.assertFalse(r["oficial"])
+
+    def test_nota_do_proprio_orgao_nao_confirma_a_si_mesma(self):
+        original = linha("o", "pm", "Polícia Militar prende suspeito de assalto a banco em Aracaju")
+        c = corpus(original, linha("n", "pm", "Polícia Militar prende suspeito de assalto a banco em Aracaju", "oficial"))
+        self.assertEqual(calculo.classificar(original, c, VEICULOS)["rotulo"], "em-apuracao")
+
+
+class TestDados(unittest.TestCase):
+    def test_extrai_numero_e_unidade(self):
+        self.assertEqual(dict(calculo.dados("Obra de R$ 18 milhões reforma 12 escolas; 2 mortos e 45% de alta")),
+                         {"reais": {18e6}, "escolas": {12.0}, "mortos": {2.0}, "%": {45.0}})
+        self.assertEqual(dict(calculo.dados("Mega-Sena 3080 acumula")), {})
+
+    def test_cruzar(self):
+        self.assertEqual(calculo.cruzar_dados(calculo.dados("2 mortos"), calculo.dados("duas mortes, 2 óbitos")), (True, False))
+        self.assertEqual(calculo.cruzar_dados(calculo.dados("2 mortos"), calculo.dados("3 mortes")), (False, True))
+        self.assertEqual(calculo.cruzar_dados(calculo.dados("2 mortos"), calculo.dados("61 votos")), (False, False))
 
 
 class TestSinais(unittest.TestCase):

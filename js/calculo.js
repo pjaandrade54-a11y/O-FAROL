@@ -6,6 +6,38 @@
   var LIMIAR_FATO = 0.48, SIMILARIDADE_FORTE = 0.80, CONFIANCA_CONFIRMADA = 0.70, LIMIAR_CHECAGEM = 0.50;
   var NUMEROS_DIFERENTES = 0.5, HORAS = 72, MINIMO_DE_PALAVRAS = 4, COMUM_DEMAIS = 0.05;
   var REPRODUCAO = 0.90, FATOR_REPRODUCAO = 0.6;
+  var LIMIAR_OFICIAL = 0.45, LIMIAR_OFICIAL_ASSUNTO = 0.30, FATOR_DADOS_CONFEREM = 1.3, FATOR_DADOS_DIVERGEM = 0.6;
+  var UNIDADES = { morto: 'mortos', morte: 'mortos', obito: 'mortos', ferido: 'feridos', preso: 'presos', prisao: 'presos',
+    pessoa: 'pessoas', vitima: 'vitimas', caso: 'casos', voto: 'votos', vaga: 'vagas', ano: 'anos', dia: 'dias', hora: 'horas',
+    km: 'km', tonelada: 'toneladas', '%': '%', 'por cento': '%', real: 'reais', escola: 'escolas', leito: 'leitos', casa: 'casas',
+    familia: 'familias', desabrigado: 'desabrigados', desalojado: 'desalojados', municipio: 'municipios', cidade: 'municipios',
+    aluno: 'alunos', estudante: 'alunos', veiculo: 'veiculos' };
+  var MULTIPLICADOR = { mil: 1e3, milhao: 1e6, milhoes: 1e6, bilhao: 1e9, bilhoes: 1e9 };
+
+  // Dados do texto: {unidade: Set de valores}, como "2 mortos", "R$ 18 milhões", "61 votos"
+  function dados(n) {
+    var saida = {}, texto = semAcento(((n.titulo || '') + ' ' + (n.resumo || '')).toLowerCase());
+    var re = /(r\$\s*)?(\d+(?:[.,]\d+)*)\s*(milhoes|milhao|bilhoes|bilhao|mil\b)?\s*(%|por cento|[a-z]+)?/g, m;
+    while ((m = re.exec(texto))) {
+      var palavra = m[4], unidade = null;
+      if (palavra) {
+        var base = UNIDADES[palavra] ? palavra : (palavra.endsWith('s') ? palavra.slice(0, -1) : palavra);
+        if (base === 'prisoe' || base === 'prisoes') base = 'prisao';
+        unidade = UNIDADES[palavra] || UNIDADES[base];
+      }
+      if (m[1] && !unidade) unidade = 'reais';
+      if (!unidade) continue;
+      var valor = parseFloat(m[2].replace(/\./g, '').replace(',', '.')) * (MULTIPLICADOR[m[3]] || 1);
+      (saida[unidade] = saida[unidade] || new Set()).add(valor);
+    }
+    return saida;
+  }
+
+  function cruzarDados(meus, deles) {
+    var comuns = Object.keys(meus).filter(function (u) { return deles[u]; });
+    var conferem = comuns.some(function (u) { return [...meus[u]].some(function (v) { return deles[u].has(v); }); });
+    return { conferem: conferem, divergem: comuns.length > 0 && !conferem };
+  }
   var FATOR = { oficial: 1.5, autor: 1.15, tipos: 1.15, vaga: 0.7, alarme: 0.75, semData: 0.9 };
   var FONTE_OFICIAL_NOME = /(^|[^\p{L}])(pol[ií]cia (militar|civil|federal|rodovi[aá]ria federal)|corpo de bombeiros|bombeiros|defesa civil|prefeitura|governo (federal|do estado|estadual)|minist[eé]rio|secretaria|tribunal|justi[cç]a eleitoral|c[aâ]mara (municipal|dos deputados)|senado|assembleia legislativa|banco central|receita federal|di[aá]rio oficial|caixa econ[oô]mica|instituto nacional)(?![\p{L}])/iu;
   var FONTE_OFICIAL_SIGLA = /\b(PM|PF|PRF|IBGE|Ipea|Inmet|Anvisa|Fiocruz|STF|STJ|TSE|TRE|TCU|TJ[A-Z]{0,2}|MPF|MP[A-Z]{2}|INSS|DOU|OMS|ONU|Ibama|ICMBio|Detran|SUS|Petrobras|Aneel|Anatel|Datafolha|Quaest)\b/;
@@ -35,7 +67,7 @@
     sinais.forEach(function (s) { chances *= s[1]; });
     return chances / (1 + chances);
   }
-  var PESO_TIPO = { agencia: 0.85, jornal: 0.9, tv: 0.9, radio: 0.85, revista: 0.85, portal: 0.75, blog: 0.55, checador: 0 };
+  var PESO_TIPO = { oficial: 0.95, agencia: 0.85, jornal: 0.9, tv: 0.9, radio: 0.85, revista: 0.85, portal: 0.75, blog: 0.55, checador: 0 };
   var PESO_PADRAO = 0.7;
   var VAZIAS = new Set(('a o as os um uma uns umas de da do das dos em na no nas nos por para pela pelo pelas pelos com sem sob ' +
     'e ou mas que se ao aos à às como mais menos sobre entre apos antes desde ainda ser sera serao foi foram ' +
@@ -118,21 +150,40 @@
       if (quando && q && Math.abs(quando - q) > HORAS * 3600 * 1000) return;
       var vb = corpus.vetores[i], s = 0;
       va.forEach(function (x, p) { s += x * (vb.get(p) || 0); });
-      var deles = numeros(n), cortou = false;
+      var deles = numeros(n), cortou = false, bruta = s;
       if (meusNumeros.size && deles.size && ![...meusNumeros].some(function (x) { return deles.has(x); })) {
         s *= NUMEROS_DIFERENTES; cortou = true;
       }
-      if (s > 0.15) parecidas.push({ s: s, n: n, cortou: cortou });
+      if (s > 0.15 || bruta >= LIMIAR_OFICIAL_ASSUNTO) parecidas.push({ s: s, bruta: bruta, n: n, cortou: cortou });
     });
     parecidas.sort(function (a, b) { return b.s - a.s; });
 
     var original = veiculos[alvo.veiculo_id];
     var gOriginal = alvo.veiculo_id ? grupo(original, alvo.veiculo_id) : null;
-    var usados = {}, linhas = [], checagem = false, produto = 1, grupos = 0;
-    parecidas.slice(0, 12).forEach(function (x) {
+    var usados = {}, linhas = [], checagem = false, produto = 1, grupos = 0, oficiais = 0, conferem = false, divergem = false;
+    var meusDados = dados(alvo);
+    parecidas.slice(0, 14).forEach(function (x) {
       var v = veiculos[x.n.veiculo_id] || {};
-      var linha = { titulo: x.n.titulo, veiculo: v.nome || x.n.veiculo_id, s: x.s, cortou: x.cortou, p: null, nota: '', tipo: v.tipo };
+      var linha = { titulo: x.n.titulo, veiculo: v.nome || x.n.veiculo || x.n.veiculo_id, s: x.s, cortou: x.cortou, p: null, nota: '', tipo: v.tipo };
       var g = grupo(v, x.n.veiculo_id);
+      if (x.n.uso === 'oficial' || v.tipo === 'oficial') {
+        var cruz = cruzarDados(meusDados, dados(x.n));
+        linha.s = x.bruta; linha.cortou = false;
+        if (g === gOriginal) linha.nota = 'nota do próprio órgão: não confirma a si mesma';
+        else if (cruz.divergem && x.bruta >= LIMIAR_OFICIAL_ASSUNTO) { divergem = true; linha.nota = 'fonte oficial com números diferentes: impede Confirmada'; }
+        else if (x.bruta >= LIMIAR_OFICIAL && !usados[g]) {
+          usados[g] = true;
+          var f = Math.min(1, (x.bruta - LIMIAR_OFICIAL) / (SIMILARIDADE_FORTE - LIMIAR_OFICIAL));
+          linha.p = PESO_TIPO.oficial * (0.6 + 0.4 * f);
+          produto *= 1 - linha.p;
+          oficiais++;
+          if (cruz.conferem) conferem = true;
+          linha.nota = 'fonte oficial sobre o mesmo fato' + (cruz.conferem ? ', os números conferem' : '');
+        } else linha.nota = 'fonte oficial sobre outro assunto';
+        linha.tipo = null;
+        linhas.push(linha);
+        return;
+      }
       if (x.s < LIMIAR_FATO) {
         linha.nota = 'abaixo do limiar: outro fato';
       } else if (x.n.uso === 'checagens' || v.tipo === 'checador') {
@@ -156,9 +207,13 @@
     var base = 1 - produto;
     var tipos = new Set(linhas.filter(function (l) { return l.p != null && l.tipo; }).map(function (l) { return l.tipo; }));
     var sinais = sinaisDaNoticia(alvo, tipos.size >= 2);
+    if (conferem) sinais.push(['os números conferem com a fonte oficial', FATOR_DADOS_CONFEREM]);
+    if (divergem) sinais.push(['números diferentes dos da fonte oficial', FATOR_DADOS_DIVERGEM]);
     var c = ajustar(base, sinais);
-    var rotulo = grupos >= 2 && c >= CONFIANCA_CONFIRMADA && !checagem ? 'confirmada' : 'em-apuracao';
-    return { rotulo: rotulo, base: base, confianca: c, sinais: sinais, grupos: grupos, linhas: linhas, checagem: checagem };
+    var pode = (grupos >= 2 || oficiais > 0) && !checagem && !divergem;
+    var rotulo = pode && c >= CONFIANCA_CONFIRMADA ? 'confirmada' : 'em-apuracao';
+    return { rotulo: rotulo, base: base, confianca: c, sinais: sinais, grupos: grupos, oficiais: oficiais, linhas: linhas,
+      checagem: checagem, divergem: divergem };
   }
 
   // Interface
@@ -208,10 +263,11 @@
     saida.appendChild(el('p', 'calc__conta', conta.length
       ? 'Confirmações: 1 − ' + conta.join(' × ') + ' = ' + pct(r.base) +
         (r.sinais.length ? '. Com os sinais, as chances ' + pct(r.base) + ' ÷ ' + pct(1 - r.base) + ' são multiplicadas e a confiança final fica em ' + pct(r.confianca) : '') +
-        ', com ' + r.grupos + ' grupo(s) independente(s). ' +
-        (r.rotulo === 'confirmada' ? 'Passa dos 70% com ao menos dois grupos: Confirmada.'
+        ', com ' + r.grupos + ' grupo(s) de imprensa e ' + r.oficiais + ' fonte(s) oficial(is). ' +
+        (r.rotulo === 'confirmada' ? 'Passa dos 70% com dois grupos ou uma fonte oficial: Confirmada.'
+          : r.divergem ? 'Os números diferem dos da fonte oficial: não pode ser Confirmada.'
           : r.checagem ? 'Há uma checagem parecida: não pode ser Confirmada.'
-          : 'Precisa de ao menos dois grupos e 70%: Em apuração.')
+          : 'Precisa de dois grupos ou uma fonte oficial, e 70%: Em apuração.')
       : 'Nenhuma notícia passou do limiar de similaridade (48%): Em apuração.'));
   }
 
@@ -229,6 +285,7 @@
       Object.keys(geral.escalas || {}).forEach(function (e) { juntar(geral.escalas[e], 'noticias'); });
       if (est) Object.keys(est.escalas || {}).forEach(function (e) { juntar(est.escalas[e], 'noticias'); });
       juntar(geral.checagens, 'checagens');
+      juntar(geral.oficiais, 'oficial');
       corpus = new Corpus(noticias);
       var opcoes = noticias.filter(function (n) { return n.uso === 'noticias'; }).slice(0, 80).map(function (n, i) {
         var o = el('option', null, n.titulo.slice(0, 90) + ' — ' + n.veiculo);

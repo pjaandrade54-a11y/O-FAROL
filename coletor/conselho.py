@@ -545,6 +545,7 @@ def analisar_por_regras(noticia, veiculos_por_id, conexao, indice=None):
         "fontesNoDossie": len(r["provas"]),
         "pareceres": [parecer],
         "rotulo": rotulo,
+        "oficial": bool(r.get("oficial")),
         "tema": None,
         "consenso": True,
         "destino": "automatico",
@@ -586,6 +587,7 @@ def carregar_analises(conexao):
         saida[linha["link"]] = {
             "rotulo": a["rotulo"],
             "destino": a["destino"],
+            "oficial": a.get("oficial", False),
             "consenso": a["consenso"],
             "motivos": a["motivos"],
             "motivosDestino": a["motivosDestino"],

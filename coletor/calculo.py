@@ -13,7 +13,12 @@
    confirmação por tipos diferentes de veículo × 1,15, atribuição vaga × 0,7, sensacionalismo × 0,75,
    sem data × 0,9) e o resultado volta a ser porcentagem. Uma confirmação com texto quase idêntico ao
    original (90% ou mais) é provável reprodução e vale 60% da força.
-6. Confirmada exige ao menos dois grupos independentes e confiança final ≥ CONFIANCA_CONFIRMADA.
+6. Verificação oficial: a notícia também é comparada com o que órgãos públicos publicaram (polícias,
+   governos, tribunais, IBGE…), coletado dos feeds deles. Uma nota oficial sobre o mesmo fato é uma
+   confirmação forte (peso 0,95). Os números são cruzados: se batem com os da nota, as chances × 1,3; se
+   a nota trata do mesmo assunto com números diferentes, as chances × 0,6 e a notícia não é Confirmada.
+7. Confirmada exige (dois grupos de imprensa independentes ou uma fonte oficial) e confiança final
+   ≥ CONFIANCA_CONFIRMADA, sem checagem parecida nem dados divergentes da fonte oficial.
 
 Tudo é determinístico: a mesma entrada dá sempre o mesmo resultado, e cada número aparece no site.
 """
@@ -59,8 +64,13 @@ SENSACIONALISMO = re.compile(
     r"surpreende|revoltante|assustador|imperd[ií]vel|polêmica|pol[eê]mica)\b", re.I)
 CAIXA_ALTA_PERMITIDA = {"VIDEO", "VÍDEO", "FOTOS", "PODCAST", "AO", "VIVO", "AGORA"}
 
+LIMIAR_OFICIAL = 0.45          # similaridade mínima com uma nota oficial
+LIMIAR_OFICIAL_ASSUNTO = 0.30  # mesmo assunto com dados da mesma unidade (mortos, votos…) para cruzar os números
+FATOR_DADOS_CONFEREM = 1.3
+FATOR_DADOS_DIVERGEM = 0.6
+
 # Quanto vale a confirmação de cada tipo de veículo (checador não confirma fato: ele verifica)
-PESO_TIPO = {"agencia": 0.85, "jornal": 0.9, "tv": 0.9, "radio": 0.85, "revista": 0.85,
+PESO_TIPO = {"oficial": 0.95, "agencia": 0.85, "jornal": 0.9, "tv": 0.9, "radio": 0.85, "revista": 0.85,
              "portal": 0.75, "blog": 0.55, "checador": 0.0}
 PESO_PADRAO = 0.7
 
@@ -102,6 +112,48 @@ def numeros(*textos):
     return {n.replace(".", "").replace(",", "") for t in textos for n in re.findall(r"\d[\d.,]*\d", t or "")}
 
 
+UNIDADES = {"morto": "mortos", "morte": "mortos", "obito": "mortos", "ferido": "feridos", "preso": "presos",
+            "prisao": "presos", "pessoa": "pessoas", "vitima": "vitimas", "caso": "casos", "voto": "votos",
+            "vaga": "vagas", "ano": "anos", "dia": "dias", "hora": "horas", "km": "km", "tonelada": "toneladas",
+            "%": "%", "por cento": "%", "real": "reais", "escola": "escolas", "leito": "leitos", "casa": "casas",
+            "familia": "familias", "desabrigado": "desabrigados", "desalojado": "desalojados", "municipio": "municipios",
+            "cidade": "municipios", "aluno": "alunos", "estudante": "alunos", "veiculo": "veiculos"}
+DADO = re.compile(r"(r\$\s*)?(\d+(?:[.,]\d+)*)\s*(milhoes|milhao|bilhoes|bilhao|mil\b)?\s*"
+                  r"(%|por cento|[a-z]+)?")
+MULTIPLICADOR = {"mil": 1e3, "milhao": 1e6, "milhoes": 1e6, "bilhao": 1e9, "bilhoes": 1e9}
+
+
+def dados(*textos):
+    """Dados do texto como {unidade: {valores}}: "2 mortos", "R$ 18 milhões", "61 votos", "45%"."""
+    saida = defaultdict(set)
+    texto = _sem_acento(" ".join(t or "" for t in textos).lower())
+    for real, numero, mult, palavra in DADO.findall(texto):
+        unidade = None
+        if palavra:
+            base = palavra if palavra in UNIDADES else (palavra[:-1] if palavra.endswith("s") else palavra)
+            base = "prisao" if base in ("prisoe", "prisoes") else base
+            unidade = UNIDADES.get(palavra) or UNIDADES.get(base)
+        if real and not unidade:
+            unidade = "reais"
+        if not unidade:
+            continue
+        try:
+            valor = float(numero.replace(".", "").replace(",", ".")) * MULTIPLICADOR.get(mult, 1)
+        except ValueError:
+            continue
+        saida[unidade].add(valor)
+    return saida
+
+
+def cruzar_dados(meus, deles):
+    """(conferem, divergem): alguma unidade em comum com o mesmo valor; ou unidades em comum só com valores
+    diferentes."""
+    comuns = set(meus) & set(deles)
+    conferem = any(meus[u] & deles[u] for u in comuns)
+    divergem = bool(comuns) and not conferem
+    return conferem, divergem
+
+
 def _quando(linha):
     try:
         return datetime.fromisoformat(linha["publicado_em"] or linha["coletado_em"])
@@ -138,7 +190,8 @@ class Corpus:
         return self._vetor(termos(noticia["titulo"], 2.0) + termos(noticia["resumo"], 1.0))
 
     def parecidas(self, noticia):
-        """(similaridade, linha) das notícias de outros veículos publicadas até 72 h antes ou depois."""
+        """(similaridade, linha, similaridade antes do corte por números) das notícias de outros veículos
+        publicadas até 72 h antes ou depois."""
         alvo = self.vetor(noticia)
         quando = _quando(noticia)
         candidatas = set()
@@ -154,10 +207,11 @@ class Corpus:
                 continue
             vetor = self.vetores[link]
             similaridade = sum(v * vetor.get(p, 0.0) for p, v in alvo.items())
+            bruta = similaridade
             meus, deles = numeros(noticia["titulo"], noticia["resumo"]), self.numeros[link]
             if meus and deles and not meus & deles:
                 similaridade *= NUMEROS_DIFERENTES
-            saida.append((similaridade, outra))
+            saida.append((similaridade, outra, bruta))
         saida.sort(key=lambda x: x[0], reverse=True)
         return saida
 
@@ -229,17 +283,32 @@ def classificar(noticia, corpus, veiculos_por_id):
 
     original = veiculos_por_id.get(noticia["veiculo_id"])
     grupo_original = _grupo(original, noticia["veiculo_id"])
-    por_grupo, checagens = {}, []
-    for similaridade, outra in corpus.parecidas(noticia):
-        if similaridade < LIMIAR_FATO:
-            break
+    por_grupo, checagens, oficiais, divergentes = {}, [], {}, []
+    meus_dados = dados(noticia["titulo"], noticia["resumo"])
+    for similaridade, outra, bruta in corpus.parecidas(noticia):
+        if bruta < LIMIAR_OFICIAL_ASSUNTO and similaridade < LIMIAR_FATO:
+            continue
         veiculo = veiculos_por_id.get(outra["veiculo_id"]) or {}
+        grupo = _grupo(veiculo, outra["veiculo_id"])
+        if eh_oficial(veiculo, outra):
+            if grupo == grupo_original:
+                continue  # a nota do próprio órgão que publicou a notícia não confirma a si mesma
+            conferem, divergem = cruzar_dados(meus_dados, dados(outra["titulo"], outra["resumo"]))
+            if divergem and bruta >= LIMIAR_OFICIAL_ASSUNTO:
+                divergentes.append((bruta, outra, veiculo))
+            elif bruta >= LIMIAR_OFICIAL and grupo not in oficiais:
+                similaridade = bruta  # com a nota oficial, os números são cruzados à parte
+                forca = min(1.0, (similaridade - LIMIAR_OFICIAL) / (SIMILARIDADE_FORTE - LIMIAR_OFICIAL))
+                p = PESO_TIPO["oficial"] * (0.6 + 0.4 * forca)
+                oficiais[grupo] = (p, similaridade, outra, veiculo, conferem)
+            continue
+        if similaridade < LIMIAR_FATO:
+            continue
         checador = outra["uso"] == "checagens" or veiculo.get("tipo") == "checador"
         if checador:
             if similaridade >= LIMIAR_CHECAGEM and CHECAGEM_FALSO.search(outra["titulo"]):
                 checagens.append((similaridade, outra, veiculo))
             continue
-        grupo = _grupo(veiculo, outra["veiculo_id"])
         if grupo == grupo_original or grupo in por_grupo:
             continue  # o mesmo grupo de mídia conta uma vez só, e o do original não conta
         forca = min(1.0, (similaridade - LIMIAR_FATO) / (SIMILARIDADE_FORTE - LIMIAR_FATO))
@@ -248,37 +317,71 @@ def classificar(noticia, corpus, veiculos_por_id):
             p *= FATOR_REPRODUCAO  # texto quase idêntico: mais provável que reproduza, não que confirme
         por_grupo[grupo] = (p, similaridade, outra, veiculo)
 
-    base = 1 - math.prod(1 - p for p, *_ in por_grupo.values())
+    # Confirmações: imprensa e fontes oficiais somadas como evidências independentes
+    pesos = [x[0] for x in por_grupo.values()] + [x[0] for x in oficiais.values()]
+    base = 1 - math.prod(1 - p for p in pesos)
     tipos = {(v.get("tipo") or "") for _, _, _, v in por_grupo.values()}
     sinais = sinais_da_noticia(noticia, len({t for t in tipos if t}) >= 2)
+    if any(x[4] for x in oficiais.values()):
+        sinais.append(("os números conferem com a fonte oficial", FATOR_DADOS_CONFEREM))
+    if divergentes:
+        sinais.append(("números diferentes dos da fonte oficial", FATOR_DADOS_DIVERGEM))
     confianca = ajustar(base, sinais)
+
     provas = [{"linha": outra, "veiculo": veiculo.get("nome") or outra["veiculo_id"],
-               "explicacao": f"Mesmo fato (similaridade {round(s * 100)}%, peso da confirmação {round(p * 100)}%"
-                             + (", texto quase idêntico: provável reprodução" if s >= REPRODUCAO else "") + ")"}
-              for p, s, outra, veiculo in sorted(por_grupo.values(), key=lambda x: x[0], reverse=True)]
-    conta = (f"Confirmações: {round(base * 100)}% (1 − Π(1 − p) sobre {len(por_grupo)} grupo(s) de mídia "
-             f"independente(s)).")
-    if sinais and por_grupo:
-        conta += (" Sinais da notícia: " + "; ".join(f"{t} (× {str(f).replace('.', ',')})" for t, f in sinais)
-                  + f". Confiança final: {round(confianca * 100)}%.")
-    if not por_grupo:
-        conta = ("Sinais da notícia: " + "; ".join(t for t, _ in sinais) + ".") if sinais else None
+               "explicacao": f"Fonte oficial sobre o mesmo fato (similaridade {round(s * 100)}%, peso {round(p * 100)}%"
+                             + (", os números conferem" if conferem else "") + ")"}
+              for p, s, outra, veiculo, conferem in sorted(oficiais.values(), key=lambda x: x[0], reverse=True)]
+    provas += [{"linha": outra, "veiculo": veiculo.get("nome") or outra["veiculo_id"],
+                "explicacao": f"Mesmo fato (similaridade {round(s * 100)}%, peso da confirmação {round(p * 100)}%"
+                              + (", texto quase idêntico: provável reprodução" if s >= REPRODUCAO else "") + ")"}
+               for p, s, outra, veiculo in sorted(por_grupo.values(), key=lambda x: x[0], reverse=True)]
+    partes = []
+    if por_grupo:
+        partes.append(f"{len(por_grupo)} grupo(s) de imprensa independente(s)")
+    if oficiais:
+        partes.append(f"{len(oficiais)} fonte(s) oficial(is)")
+    conta = None
+    if pesos:
+        conta = f"Confirmações: {round(base * 100)}% (1 − Π(1 − p) sobre {' e '.join(partes)})."
+        if sinais:
+            conta += (" Sinais: " + "; ".join(f"{t} (× {str(f).replace('.', ',')})" for t, f in sinais)
+                      + f". Confiança final: {round(confianca * 100)}%.")
+    elif sinais:
+        conta = "Sinais da notícia: " + "; ".join(t for t, _ in sinais) + "."
+
     avisos = []
+    for s, outra, veiculo in divergentes[:1]:
+        avisos.append(f"Os números da notícia são diferentes dos publicados por {veiculo.get('nome') or outra['veiculo_id']} "
+                      f"sobre o mesmo assunto: confira os dados na fonte oficial.")
+        provas.append({"linha": outra, "veiculo": veiculo.get("nome") or outra["veiculo_id"],
+                       "explicacao": f"Fonte oficial sobre o mesmo assunto, com números diferentes (similaridade {round(s * 100)}%)"})
     for s, outra, veiculo in checagens[:1]:
         avisos.append(f"Checagem parecida encontrada ({veiculo.get('nome') or outra['veiculo_id']}, "
                       f"similaridade {round(s * 100)}%): o cálculo não lê o texto para saber se ela desmente esta notícia.")
         provas.append({"linha": outra, "veiculo": veiculo.get("nome") or outra["veiculo_id"],
                        "explicacao": f"Checagem sobre assunto parecido (similaridade {round(s * 100)}%)"})
 
-    if len(por_grupo) >= 2 and confianca >= CONFIANCA_CONFIRMADA and not checagens:
-        nomes = ", ".join(p["veiculo"] for p in provas[:len(por_grupo)])
-        return {"rotulo": "confirmada", "confianca": confianca, "provas": provas, "avisos": avisos,
-                "motivos": [f"{len(por_grupo)} veículos de grupos diferentes publicaram o mesmo fato: {nomes}.", conta]}
-    if por_grupo:
-        falta = ("falta mais um grupo de mídia independente" if len(por_grupo) < 2
+    resultado = {"confianca": confianca, "provas": provas, "avisos": avisos, "oficial": bool(oficiais)}
+    pode = (len(por_grupo) >= 2 or oficiais) and not checagens and not divergentes
+    if pode and confianca >= CONFIANCA_CONFIRMADA:
+        nomes = ", ".join(p["veiculo"] for p in provas[:len(pesos)])
+        quem = " e ".join(partes)
+        return {**resultado, "rotulo": "confirmada",
+                "motivos": [f"Confirmada por {quem}: {nomes}.", conta]}
+    if oficiais and not pode:
+        motivo = "Uma fonte oficial publicou o mesmo fato, mas há um aviso abaixo que impede a confirmação."
+    elif por_grupo and not oficiais:
+        falta = ("falta mais um grupo de imprensa independente ou uma fonte oficial" if len(por_grupo) < 2
                  else f"a confiança precisa chegar a {round(CONFIANCA_CONFIRMADA * 100)}%")
-        motivo = f"{len(por_grupo)} grupo(s) de mídia diferente(s) publicaram o mesmo fato; {falta}."
+        motivo = f"{len(por_grupo)} grupo(s) de imprensa publicaram o mesmo fato; {falta}."
+    elif oficiais:
+        motivo = f"Há fonte oficial sobre o fato, mas a confiança precisa chegar a {round(CONFIANCA_CONFIRMADA * 100)}%."
     else:
-        motivo = "Nenhum outro veículo acompanhado publicou este fato até agora."
-    return {"rotulo": "em-apuracao", "confianca": confianca, "provas": provas, "avisos": avisos,
-            "motivos": [motivo] + ([conta] if conta else [])}
+        motivo = "Nenhum outro veículo nem fonte oficial acompanhada publicou este fato até agora."
+    return {**resultado, "rotulo": "em-apuracao", "motivos": [motivo] + ([conta] if conta else [])}
+
+
+def eh_oficial(veiculo, linha):
+    """Órgão público (governo, polícia, tribunal, Legislativo, IBGE…) ou nota coletada como oficial."""
+    return veiculo.get("tipo") == "oficial" or linha["uso"] == "oficial"

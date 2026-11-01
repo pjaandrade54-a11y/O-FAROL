@@ -100,6 +100,11 @@
       var chip = el('span', 'rotulo rotulo--' + a.rotulo, m.ROTULOS[a.rotulo] + selo + (c != null ? ' · ' + c + '%' : ''));
       if (c != null) chip.title = 'Confiança calculada: ' + c + '%';
       meta.appendChild(chip);
+      if (a.oficial) {
+        var selo = el('span', 'rotulo rotulo--oficial', 'Fonte oficial');
+        selo.title = 'Um órgão público publicou o mesmo fato';
+        meta.appendChild(selo);
+      }
     } else {
       meta.appendChild(el('span', 'rotulo rotulo--aguardando', 'Aguardando análise'));
     }

@@ -155,6 +155,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .rotulo--desmentida { color: #8c1d18; background: #f9e3e1; }
 .rotulo--opiniao { color: var(--azul); background: var(--azul-fundo); }
 .rotulo--dados-insuficientes { color: #4a4943; background: #ebe8e0; }
+.rotulo--oficial { color: #0e3a6b; background: #dde9f8; }
 .rotulo--aguardando { color: var(--texto); background: var(--papel-escuro); }
 .noticia__vazia { font-style: italic; color: var(--texto-suave); }
 

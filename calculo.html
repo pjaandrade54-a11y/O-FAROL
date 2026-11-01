@@ -69,15 +69,17 @@
       </section>
 
       <section id="passos">
-        <h2>O cálculo em seis passos</h2>
+        <h2>O cálculo em sete passos</h2>
         <ol class="lista-numerada">
           <li><strong>A notícia vira números.</strong> O título (peso 2) e o resumo (peso 1) são separados em palavras, sem acento e sem plural simples. Palavras como “de”, “para” e “veja” são ignoradas. Nomes próprios e números valem 1,5 vez mais.</li>
           <li><strong>Palavras raras valem mais (TF-IDF).</strong> Cada palavra ganha o peso <code>(1 + log n) × idf</code>, em que <code>n</code> é quantas vezes ela aparece na notícia e <code>idf = log((N + 1) / (d + 1)) + 1</code>, com <code>N</code> notícias no período e <code>d</code> notícias que usam a palavra. “Aracaju” aparece em muitas notícias e pesa pouco; “Badyally” aparece em poucas e pesa muito.</li>
           <li><strong>Mesmo fato (similaridade de cosseno).</strong> A similaridade entre duas notícias é o cosseno entre os dois vetores de palavras: 0% quando não têm nada em comum, 100% quando são iguais. Duas notícias tratam do mesmo fato com <strong>48% ou mais</strong>, publicadas com até 72 horas de diferença. Se as duas trazem números e nenhum coincide (o concurso 3079 e o 3080, por exemplo), a similaridade cai pela metade.</li>
           <li><strong>Força de cada confirmação.</strong> Só conta um veículo por grupo de mídia, e o grupo do veículo original não conta. A força é <code>p = peso do tipo × (0,6 + 0,4 × f)</code>, em que <code>f</code> vai de 0 (similaridade de 48%) a 1 (80% ou mais). Um texto quase idêntico ao original (90% ou mais) é provável reprodução, não apuração própria, e vale 60% da força.</li>
           <li><strong>Confirmações somadas.</strong> As confirmações se somam como evidências independentes: <code>C = 1 − (1 − p₁) × (1 − p₂) × …</code>.</li>
-          <li><strong>Sinais da própria notícia.</strong> A confiança vira chances, <code>C ÷ (1 − C)</code>, cada sinal da tabela abaixo multiplica as chances, e o resultado volta a ser porcentagem: <code>chances ÷ (1 + chances)</code>. É uma atualização bayesiana: os sinais ajustam a confiança, mas não criam confirmação onde ela não existe. A notícia é <strong>Confirmada</strong> com pelo menos dois grupos independentes e <strong>confiança final de 70% ou mais</strong>. Abaixo disso, fica <strong>Em apuração</strong> e é recalculada a cada coleta.</li>
+          <li><strong>Sinais da própria notícia.</strong> A confiança vira chances, <code>C ÷ (1 − C)</code>, cada sinal da tabela abaixo multiplica as chances, e o resultado volta a ser porcentagem: <code>chances ÷ (1 + chances)</code>. É uma atualização bayesiana: os sinais ajustam a confiança, mas não criam confirmação onde ela não existe.</li>
+          <li><strong>Verificação oficial.</strong> A notícia também é comparada com o que órgãos públicos publicaram nas últimas 72 horas: polícias, governos federal e estaduais, prefeituras, tribunais, Ministério Público, Senado, Câmara, IBGE. O Farol lê os canais oficiais desses órgãos a cada coleta. Uma nota oficial sobre o mesmo fato (similaridade de 45% ou mais) é uma confirmação forte, com peso 0,95. Os <strong>dados</strong> são cruzados: o cálculo lê número e unidade (“2 mortos”, “R$ 18 milhões”, “61 votos”, “45%”) nos dois textos. Se os números da mesma unidade batem, as chances × 1,3; se a nota oficial trata do mesmo assunto com números diferentes, as chances × 0,6 e a notícia não pode ser Confirmada até a diferença se resolver.</li>
         </ol>
+        <p>A notícia é <strong>Confirmada</strong> com <strong>dois grupos de imprensa independentes ou uma fonte oficial</strong>, e <strong>confiança final de 70% ou mais</strong>, sem checagem parecida nem números divergentes da fonte oficial. Abaixo disso, fica <strong>Em apuração</strong> e é recalculada a cada coleta. Quando um órgão público confirmou o fato, a notícia ganha o selo <span class="rotulo rotulo--oficial">Fonte oficial</span>.</p>
         <h3 class="subtitulo">Peso de cada tipo de veículo</h3>
         <div class="tabela-rolagem">
           <table class="tabela">
@@ -88,6 +90,7 @@
               <tr><td>Portal</td><td>0,75</td></tr>
               <tr><td>Veículo sem tipo cadastrado</td><td>0,70</td></tr>
               <tr><td>Blog</td><td>0,55</td></tr>
+              <tr><td>Fonte oficial (órgão público)</td><td>0,95</td></tr>
               <tr><td>Checador de fatos</td><td>não confirma fato: verifica</td></tr>
             </tbody>
           </table>
