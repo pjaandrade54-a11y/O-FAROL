@@ -1,7 +1,13 @@
 // O Farol — formulário de contestação (contestar.html)
-// Monta o e-mail da contestação com os dados dela e a avaliação atual do painel.
+// Lista as notícias reais do site, mostra o rótulo e a conta atuais e monta o e-mail da contestação.
+// contestar.html?n=<link da notícia> já chega com a notícia escolhida.
 
-(function (m, agentes, casos, config) {
+(function () {
+  var EMAIL = (window.Farol && Farol.site && Farol.site.email) || 'ofarolnws@gmail.com';
+  var PRAZO = '3 dias úteis';
+  var NOMES = { 'confirmada': 'Confirmada', 'em-apuracao': 'Em apuração', 'opiniao': 'Opinião ou análise',
+    'dados-insuficientes': 'Dados insuficientes', 'desmentida': 'Desmentida', 'contestada': 'Contestada' };
+
   var form = document.getElementById('form-contestacao');
   var noticia = document.getElementById('c-noticia');
   var campoOutra = document.getElementById('campo-outra');
@@ -9,40 +15,58 @@
   var atual = document.getElementById('rotulo-atual');
   var erro = document.getElementById('erro-contestacao');
   var confirmacao = document.getElementById('confirmacao');
+  var mensagem = document.getElementById('mensagem-pronta');
+  var copiaStatus = document.getElementById('copia-status');
+  var noticias = [];
 
-  casos.forEach(function (c) {
+  function opcao(valor, texto) {
     var op = document.createElement('option');
-    op.value = c.id;
-    op.textContent = c.titulo;
-    noticia.appendChild(op);
-  });
-  var opOutra = document.createElement('option');
-  opOutra.value = 'outra';
-  opOutra.textContent = 'Outra notícia';
-  noticia.appendChild(opOutra);
-
-  function casoEscolhido() {
-    return casos.filter(function (c) { return c.id === noticia.value; })[0];
+    op.value = valor;
+    op.textContent = texto;
+    return op;
   }
 
-  function avaliar(caso) {
-    var pareceres = agentes.LISTA.map(function (a) { return a.analisar(caso); });
-    return { pareceres: pareceres, decisao: agentes.decidir(caso, pareceres) };
+  function escolhida() { return noticias[parseInt(noticia.value, 10)]; }
+
+  function descrever(n) {
+    var a = n.analise;
+    if (!a) return 'Ainda sem rótulo: ele aparece na próxima coleta.';
+    var p = (a.pareceres || [])[0] || {};
+    var c = typeof p.confianca === 'number' ? ', confiança calculada de ' + Math.round(p.confianca * 100) + '%' : '';
+    return 'Rótulo atual: ' + (NOMES[a.rotulo] || a.rotulo) + c + '. ' + (p.motivos || a.motivos || []).join(' ');
   }
 
   function mostrarAtual() {
     campoOutra.hidden = noticia.value !== 'outra';
-    var caso = casoEscolhido();
-    if (!caso) { atual.textContent = ''; return; }
-    var d = avaliar(caso).decisao;
-    atual.textContent = 'Avaliação atual: ' + m.ROTULOS[d.rotulo] + ' (pontuação ' + d.pontuacao.total + ' de 100' +
-      (d.destino === 'relator' ? ', decidida pelo Relator de IA' : '') + ').';
+    var n = escolhida();
+    atual.textContent = n ? descrever(n) : '';
   }
   noticia.addEventListener('change', mostrarAtual);
 
-  // Permite chegar já com a notícia escolhida: contestar.html#caso-escolas
-  var pedido = casos.filter(function (c) { return location.hash === '#caso-' + c.id; })[0];
-  if (pedido) { noticia.value = pedido.id; mostrarAtual(); }
+  // Notícias do site: o arquivo geral e o do estado do leitor
+  var uf = (window.Farol && Farol.local && Farol.local.lerOuPadrao && Farol.local.lerOuPadrao().uf) || 'SE';
+  Promise.all([
+    fetch('dados/noticias.json').then(function (r) { return r.json(); }),
+    fetch('dados/estados/' + uf + '.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+  ]).then(function (res) {
+    var vistos = {};
+    [res[0], res[1]].forEach(function (arquivo) {
+      if (!arquivo) return;
+      Object.keys(arquivo.escalas || {}).forEach(function (e) {
+        (arquivo.escalas[e] || []).forEach(function (n) {
+          if (!vistos[n.link]) { vistos[n.link] = true; noticias.push(n); }
+        });
+      });
+    });
+    noticias.sort(function (a, b) { return (b.publicado_em || '').localeCompare(a.publicado_em || ''); });
+    noticias.forEach(function (n, i) { noticia.appendChild(opcao(String(i), n.titulo.slice(0, 100) + ' — ' + n.veiculo)); });
+    noticia.appendChild(opcao('outra', 'Outra notícia'));
+    var pedido = new URLSearchParams(location.search).get('n');
+    var indice = pedido ? noticias.findIndex(function (n) { return n.link === pedido; }) : -1;
+    if (indice >= 0) { noticia.value = String(indice); mostrarAtual(); }
+  }).catch(function () {
+    noticia.appendChild(opcao('outra', 'Outra notícia'));
+  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -59,12 +83,15 @@
     }
     erro.textContent = '';
 
-    var caso = casoEscolhido();
-    var tituloNoticia = caso ? caso.titulo : outra.value.trim();
+    var n = escolhida();
+    var titulo = n ? n.titulo : outra.value.trim();
     var linhas = [
       'Contestação recebida pelo site do Farol.',
       '',
-      'Notícia: ' + tituloNoticia,
+      'Notícia: ' + titulo
+    ];
+    if (n) linhas.push('Veículo: ' + n.veiculo, 'Link: ' + n.link, descrever(n));
+    linhas.push(
       'O que é contestado: ' + document.getElementById('c-alvo').value,
       'Quem contesta: ' + document.getElementById('c-quem').value,
       'E-mail para resposta: ' + email.value.trim(),
@@ -73,23 +100,15 @@
       explicacao.value.trim(),
       '',
       'Provas:',
-      document.getElementById('c-provas').value.trim() || '(nenhuma informada)'
-    ];
-    if (caso) {
-      var av = avaliar(caso);
-      linhas.push('', 'Avaliação atual do painel: ' + m.ROTULOS[av.decisao.rotulo] + ' (pontuação ' + av.decisao.pontuacao.total + ' de 100)');
-      av.pareceres.forEach(function (p) {
-        var nome = agentes.LISTA.filter(function (a) { return a.id === p.agente; })[0].nome;
-        linhas.push('- ' + nome + ': ' + m.ROTULOS[p.rotuloSugerido] + '. ' + p.motivos.join(' '));
-      });
-    }
-    linhas.push('', 'Prazo: nova análise por e-mail em até ' + config.prazoConselho + '.');
+      document.getElementById('c-provas').value.trim() || '(nenhuma informada)',
+      '',
+      'Prazo: resposta, com a conta refeita, em até ' + PRAZO + '.');
 
-    var assunto = '[Conselho] Contestação: ' + tituloNoticia;
+    var assunto = 'Contestação: ' + titulo;
     var corpo = linhas.join('\r\n');
-    document.getElementById('link-email').href = 'mailto:' + config.emailConselho +
+    document.getElementById('link-email').href = 'mailto:' + EMAIL +
       '?subject=' + encodeURIComponent(assunto) + '&body=' + encodeURIComponent(corpo);
-    mensagem.value = 'Para: ' + config.emailConselho + '\r\nAssunto: ' + assunto + '\r\n\r\n' + corpo;
+    mensagem.value = 'Para: ' + EMAIL + '\r\nAssunto: ' + assunto + '\r\n\r\n' + corpo;
     copiaStatus.textContent = '';
 
     form.hidden = true;
@@ -97,8 +116,6 @@
     confirmacao.focus();
   });
 
-  var mensagem = document.getElementById('mensagem-pronta');
-  var copiaStatus = document.getElementById('copia-status');
   document.getElementById('copiar-mensagem').addEventListener('click', function () {
     Farol.copiar(mensagem.value, mensagem, copiaStatus);
   });
@@ -108,4 +125,4 @@
     form.reset();
     mostrarAtual();
   });
-})(Farol.metodologia, Farol.agentes, Farol.casos, Farol.config);
+})();

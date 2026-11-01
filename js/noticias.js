@@ -96,17 +96,33 @@
     var meta = el('p', 'noticia__meta');
     if (a && m.ROTULOS[a.rotulo]) {
       var selo = a.destino === 'conselho' ? ' · provisório' : '';
-      meta.appendChild(el('span', 'rotulo rotulo--' + a.rotulo, m.ROTULOS[a.rotulo] + selo));
+      var c = confianca(a);
+      var chip = el('span', 'rotulo rotulo--' + a.rotulo, m.ROTULOS[a.rotulo] + selo + (c != null ? ' · ' + c + '%' : ''));
+      if (c != null) chip.title = 'Confiança calculada: ' + c + '%';
+      meta.appendChild(chip);
     } else {
       meta.appendChild(el('span', 'rotulo rotulo--aguardando', 'Aguardando análise'));
     }
     meta.appendChild(document.createTextNode(n.veiculo + (n.publicado_em ? ' · ' + tempoDesde(n.publicado_em) : '')));
     li.appendChild(meta);
     var acoes = el('div', 'noticia__acoes');
-    if (a && m.ROTULOS[a.rotulo]) acoes.appendChild(detalhesAnalise(a));
+    if (a && m.ROTULOS[a.rotulo]) {
+      var det = detalhesAnalise(a);
+      det.querySelector('.analise__links a:last-child').href = 'contestar.html?n=' + encodeURIComponent(n.link);
+      acoes.appendChild(det);
+    }
     if (/^https?:\/\//i.test(n.link)) acoes.appendChild(botaoCompartilhar(n, a));
     li.appendChild(acoes);
     return li;
+  }
+
+  // Confiança do Cálculo de evidências, em %, quando a notícia tem rótulo de veracidade
+  function confianca(a) {
+    var p = (a.pareceres || [])[0];
+    if (!p || typeof p.confianca !== 'number' || a.rotulo === 'opiniao' || a.rotulo === 'dados-insuficientes') return null;
+    if (a.rotulo !== 'confirmada' && (a.motivosDestino || []).length) return null; // checagem parecida: o aviso explica
+    var c = Math.round(p.confianca * 100);
+    return c > 0 ? c : null; // fonte única: "Em apuração" já diz tudo
   }
 
   // Compartilhar no WhatsApp: título, rótulo, link do veículo e o convite para o Farol
@@ -170,6 +186,15 @@
       }
       caixa.appendChild(bloco);
     });
+    var rodape = el('p', 'analise__links');
+    var conta = el('a', null, 'Como é feita a conta');
+    conta.href = 'calculo.html';
+    var contestar = el('a', null, 'Contestar este rótulo');
+    contestar.href = 'contestar.html?n=' + encodeURIComponent(caixa.dataset.link || '');
+    rodape.appendChild(conta);
+    rodape.appendChild(document.createTextNode(' · '));
+    rodape.appendChild(contestar);
+    caixa.appendChild(rodape);
     return caixa;
   }
 
@@ -247,13 +272,14 @@
     var analisadas = visiveis.filter(function (n) { return n.analise; }).length;
     var data = new Date(dados.gerado_em);
     var atualizado = data.toLocaleString('pt-BR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-    var analise = analisadas === visiveis.length ? 'Todas já foram analisadas. '
-      : analisadas ? analisadas + ' de ' + visiveis.length + ' já foram analisadas; as demais aguardam a próxima rodada. '
-      : 'Estas notícias ainda não foram analisadas. ';
+    var analise = analisadas ? 'Rótulos e confiança calculados sem IA, refeitos a cada coleta. '
+      : 'Os rótulos aparecem na próxima coleta. ';
+    var verConta = el('a', null, 'Veja o cálculo');
+    verConta.href = 'calculo.html';
     legenda.replaceChildren(
       document.createTextNode('Notícias reais de ' + dados.veiculos.length + ' veículos, coletadas em ' + atualizado +
         '. Os títulos levam ao site de cada veículo. ' + analise),
-      linkEntendaRotulos());
+      verConta, document.createTextNode(' · '), linkEntendaRotulos());
     document.querySelectorAll('[data-atualizado]').forEach(function (no) {
       no.textContent = ' · atualizado às ' + data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     });
