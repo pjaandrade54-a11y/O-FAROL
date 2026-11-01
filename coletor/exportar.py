@@ -49,6 +49,8 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
             "cidade": _da_lista(linha, "cidade"),
             "analise": analise,
         }
+        if linha["autor"]:
+            saida_item["autor"] = linha["autor"]
         # A foto que o veículo anexou (ou a de compartilhamento da página da matéria)
         if linha["imagem"]:
             saida_item["imagem"] = linha["imagem"]

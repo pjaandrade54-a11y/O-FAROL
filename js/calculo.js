@@ -5,6 +5,36 @@
 (function () {
   var LIMIAR_FATO = 0.48, SIMILARIDADE_FORTE = 0.80, CONFIANCA_CONFIRMADA = 0.70, LIMIAR_CHECAGEM = 0.50;
   var NUMEROS_DIFERENTES = 0.5, HORAS = 72, MINIMO_DE_PALAVRAS = 4, COMUM_DEMAIS = 0.05;
+  var REPRODUCAO = 0.90, FATOR_REPRODUCAO = 0.6;
+  var FATOR = { oficial: 1.5, autor: 1.15, tipos: 1.15, vaga: 0.7, alarme: 0.75, semData: 0.9 };
+  var FONTE_OFICIAL_NOME = /(^|[^\p{L}])(pol[ií]cia (militar|civil|federal|rodovi[aá]ria federal)|corpo de bombeiros|bombeiros|defesa civil|prefeitura|governo (federal|do estado|estadual)|minist[eé]rio|secretaria|tribunal|justi[cç]a eleitoral|c[aâ]mara (municipal|dos deputados)|senado|assembleia legislativa|banco central|receita federal|di[aá]rio oficial|caixa econ[oô]mica|instituto nacional)(?![\p{L}])/iu;
+  var FONTE_OFICIAL_SIGLA = /\b(PM|PF|PRF|IBGE|Ipea|Inmet|Anvisa|Fiocruz|STF|STJ|TSE|TRE|TCU|TJ[A-Z]{0,2}|MPF|MP[A-Z]{2}|INSS|DOU|OMS|ONU|Ibama|ICMBio|Detran|SUS|Petrobras|Aneel|Anatel|Datafolha|Quaest)\b/;
+  var ATRIBUICAO_VAGA = /(^|[^\p{L}])(fontes? (dizem|afirmam|apontam|ouvidas)|segundo rumores|rumores?|circula(m)? nas redes|viraliza|nas redes sociais|teria(m)? (sido|dito|feito)|supostamente|suposto|boato|dizem que)(?![\p{L}])/iu;
+  var SENSACIONALISMO = /(^|[^\p{L}])(chocante|urgente|bomba|inacredit[aá]vel|absurdo|esc[aâ]ndalo|bizarro|voc[eê] n[aã]o vai acreditar|surpreende|revoltante|assustador|imperd[ií]vel|pol[eê]mica)(?![\p{L}])/iu;
+  var CAIXA_ALTA_PERMITIDA = new Set(['VIDEO', 'VÍDEO', 'FOTOS', 'PODCAST', 'AO', 'VIVO', 'AGORA']);
+
+  function sinaisDaNoticia(n, tiposDiferentes) {
+    var titulo = n.titulo || '', texto = titulo + ' ' + (n.resumo || ''), sinais = [], m;
+    if ((m = texto.match(FONTE_OFICIAL_NOME))) sinais.push(['cita fonte oficial (' + m[2] + ')', FATOR.oficial]);
+    else if ((m = texto.match(FONTE_OFICIAL_SIGLA))) sinais.push(['cita fonte oficial (' + m[1] + ')', FATOR.oficial]);
+    if (n.autor) sinais.push(['autor identificado', FATOR.autor]);
+    if (tiposDiferentes) sinais.push(['confirmada por tipos diferentes de veículo', FATOR.tipos]);
+    if ((m = texto.match(ATRIBUICAO_VAGA))) sinais.push(['atribuição vaga (“' + m[2] + '”)', FATOR.vaga]);
+    var alarmes = [];
+    if (titulo.indexOf('!') >= 0) alarmes.push('exclamação no título');
+    if ((titulo.match(/[A-ZÀ-Ý]{5,}/g) || []).some(function (p) { return !CAIXA_ALTA_PERMITIDA.has(p); })) alarmes.push('palavra em caixa alta no título');
+    if ((m = titulo.match(SENSACIONALISMO))) alarmes.push('termo sensacionalista (“' + m[2] + '”)');
+    alarmes.slice(0, 2).forEach(function (a) { sinais.push([a, FATOR.alarme]); });
+    if (!n.digitado && !n.publicado_em) sinais.push(['sem data de publicação', FATOR.semData]);
+    return sinais;
+  }
+
+  function ajustar(base, sinais) {
+    if (base <= 0) return 0;
+    var b = Math.min(base, 0.999), chances = b / (1 - b);
+    sinais.forEach(function (s) { chances *= s[1]; });
+    return chances / (1 + chances);
+  }
   var PESO_TIPO = { agencia: 0.85, jornal: 0.9, tv: 0.9, radio: 0.85, revista: 0.85, portal: 0.75, blog: 0.55, checador: 0 };
   var PESO_PADRAO = 0.7;
   var VAZIAS = new Set(('a o as os um uma uns umas de da do das dos em na no nas nos por para pela pelo pelas pelos com sem sob ' +
@@ -101,7 +131,7 @@
     var usados = {}, linhas = [], checagem = false, produto = 1, grupos = 0;
     parecidas.slice(0, 12).forEach(function (x) {
       var v = veiculos[x.n.veiculo_id] || {};
-      var linha = { titulo: x.n.titulo, veiculo: v.nome || x.n.veiculo_id, s: x.s, cortou: x.cortou, p: null, nota: '' };
+      var linha = { titulo: x.n.titulo, veiculo: v.nome || x.n.veiculo_id, s: x.s, cortou: x.cortou, p: null, nota: '', tipo: v.tipo };
       var g = grupo(v, x.n.veiculo_id);
       if (x.s < LIMIAR_FATO) {
         linha.nota = 'abaixo do limiar: outro fato';
@@ -116,15 +146,19 @@
         usados[g] = true;
         var forca = Math.min(1, (x.s - LIMIAR_FATO) / (SIMILARIDADE_FORTE - LIMIAR_FATO));
         linha.p = (PESO_TIPO[v.tipo] != null ? PESO_TIPO[v.tipo] : PESO_PADRAO) * (0.6 + 0.4 * forca);
+        linha.nota = 'confirmação independente';
+        if (x.s >= REPRODUCAO) { linha.p *= FATOR_REPRODUCAO; linha.nota = 'confirmação, mas texto quase idêntico: vale 60%'; }
         produto *= 1 - linha.p;
         grupos++;
-        linha.nota = 'confirmação independente';
       }
       linhas.push(linha);
     });
-    var c = 1 - produto;
+    var base = 1 - produto;
+    var tipos = new Set(linhas.filter(function (l) { return l.p != null && l.tipo; }).map(function (l) { return l.tipo; }));
+    var sinais = sinaisDaNoticia(alvo, tipos.size >= 2);
+    var c = ajustar(base, sinais);
     var rotulo = grupos >= 2 && c >= CONFIANCA_CONFIRMADA && !checagem ? 'confirmada' : 'em-apuracao';
-    return { rotulo: rotulo, confianca: c, grupos: grupos, linhas: linhas, checagem: checagem };
+    return { rotulo: rotulo, base: base, confianca: c, sinais: sinais, grupos: grupos, linhas: linhas, checagem: checagem };
   }
 
   // Interface
@@ -164,9 +198,17 @@
     tabela.appendChild(corpo);
     var rolagem = el('div', 'tabela-rolagem'); rolagem.appendChild(tabela);
     saida.appendChild(rolagem);
-    var conta = r.linhas.filter(function (l) { return l.p != null; }).map(function (l) { return '(1 − ' + l.p.toFixed(2) + ')'; });
+    var conta = r.linhas.filter(function (l) { return l.p != null; }).map(function (l) { return '(1 − ' + l.p.toFixed(2).replace('.', ',') + ')'; });
+    if (r.sinais.length) {
+      var lista = el('ul', 'lista-marcada');
+      r.sinais.forEach(function (s) { lista.appendChild(el('li', null, s[0] + ': chances × ' + String(s[1]).replace('.', ','))); });
+      saida.appendChild(el('p', null, 'Sinais da própria notícia:'));
+      saida.appendChild(lista);
+    }
     saida.appendChild(el('p', 'calc__conta', conta.length
-      ? 'C = 1 − ' + conta.join(' × ') + ' = ' + pct(r.confianca) + ', com ' + r.grupos + ' grupo(s) independente(s). ' +
+      ? 'Confirmações: 1 − ' + conta.join(' × ') + ' = ' + pct(r.base) +
+        (r.sinais.length ? '. Com os sinais, as chances ' + pct(r.base) + ' ÷ ' + pct(1 - r.base) + ' são multiplicadas e a confiança final fica em ' + pct(r.confianca) : '') +
+        ', com ' + r.grupos + ' grupo(s) independente(s). ' +
         (r.rotulo === 'confirmada' ? 'Passa dos 70% com ao menos dois grupos: Confirmada.'
           : r.checagem ? 'Há uma checagem parecida: não pode ser Confirmada.'
           : 'Precisa de ao menos dois grupos e 70%: Em apuração.')
@@ -206,7 +248,7 @@
   document.getElementById('calc-form').addEventListener('submit', function (e) {
     e.preventDefault();
     if (!corpus || !campo.value.trim()) return;
-    mostrar({ titulo: campo.value.trim(), resumo: '', link: '', veiculo_id: null, publicado_em: null });
+    mostrar({ titulo: campo.value.trim(), resumo: '', link: '', veiculo_id: null, publicado_em: null, digitado: true });
   });
 
   var uf = (window.Farol && Farol.local && Farol.local.lerOuPadrao && Farol.local.lerOuPadrao().uf) || 'SE';

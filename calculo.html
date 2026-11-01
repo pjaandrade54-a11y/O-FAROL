@@ -69,13 +69,14 @@
       </section>
 
       <section id="passos">
-        <h2>O cálculo em cinco passos</h2>
+        <h2>O cálculo em seis passos</h2>
         <ol class="lista-numerada">
           <li><strong>A notícia vira números.</strong> O título (peso 2) e o resumo (peso 1) são separados em palavras, sem acento e sem plural simples. Palavras como “de”, “para” e “veja” são ignoradas. Nomes próprios e números valem 1,5 vez mais.</li>
           <li><strong>Palavras raras valem mais (TF-IDF).</strong> Cada palavra ganha o peso <code>(1 + log n) × idf</code>, em que <code>n</code> é quantas vezes ela aparece na notícia e <code>idf = log((N + 1) / (d + 1)) + 1</code>, com <code>N</code> notícias no período e <code>d</code> notícias que usam a palavra. “Aracaju” aparece em muitas notícias e pesa pouco; “Badyally” aparece em poucas e pesa muito.</li>
           <li><strong>Mesmo fato (similaridade de cosseno).</strong> A similaridade entre duas notícias é o cosseno entre os dois vetores de palavras: 0% quando não têm nada em comum, 100% quando são iguais. Duas notícias tratam do mesmo fato com <strong>48% ou mais</strong>, publicadas com até 72 horas de diferença. Se as duas trazem números e nenhum coincide (o concurso 3079 e o 3080, por exemplo), a similaridade cai pela metade.</li>
-          <li><strong>Força de cada confirmação.</strong> Só conta um veículo por grupo de mídia, e o grupo do veículo original não conta. A força é <code>p = peso do tipo × (0,6 + 0,4 × f)</code>, em que <code>f</code> vai de 0 (similaridade de 48%) a 1 (80% ou mais).</li>
-          <li><strong>Confiança.</strong> As confirmações se somam como evidências independentes: <code>C = 1 − (1 − p₁) × (1 − p₂) × …</code>. A notícia é <strong>Confirmada</strong> com pelo menos dois grupos independentes e <strong>C ≥ 70%</strong>. Abaixo disso, fica <strong>Em apuração</strong> e é recalculada a cada coleta.</li>
+          <li><strong>Força de cada confirmação.</strong> Só conta um veículo por grupo de mídia, e o grupo do veículo original não conta. A força é <code>p = peso do tipo × (0,6 + 0,4 × f)</code>, em que <code>f</code> vai de 0 (similaridade de 48%) a 1 (80% ou mais). Um texto quase idêntico ao original (90% ou mais) é provável reprodução, não apuração própria, e vale 60% da força.</li>
+          <li><strong>Confirmações somadas.</strong> As confirmações se somam como evidências independentes: <code>C = 1 − (1 − p₁) × (1 − p₂) × …</code>.</li>
+          <li><strong>Sinais da própria notícia.</strong> A confiança vira chances, <code>C ÷ (1 − C)</code>, cada sinal da tabela abaixo multiplica as chances, e o resultado volta a ser porcentagem: <code>chances ÷ (1 + chances)</code>. É uma atualização bayesiana: os sinais ajustam a confiança, mas não criam confirmação onde ela não existe. A notícia é <strong>Confirmada</strong> com pelo menos dois grupos independentes e <strong>confiança final de 70% ou mais</strong>. Abaixo disso, fica <strong>Em apuração</strong> e é recalculada a cada coleta.</li>
         </ol>
         <h3 class="subtitulo">Peso de cada tipo de veículo</h3>
         <div class="tabela-rolagem">
@@ -91,6 +92,20 @@
             </tbody>
           </table>
         </div>
+        <h3 class="subtitulo">Sinais da própria notícia</h3>
+        <div class="tabela-rolagem">
+          <table class="tabela">
+            <thead><tr><th scope="col">Sinal</th><th scope="col">Como é detectado</th><th scope="col">Chances ×</th></tr></thead>
+            <tbody>
+              <tr><td>Fonte oficial citada</td><td>Polícia, Bombeiros, Defesa Civil, Prefeitura, Governo, ministérios, tribunais, IBGE, Diário Oficial e outros órgãos públicos no título ou no resumo</td><td>1,5</td></tr>
+              <tr><td>Autor identificado</td><td>O veículo informa quem escreveu</td><td>1,15</td></tr>
+              <tr><td>Confirmação por tipos diferentes</td><td>Confirmada por tipos diferentes de veículo, como jornal e TV</td><td>1,15</td></tr>
+              <tr><td>Atribuição vaga</td><td>“fontes dizem”, “teria dito”, “circula nas redes”, “supostamente”</td><td>0,7</td></tr>
+              <tr><td>Sensacionalismo</td><td>Exclamação, palavra em caixa alta (siglas e “VÍDEO” não contam) ou termos como “chocante”, “urgente”, “bomba” no título; até dois sinais</td><td>0,75 cada</td></tr>
+              <tr><td>Sem data de publicação</td><td>O veículo não informou quando publicou</td><td>0,9</td></tr>
+            </tbody>
+          </table>
+        </div>
         <h3 class="subtitulo">Os outros rótulos</h3>
         <ul class="lista-marcada">
           <li><strong>Opinião ou análise:</strong> o título ou o endereço indicam coluna, artigo ou editorial.</li>
@@ -101,12 +116,14 @@
 
       <section id="exemplo">
         <h2>Um exemplo resolvido</h2>
-        <p>Um jornal publica “Ataque a tiros deixa dois mortos e seis feridos em Cariacica”. Na mesma tarde:</p>
+        <p>Um jornal publica “Ataque a tiros deixa dois mortos e seis feridos em Cariacica, diz PM”, com autor identificado. Na mesma tarde:</p>
         <ul class="lista-marcada">
           <li>Um portal de outro grupo publica “Homem e mulher são mortos e seis ficam feridos em ataque a tiros em Cariacica”: similaridade de 70%, então <code>f = (0,70 − 0,48) / (0,80 − 0,48) = 0,69</code> e <code>p = 0,75 × (0,6 + 0,4 × 0,69) = 0,66</code>.</li>
-          <li>Uma rádio de um terceiro grupo publica um título quase igual ao original: similaridade de 90%, <code>f = 1</code> e <code>p = 0,85</code>.</li>
+          <li>Uma rádio de um terceiro grupo publica com outras palavras: similaridade de 75%, <code>f = 0,84</code> e <code>p = 0,85 × (0,6 + 0,4 × 0,84) = 0,80</code>.</li>
         </ul>
-        <p>Confiança: <code>C = 1 − (1 − 0,66) × (1 − 0,85) = 1 − 0,34 × 0,15 = 95%</code>. São dois grupos independentes e mais de 70%: <strong>Confirmada</strong>.</p>
+        <p>Confirmações: <code>C = 1 − (1 − 0,66) × (1 − 0,80) = 1 − 0,34 × 0,20 = 93%</code>, ou chances de <code>0,93 ÷ 0,07 ≈ 13,7</code>.</p>
+        <p>Sinais: cita fonte oficial (PM, × 1,5), autor identificado (× 1,15) e confirmação por tipos diferentes, portal e rádio (× 1,15). Chances: <code>13,7 × 1,5 × 1,15 × 1,15 ≈ 27</code>, e confiança final de <code>27 ÷ 28 ≈ 96%</code>. São dois grupos independentes e mais de 70%: <strong>Confirmada</strong>.</p>
+        <p>Se o mesmo título viesse como “URGENTE! Ataque a tiros…”, sem fonte nem autor, as chances seriam <code>13,7 × 1,15 × 0,75 × 0,75 ≈ 8,9</code>: confiança de 90%, ainda Confirmada, porque duas confirmações independentes fortes pesam mais que o tom do título. Com confirmações fracas, o sensacionalismo pode deixar a notícia Em apuração.</p>
       </section>
 
       <section id="calcule">
