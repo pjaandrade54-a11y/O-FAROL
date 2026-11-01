@@ -1,137 +1,696 @@
 [
   {
-    "id": "jornal-de-brasilia",
-    "nome": "Jornal de Brasília",
-    "site": "https://jornaldebrasilia.com.br",
-    "tipo": "jornal",
-    "abrangencia": "estadual",
-    "grupo": null,
-    "feeds": [],
-    "adivinhar": true,
-    "uf": "DF"
-  },
-  {
-    "id": "rondonia-dinamica",
-    "nome": "Rondônia Dinâmica",
-    "site": "https://www.rondoniadinamica.com",
-    "tipo": "portal",
-    "abrangencia": "estadual",
-    "grupo": null,
-    "feeds": [],
-    "adivinhar": true,
-    "uf": "RO"
-  },
-  {
-    "id": "diario-do-nordeste",
-    "nome": "Diário do Nordeste",
-    "site": "https://diariodonordeste.verdesmares.com.br",
-    "tipo": "jornal",
-    "abrangencia": "estadual",
-    "grupo": "Sistema Verdes Mares",
+    "id": "planalto",
+    "nome": "Palácio do Planalto",
+    "site": "https://www.gov.br/planalto",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Executivo federal",
     "feeds": [
-      "https://diariodonordeste.verdesmares.com.br/rss"
+      "https://www.gov.br/planalto/pt-br/acompanhe-o-planalto/noticias/RSS",
+      "https://www.gov.br/planalto/pt-br/acompanhe-o-planalto/noticias/@@rss",
+      "https://www.gov.br/planalto/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "agencia-gov",
+    "nome": "Agência Gov",
+    "site": "https://agenciagov.ebc.com.br",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Executivo federal",
+    "feeds": [
+      "https://agenciagov.ebc.com.br/noticias/RSS",
+      "https://agenciagov.ebc.com.br/feed"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "policia-federal",
+    "nome": "Polícia Federal",
+    "site": "https://www.gov.br/pf",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Polícia Federal",
+    "feeds": [
+      "https://www.gov.br/pf/pt-br/assuntos/noticias/RSS",
+      "https://www.gov.br/pf/pt-br/assuntos/noticias/@@rss",
+      "https://www.gov.br/pf/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "prf",
+    "nome": "Polícia Rodoviária Federal",
+    "site": "https://www.gov.br/prf",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Polícia Rodoviária Federal",
+    "feeds": [
+      "https://www.gov.br/prf/pt-br/noticias/RSS",
+      "https://www.gov.br/prf/pt-br/noticias/@@rss",
+      "https://www.gov.br/prf/pt-br/RSS",
+      "https://www.gov.br/prf/pt-br/assuntos/noticias/RSS",
+      "https://www.gov.br/prf/pt-br/assuntos/noticias/@@rss",
+      "https://www.gov.br/prf/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "ministerio-saude",
+    "nome": "Ministério da Saúde",
+    "site": "https://www.gov.br/saude",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Executivo federal",
+    "feeds": [
+      "https://www.gov.br/saude/pt-br/assuntos/noticias/RSS",
+      "https://www.gov.br/saude/pt-br/assuntos/noticias/@@rss",
+      "https://www.gov.br/saude/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "ministerio-educacao",
+    "nome": "Ministério da Educação",
+    "site": "https://www.gov.br/mec",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Executivo federal",
+    "feeds": [
+      "https://www.gov.br/mec/pt-br/assuntos/noticias/RSS",
+      "https://www.gov.br/mec/pt-br/assuntos/noticias/@@rss",
+      "https://www.gov.br/mec/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "receita-federal",
+    "nome": "Receita Federal",
+    "site": "https://www.gov.br/receitafederal",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Executivo federal",
+    "feeds": [
+      "https://www.gov.br/receitafederal/pt-br/assuntos/noticias/RSS",
+      "https://www.gov.br/receitafederal/pt-br/assuntos/noticias/@@rss",
+      "https://www.gov.br/receitafederal/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "ministerio-justica",
+    "nome": "Ministério da Justiça",
+    "site": "https://www.gov.br/mj",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Executivo federal",
+    "feeds": [
+      "https://www.gov.br/mj/pt-br/assuntos/noticias/RSS",
+      "https://www.gov.br/mj/pt-br/assuntos/noticias/@@rss",
+      "https://www.gov.br/mj/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "defesa-civil-nacional",
+    "nome": "Defesa Civil Nacional",
+    "site": "https://www.gov.br/mdr",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Executivo federal",
+    "feeds": [
+      "https://www.gov.br/mdr/pt-br/noticias/RSS",
+      "https://www.gov.br/mdr/pt-br/noticias/@@rss",
+      "https://www.gov.br/mdr/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "inss",
+    "nome": "INSS",
+    "site": "https://www.gov.br/inss",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Executivo federal",
+    "feeds": [
+      "https://www.gov.br/inss/pt-br/noticias/RSS",
+      "https://www.gov.br/inss/pt-br/noticias/@@rss",
+      "https://www.gov.br/inss/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "anvisa",
+    "nome": "Anvisa",
+    "site": "https://www.gov.br/anvisa",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Anvisa",
+    "feeds": [
+      "https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/RSS",
+      "https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/@@rss",
+      "https://www.gov.br/anvisa/pt-br/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "ibge",
+    "nome": "Agência IBGE Notícias",
+    "site": "https://agenciadenoticias.ibge.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "IBGE",
+    "feeds": [
+      "https://agenciadenoticias.ibge.gov.br/agencia-noticias.html?format=feed&type=rss",
+      "https://agenciadenoticias.ibge.gov.br/?format=feed&type=rss"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "inmet",
+    "nome": "Inmet",
+    "site": "https://www.gov.br/agricultura",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Executivo federal",
+    "feeds": [
+      "https://portal.inmet.gov.br/noticias/feed",
+      "https://portal.inmet.gov.br/rss"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "banco-central",
+    "nome": "Banco Central",
+    "site": "https://www.bcb.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Banco Central",
+    "feeds": [
+      "https://www.bcb.gov.br/api/feed/sitebcb/sitefeeds/notas",
+      "https://www.bcb.gov.br/api/feed/sitebcb/sitefeeds/noticias"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "stf",
+    "nome": "Supremo Tribunal Federal",
+    "site": "https://portal.stf.jus.br",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Judiciário",
+    "feeds": [
+      "https://portal.stf.jus.br/rss/noticias.asp",
+      "https://noticias.stf.jus.br/feed/",
+      "https://portal.stf.jus.br/noticias/rss.asp"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "stj",
+    "nome": "Superior Tribunal de Justiça",
+    "site": "https://www.stj.jus.br",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Judiciário",
+    "feeds": [
+      "https://www.stj.jus.br/sites/portalp/Paginas/Comunicacao/Noticias/rss.aspx",
+      "https://www.stj.jus.br/rss"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "tse",
+    "nome": "Tribunal Superior Eleitoral",
+    "site": "https://www.tse.jus.br",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Judiciário",
+    "feeds": [
+      "https://www.tse.jus.br/comunicacao/noticias/RSS",
+      "https://www.tse.jus.br/comunicacao/noticias/@@rss"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "cnj",
+    "nome": "Conselho Nacional de Justiça",
+    "site": "https://www.cnj.jus.br",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Poder Judiciário",
+    "feeds": [],
+    "adivinhar": true
+  },
+  {
+    "id": "mpf",
+    "nome": "Ministério Público Federal",
+    "site": "https://www.mpf.mp.br",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Ministério Público",
+    "feeds": [
+      "https://www.mpf.mp.br/pgr/noticias-pgr/RSS",
+      "https://www.mpf.mp.br/noticias/RSS"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "tcu",
+    "nome": "Tribunal de Contas da União",
+    "site": "https://portal.tcu.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "nacional",
+    "grupo": "Tribunal de Contas",
+    "feeds": [
+      "https://portal.tcu.gov.br/rss/noticias.xml"
+    ],
+    "adivinhar": true
+  },
+  {
+    "id": "governo-se",
+    "nome": "Governo de Sergipe",
+    "site": "https://www.se.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo de Sergipe",
+    "feeds": [
+      "https://www.se.gov.br/noticias/feed",
+      "https://agencia.se.gov.br/feed/"
+    ],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "ssp-se",
+    "nome": "Secretaria de Segurança Pública de SE",
+    "site": "https://www.ssp.se.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo de Sergipe",
+    "feeds": [
+      "https://www.ssp.se.gov.br/feed/",
+      "https://www.ssp.se.gov.br/Noticias/rss"
+    ],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "pm-se",
+    "nome": "Polícia Militar de Sergipe",
+    "site": "https://www.pm.se.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo de Sergipe",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "policia-civil-se",
+    "nome": "Polícia Civil de Sergipe",
+    "site": "https://www.policiacivil.se.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo de Sergipe",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "prefeitura-aracaju",
+    "nome": "Prefeitura de Aracaju",
+    "site": "https://www.aracaju.se.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Prefeitura de Aracaju",
+    "feeds": [
+      "https://www.aracaju.se.gov.br/noticias/rss",
+      "https://www.aracaju.se.gov.br/index.php?act=rss"
+    ],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "alese",
+    "nome": "Assembleia Legislativa de Sergipe",
+    "site": "https://al.se.leg.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Assembleia Legislativa de SE",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "tjse",
+    "nome": "Tribunal de Justiça de Sergipe",
+    "site": "https://www.tjse.jus.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Poder Judiciário",
+    "feeds": [
+      "https://www.tjse.jus.br/portal/rss",
+      "https://www.tjse.jus.br/agencia/noticias/rss"
+    ],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "mpse",
+    "nome": "Ministério Público de Sergipe",
+    "site": "https://www.mpse.mp.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Ministério Público",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "tre-se",
+    "nome": "TRE de Sergipe",
+    "site": "https://www.tre-se.jus.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Poder Judiciário",
+    "feeds": [
+      "https://www.tre-se.jus.br/comunicacao/noticias/RSS"
+    ],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "defesa-civil-aracaju",
+    "nome": "Defesa Civil de Aracaju",
+    "site": "https://www.aracaju.se.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Prefeitura de Aracaju",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "SE"
+  },
+  {
+    "id": "governo-ce",
+    "nome": "Governo do estado (CE)",
+    "site": "https://www.ceara.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (CE)",
+    "feeds": [
+      "https://www.ceara.gov.br/feed/"
     ],
     "adivinhar": true,
     "uf": "CE"
   },
   {
-    "id": "revista-oeste",
-    "nome": "Revista Oeste",
-    "site": "https://revistaoeste.com",
-    "tipo": "revista",
-    "abrangencia": "nacional",
-    "grupo": "Editora Oeste",
-    "feeds": [],
-    "adivinhar": true
-  },
-  {
-    "id": "noticias-ao-minuto",
-    "nome": "Notícias ao Minuto",
-    "site": "https://www.noticiasaominuto.com.br",
-    "tipo": "portal",
-    "abrangencia": "nacional",
-    "grupo": null,
-    "feeds": [],
-    "adivinhar": true
-  },
-  {
-    "id": "o-povo",
-    "nome": "O Povo",
-    "site": "https://www.opovo.com.br",
-    "tipo": "jornal",
+    "id": "governo-ms",
+    "nome": "Governo do estado (MS)",
+    "site": "https://agenciadenoticias.ms.gov.br",
+    "tipo": "oficial",
     "abrangencia": "estadual",
-    "grupo": "Grupo de Comunicação O Povo",
+    "grupo": "Governo do estado (MS)",
     "feeds": [
-      "https://www.opovo.com.br/rss.xml"
+      "https://agenciadenoticias.ms.gov.br/feed/"
     ],
     "adivinhar": true,
-    "uf": "CE"
+    "uf": "MS"
   },
   {
-    "id": "rondoniaovivo",
-    "nome": "Rondoniaovivo",
-    "site": "https://rondoniaovivo.com",
-    "tipo": "portal",
+    "id": "governo-ro",
+    "nome": "Governo do estado (RO)",
+    "site": "https://rondonia.ro.gov.br",
+    "tipo": "oficial",
     "abrangencia": "estadual",
-    "grupo": null,
-    "feeds": [],
+    "grupo": "Governo do estado (RO)",
+    "feeds": [
+      "https://rondonia.ro.gov.br/feed/"
+    ],
     "adivinhar": true,
     "uf": "RO"
   },
   {
-    "id": "novo-noticias",
-    "nome": "Novo Notícias",
-    "site": "https://novonoticias.com",
-    "tipo": "portal",
+    "id": "governo-pi",
+    "nome": "Governo do estado (PI)",
+    "site": "https://www.pi.gov.br",
+    "tipo": "oficial",
     "abrangencia": "estadual",
-    "grupo": null,
+    "grupo": "Governo do estado (PI)",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "PI"
+  },
+  {
+    "id": "governo-pe",
+    "nome": "Governo do estado (PE)",
+    "site": "https://www.pe.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (PE)",
+    "feeds": [
+      "https://www.pe.gov.br/feed/"
+    ],
+    "adivinhar": true,
+    "uf": "PE"
+  },
+  {
+    "id": "governo-pb",
+    "nome": "Governo do estado (PB)",
+    "site": "https://paraiba.pb.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (PB)",
+    "feeds": [
+      "https://paraiba.pb.gov.br/noticias/RSS",
+      "https://paraiba.pb.gov.br/RSS"
+    ],
+    "adivinhar": true,
+    "uf": "PB"
+  },
+  {
+    "id": "governo-rn",
+    "nome": "Governo do estado (RN)",
+    "site": "https://www.rn.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (RN)",
     "feeds": [],
     "adivinhar": true,
     "uf": "RN"
   },
   {
-    "id": "tribuna-da-bahia",
-    "nome": "Tribuna da Bahia",
-    "site": "https://www.trbn.com.br",
-    "tipo": "jornal",
+    "id": "governo-al",
+    "nome": "Governo do estado (AL)",
+    "site": "https://www.alagoas.al.gov.br",
+    "tipo": "oficial",
     "abrangencia": "estadual",
-    "grupo": null,
+    "grupo": "Governo do estado (AL)",
     "feeds": [],
+    "adivinhar": true,
+    "uf": "AL"
+  },
+  {
+    "id": "governo-ba",
+    "nome": "Governo do estado (BA)",
+    "site": "https://www.ba.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (BA)",
+    "feeds": [
+      "https://www.ba.gov.br/comunicacao/noticias/feed"
+    ],
     "adivinhar": true,
     "uf": "BA"
   },
   {
-    "id": "gzh",
-    "nome": "GZH",
-    "site": "https://gauchazh.clicrbs.com.br",
-    "tipo": "portal",
+    "id": "governo-go",
+    "nome": "Governo do estado (GO)",
+    "site": "https://goias.gov.br",
+    "tipo": "oficial",
     "abrangencia": "estadual",
-    "grupo": "Grupo RBS",
+    "grupo": "Governo do estado (GO)",
     "feeds": [
-      "https://gauchazh.clicrbs.com.br/ultimas-noticias/rss/"
+      "https://goias.gov.br/feed/"
+    ],
+    "adivinhar": true,
+    "uf": "GO"
+  },
+  {
+    "id": "governo-mt",
+    "nome": "Governo do estado (MT)",
+    "site": "https://www.mt.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (MT)",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "MT"
+  },
+  {
+    "id": "governo-sc",
+    "nome": "Governo do estado (SC)",
+    "site": "https://estado.sc.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (SC)",
+    "feeds": [
+      "https://estado.sc.gov.br/noticias/feed/"
+    ],
+    "adivinhar": true,
+    "uf": "SC"
+  },
+  {
+    "id": "governo-rs",
+    "nome": "Governo do estado (RS)",
+    "site": "https://www.estado.rs.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (RS)",
+    "feeds": [
+      "https://www.estado.rs.gov.br/rss"
     ],
     "adivinhar": true,
     "uf": "RS"
   },
   {
-    "id": "jornal-do-comercio-rs",
-    "nome": "Jornal do Comércio",
-    "site": "https://www.jornaldocomercio.com",
-    "tipo": "jornal",
+    "id": "governo-rj",
+    "nome": "Governo do estado (RJ)",
+    "site": "https://www.rj.gov.br",
+    "tipo": "oficial",
     "abrangencia": "estadual",
-    "grupo": null,
+    "grupo": "Governo do estado (RJ)",
     "feeds": [],
     "adivinhar": true,
-    "uf": "RS"
+    "uf": "RJ"
   },
   {
-    "id": "acidadeon",
-    "nome": "ACidadeON",
-    "site": "https://www.acidadeon.com",
-    "tipo": "portal",
+    "id": "governo-es",
+    "nome": "Governo do estado (ES)",
+    "site": "https://www.es.gov.br",
+    "tipo": "oficial",
     "abrangencia": "estadual",
-    "grupo": "EPTV",
+    "grupo": "Governo do estado (ES)",
+    "feeds": [
+      "https://www.es.gov.br/Noticias/rss"
+    ],
+    "adivinhar": true,
+    "uf": "ES"
+  },
+  {
+    "id": "governo-to",
+    "nome": "Governo do estado (TO)",
+    "site": "https://www.to.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (TO)",
     "feeds": [],
+    "adivinhar": true,
+    "uf": "TO"
+  },
+  {
+    "id": "governo-ma",
+    "nome": "Governo do estado (MA)",
+    "site": "https://www.ma.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (MA)",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "MA"
+  },
+  {
+    "id": "governo-rr",
+    "nome": "Governo do estado (RR)",
+    "site": "https://portal.rr.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (RR)",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "RR"
+  },
+  {
+    "id": "governo-pa",
+    "nome": "Governo do estado (PA)",
+    "site": "https://agenciapara.com.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (PA)",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "PA"
+  },
+  {
+    "id": "governo-am",
+    "nome": "Governo do estado (AM)",
+    "site": "https://www.amazonas.am.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (AM)",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "AM"
+  },
+  {
+    "id": "governo-ap",
+    "nome": "Governo do estado (AP)",
+    "site": "https://www.portal.ap.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (AP)",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "AP"
+  },
+  {
+    "id": "governo-pr",
+    "nome": "Governo do estado (PR)",
+    "site": "https://www.aen.pr.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (PR)",
+    "feeds": [
+      "https://www.aen.pr.gov.br/rss",
+      "https://www.aen.pr.gov.br/Noticias/rss"
+    ],
+    "adivinhar": true,
+    "uf": "PR"
+  },
+  {
+    "id": "governo-df",
+    "nome": "Governo do estado (DF)",
+    "site": "https://www.agenciabrasilia.df.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo do estado (DF)",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "DF"
+  },
+  {
+    "id": "pm-sp",
+    "nome": "Polícia Militar de SP",
+    "site": "https://www.policiamilitar.sp.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo de São Paulo",
+    "feeds": [],
+    "adivinhar": true,
+    "uf": "SP"
+  },
+  {
+    "id": "ssp-sp",
+    "nome": "Secretaria da Segurança Pública de SP",
+    "site": "https://www.ssp.sp.gov.br",
+    "tipo": "oficial",
+    "abrangencia": "estadual",
+    "grupo": "Governo de São Paulo",
+    "feeds": [
+      "https://www.ssp.sp.gov.br/rss"
+    ],
     "adivinhar": true,
     "uf": "SP"
   }
