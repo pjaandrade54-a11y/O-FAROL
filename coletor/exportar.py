@@ -60,6 +60,15 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
     for escala in GERAIS:
         saida["escalas"][escala] = [item(l) for l in t[escala]]
     saida["checagens"] = [item(l) for l in t["checagens"]]
+    # Notas recentes de órgãos públicos, para a calculadora do site cruzar com elas (não aparecem na lista)
+    oficiais = [v["id"] for v in veiculos if v.get("tipo") == "oficial"]
+    marcas = ",".join("?" * len(oficiais)) or "''"
+    saida["oficiais"] = [
+        {"titulo": l["titulo"], "resumo": (l["resumo"] or "")[:200], "link": l["link"], "veiculo_id": l["veiculo_id"],
+         "veiculo": nomes.get(l["veiculo_id"], l["veiculo_id"]), "publicado_em": l["publicado_em"]}
+        for l in conexao.execute(
+            f"SELECT * FROM noticias WHERE uso = 'oficial' OR veiculo_id IN ({marcas}) "
+            "ORDER BY COALESCE(publicado_em, coletado_em) DESC LIMIT 300", oficiais)]
     _gravar(arquivo, saida)
 
     # Um arquivo por estado, sempre os 27: um estado que ficou sem notícias não guarda as antigas
@@ -74,6 +83,7 @@ def exportar(conexao, veiculos, arquivo=ARQUIVO, cidades=()):
             contagem[escala] += len(estado["escalas"][escala])
         _gravar(pasta / f"{uf}.json", estado)
     contagem["checagens"] = len(saida["checagens"])
+    contagem["oficiais"] = len(saida["oficiais"])
     return contagem
 
 

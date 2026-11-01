@@ -185,11 +185,11 @@
       "id": "agencia-acre",
       "nome": "Agência de Notícias do Acre",
       "site": "https://agencia.ac.gov.br",
-      "tipo": "agencia",
+      "tipo": "oficial",
       "abrangencia": "estadual",
       "uf": "AC",
       "cidade": null,
-      "grupo": null,
+      "grupo": "Governo do Acre",
       "linha_declarada": "não declarada",
       "feeds": [
         {
@@ -279,7 +279,7 @@
       "id": "agencia-camara",
       "nome": "Agência Câmara",
       "site": "https://www.camara.leg.br/noticias",
-      "tipo": "agencia",
+      "tipo": "oficial",
       "abrangencia": "nacional",
       "uf": null,
       "cidade": null,
@@ -339,7 +339,7 @@
       "id": "agencia-minas",
       "nome": "Agência Minas",
       "site": "https://www.agenciaminas.mg.gov.br",
-      "tipo": "agencia",
+      "tipo": "oficial",
       "abrangencia": "estadual",
       "uf": "MG",
       "cidade": null,
@@ -399,7 +399,7 @@
       "id": "agencia-senado",
       "nome": "Agência Senado",
       "site": "https://www12.senado.leg.br/noticias",
-      "tipo": "agencia",
+      "tipo": "oficial",
       "abrangencia": "nacional",
       "uf": null,
       "cidade": null,
@@ -429,11 +429,11 @@
       "id": "agencia-sp",
       "nome": "Agência SP",
       "site": "https://www.agenciasp.sp.gov.br",
-      "tipo": "agencia",
+      "tipo": "oficial",
       "abrangencia": "estadual",
       "uf": "SP",
       "cidade": null,
-      "grupo": null,
+      "grupo": "Governo de São Paulo",
       "linha_declarada": "não declarada",
       "feeds": [
         {
@@ -514,6 +514,37 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "alese",
+      "nome": "Assembleia Legislativa de Sergipe",
+      "site": "https://al.se.leg.br",
+      "tipo": "oficial",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": "Assembleia Legislativa de SE",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://al.se.leg.br/feed/",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed testado no GitHub Actions em 01/11/2026."
     },
     {
       "id": "alo-alo-bahia",
@@ -695,6 +726,37 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "banco-central",
+      "nome": "Banco Central do Brasil",
+      "site": "https://www.bcb.gov.br",
+      "tipo": "oficial",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Banco Central",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.bcb.gov.br/api/feed/sitebcb/sitefeeds/noticias",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed testado no GitHub Actions em 01/11/2026."
     },
     {
       "id": "banda-b",
@@ -1386,6 +1448,37 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "defesa-civil-nacional",
+      "nome": "Ministério da Integração e Defesa Civil",
+      "site": "https://www.gov.br/mdr",
+      "tipo": "oficial",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Poder Executivo federal",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.gov.br/mdr/pt-br/RSS",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed (RSS 1.0) testado no GitHub Actions em 01/11/2026."
     },
     {
       "id": "destaque-noticias",
@@ -3071,6 +3164,161 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "governo-go",
+      "nome": "Governo de Goiás",
+      "site": "https://goias.gov.br",
+      "tipo": "oficial",
+      "abrangencia": "estadual",
+      "uf": "GO",
+      "cidade": null,
+      "grupo": "Governo de Goiás",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://goias.gov.br/feed/",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed testado no GitHub Actions em 01/11/2026."
+    },
+    {
+      "id": "governo-ms",
+      "nome": "Governo de Mato Grosso do Sul",
+      "site": "https://agenciadenoticias.ms.gov.br",
+      "tipo": "oficial",
+      "abrangencia": "estadual",
+      "uf": "MS",
+      "cidade": null,
+      "grupo": "Governo de Mato Grosso do Sul",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://agenciadenoticias.ms.gov.br/feed/",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed testado no GitHub Actions em 01/11/2026."
+    },
+    {
+      "id": "governo-pi",
+      "nome": "Governo do Piauí",
+      "site": "https://www.pi.gov.br",
+      "tipo": "oficial",
+      "abrangencia": "estadual",
+      "uf": "PI",
+      "cidade": null,
+      "grupo": "Governo do Piauí",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.pi.gov.br/feed/",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed testado no GitHub Actions em 01/11/2026."
+    },
+    {
+      "id": "governo-ro",
+      "nome": "Governo de Rondônia",
+      "site": "https://rondonia.ro.gov.br",
+      "tipo": "oficial",
+      "abrangencia": "estadual",
+      "uf": "RO",
+      "cidade": null,
+      "grupo": "Governo de Rondônia",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://rondonia.ro.gov.br/feed/",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed testado no GitHub Actions em 01/11/2026."
+    },
+    {
+      "id": "governo-rr",
+      "nome": "Governo de Roraima",
+      "site": "https://portal.rr.gov.br",
+      "tipo": "oficial",
+      "abrangencia": "estadual",
+      "uf": "RR",
+      "cidade": null,
+      "grupo": "Governo de Roraima",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://portal.rr.gov.br/feed/",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed testado no GitHub Actions em 01/11/2026."
+    },
+    {
       "id": "imirante",
       "nome": "Imirante",
       "site": "https://imirante.com",
@@ -3520,6 +3768,37 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "ministerio-saude",
+      "nome": "Ministério da Saúde",
+      "site": "https://www.gov.br/saude",
+      "tipo": "oficial",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Poder Executivo federal",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.gov.br/saude/pt-br/RSS",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed (RSS 1.0) testado no GitHub Actions em 01/11/2026."
     },
     {
       "id": "mongabay",
@@ -4572,6 +4851,37 @@
       "observacoes": "Cadastrado em 31/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "stf",
+      "nome": "Supremo Tribunal Federal",
+      "site": "https://portal.stf.jus.br",
+      "tipo": "oficial",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Supremo Tribunal Federal",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://noticias.stf.jus.br/feed/",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed testado no GitHub Actions em 01/11/2026."
+    },
+    {
       "id": "sul21",
       "nome": "Sul21",
       "site": "https://sul21.com.br",
@@ -4600,6 +4910,37 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "tcu",
+      "nome": "Tribunal de Contas da União",
+      "site": "https://portal.tcu.gov.br",
+      "tipo": "oficial",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Tribunal de Contas da União",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://portal.tcu.gov.br/rss/noticias.xml",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed testado no GitHub Actions em 01/11/2026."
     },
     {
       "id": "tecmundo",
@@ -4692,6 +5033,37 @@
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
     },
     {
+      "id": "tre-se",
+      "nome": "TRE de Sergipe",
+      "site": "https://www.tre-se.jus.br",
+      "tipo": "oficial",
+      "abrangencia": "estadual",
+      "uf": "SE",
+      "cidade": null,
+      "grupo": "Justiça Eleitoral",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.tre-se.jus.br/rss",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed (RSS 1.0) testado no GitHub Actions em 01/11/2026."
+    },
+    {
       "id": "tribuna-do-norte",
       "nome": "Tribuna do Norte",
       "site": "https://tribunadonorte.com.br",
@@ -4780,6 +5152,37 @@
       },
       "ativo": true,
       "observacoes": "Cadastrado em 29/10/2026 depois de testar o feed no GitHub Actions; transparência ainda não verificada."
+    },
+    {
+      "id": "tse",
+      "nome": "Tribunal Superior Eleitoral",
+      "site": "https://www.tse.jus.br",
+      "tipo": "oficial",
+      "abrangencia": "nacional",
+      "uf": null,
+      "cidade": null,
+      "grupo": "Justiça Eleitoral",
+      "linha_declarada": "não declarada",
+      "feeds": [
+        {
+          "url": "https://www.tse.jus.br/comunicacao/noticias/@@rss",
+          "uso": "oficial"
+        }
+      ],
+      "transparencia": {
+        "dono": null,
+        "cnpj": null,
+        "expediente_publicado": null,
+        "politica_correcoes": null,
+        "separa_opiniao_publicidade": null
+      },
+      "certificacoes": {
+        "ifcn": null,
+        "jti": null,
+        "trust_project": null
+      },
+      "ativo": true,
+      "observacoes": "Fonte oficial para a verificação dos fatos; feed (RSS 1.0) testado no GitHub Actions em 01/11/2026."
     },
     {
       "id": "valor",

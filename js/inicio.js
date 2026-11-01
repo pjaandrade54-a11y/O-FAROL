@@ -34,7 +34,7 @@
 
   // 2. Os rótulos
   var REGRAS = {
-    'confirmada': 'Dois ou mais grupos de mídia independentes publicaram o mesmo fato, e a confiança calculada chegou a 70%.',
+    'confirmada': 'Dois grupos de mídia independentes ou um órgão público oficial publicaram o mesmo fato, e a confiança chegou a 70%.',
     'em-apuracao': 'Ainda falta um segundo grupo independente, ou a confiança não chegou a 70%. A conta é refeita a cada coleta.',
     'opiniao': 'Coluna, artigo ou editorial: não recebe rótulo de verdadeiro ou falso.',
     'dados-insuficientes': 'O título e o resumo têm poucas palavras para comparar com outros veículos.'

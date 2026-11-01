@@ -19,6 +19,7 @@ ATOM = "{http://www.w3.org/2005/Atom}"
 CONTENT = "{http://purl.org/rss/1.0/modules/content/}"
 DC = "{http://purl.org/dc/elements/1.1/}"
 MEDIA = "{http://search.yahoo.com/mrss/}"
+RSS1 = "{http://purl.org/rss/1.0/}"  # RSS 1.0 (RDF), usado pelos portais gov.br e por tribunais
 
 AGENTE = "OFarolColetor/0.1 (agregador de noticias em teste)"
 LIMITE_BYTES = 5_000_000
@@ -126,6 +127,8 @@ def ler(conteudo):
             return itens
     if raiz.tag == ATOM + "feed":
         itens = (_item_atom(e) for e in raiz.iter(ATOM + "entry"))
+    elif raiz.tag.endswith("RDF") or raiz.find(RSS1 + "item") is not None:
+        itens = (_item_rdf(e) for e in raiz.iter(RSS1 + "item"))
     else:
         itens = (_item_rss(e) for e in raiz.iter("item"))
     return [i for i in itens if i]
@@ -144,6 +147,22 @@ def _item_rss(e):
         "autor": limpar(e.findtext(DC + "creator") or e.findtext("author")) or None,
         "publicado_em": data_iso(e.findtext("pubDate") or e.findtext(DC + "date")),
         "imagem": imagem_do_item(e, e.findtext(CONTENT + "encoded"), e.findtext("description")),
+    }
+
+
+def _item_rdf(e):
+    titulo = limpar(e.findtext(RSS1 + "title"))
+    link = normalizar_link(e.findtext(RSS1 + "link") or e.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
+    if not titulo or not link:
+        return None
+    return {
+        "titulo": titulo,
+        "link": link,
+        "guid": link,
+        "resumo": resumir(e.findtext(RSS1 + "description") or e.findtext(CONTENT + "encoded")),
+        "autor": limpar(e.findtext(DC + "creator")) or None,
+        "publicado_em": data_iso(e.findtext(DC + "date")),
+        "imagem": imagem_do_item(e, e.findtext(CONTENT + "encoded"), e.findtext(RSS1 + "description")),
     }
 
 

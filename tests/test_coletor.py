@@ -263,3 +263,24 @@ class TestFeedsComDefeito(unittest.TestCase):
         itens = feeds.ler(rss)
         self.assertEqual([i["titulo"] for i in itens], ["Boa"])
         self.assertEqual(itens[0]["autor"], "Ana")
+
+
+class TestRdf(unittest.TestCase):
+    def test_rss_1_0_dos_portais_gov_br(self):
+        rdf = """<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel rdf:about="https://www.gov.br/saude"><title>Notícias</title></channel>
+  <item rdf:about="https://www.gov.br/saude/pt-br/assuntos/noticias/2026/novembro/vacina">
+    <title>Ministério da Saúde amplia vacinação para 5 milhões de pessoas</title>
+    <link>https://www.gov.br/saude/pt-br/assuntos/noticias/2026/novembro/vacina</link>
+    <description>A campanha começa na segunda.</description>
+    <dc:creator>Ascom</dc:creator>
+    <dc:date>2026-11-01T10:00:00-03:00</dc:date>
+  </item>
+</rdf:RDF>""".encode("utf-8")
+        itens = feeds.ler(rdf)
+        self.assertEqual(len(itens), 1)
+        self.assertEqual(itens[0]["titulo"], "Ministério da Saúde amplia vacinação para 5 milhões de pessoas")
+        self.assertEqual(itens[0]["publicado_em"], "2026-11-01T13:00:00+00:00")
+        self.assertEqual(itens[0]["autor"], "Ascom")

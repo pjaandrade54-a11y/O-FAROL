@@ -13,12 +13,14 @@ RAIZ = Path(__file__).resolve().parent.parent
 ARQUIVO = RAIZ / "dados" / "veiculos.json"
 ARQUIVO_CIDADES = RAIZ / "dados" / "cidades.json"
 
-TIPOS = {"agencia", "jornal", "portal", "revista", "radio", "tv", "blog", "checador"}
+# "oficial": órgão público (governo, polícia, tribunal, Legislativo, IBGE…), usado para verificar os fatos
+TIPOS = {"agencia", "jornal", "portal", "revista", "radio", "tv", "blog", "checador", "oficial"}
 
 # Abrangência do veículo -> aba da página inicial onde as notícias dele aparecem
 ABRANGENCIAS = {"local": "cidade", "estadual": "estado", "nacional": "pais", "internacional": "mundo"}
 ESCALAS = set(ABRANGENCIAS.values())
-USOS = {"noticias", "checagens"}
+# "oficial": notas de órgãos públicos; não aparecem na lista de notícias, só na verificação
+USOS = {"noticias", "checagens", "oficial"}
 
 UFS = {
     "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA",
@@ -95,7 +97,7 @@ def validar(veiculos):
             if f.get("escala") not in (None, *ESCALAS):
                 erro(f"escala do feed deve ser uma destas: {', '.join(sorted(ESCALAS))}")
             if f.get("uso", "noticias") not in USOS:
-                erro("uso do feed deve ser noticias ou checagens")
+                erro("uso do feed deve ser noticias, checagens ou oficial")
     return erros
 
 
