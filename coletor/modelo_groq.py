@@ -7,6 +7,7 @@ A API segue o formato da OpenAI. Só a biblioteca padrão do Python.
 
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -27,8 +28,10 @@ PREFERENCIAS = {
 }
 VARIAVEIS = {"acusacao": "GROQ_MODELO_ACUSACAO", "defesa": "GROQ_MODELO_DEFESA",
              "auditor-fontes": "GROQ_MODELO_FONTES", "relator": "GROQ_MODELO_RELATOR"}
-# Modelos do catálogo que não servem para escrever pareceres (áudio, moderação)
-NAO_TEXTO = ("whisper", "tts", "guard", "playai", "distil", "orpheus")
+# Modelos do catálogo que não servem para escrever pareceres (áudio, moderação, sistemas compostos)
+NAO_TEXTO = ("whisper", "tts", "guard", "playai", "distil", "orpheus", "compound", "allam")
+# Fora da lista de preferência, vale o maior modelo de uma família conhecida
+FAMILIAS = ("gpt-oss", "kimi", "llama-4", "llama-3.3", "qwen", "deepseek", "mistral", "gemma", "llama")
 
 PAUSA_ENTRE_CHAMADAS = 3
 ESPERA_MAXIMA = 60  # segundos: um limite por minuto se espera; um limite do dia encerra a execução
@@ -72,12 +75,14 @@ def escolher_modelos(modelos, aviso=print):
     ids = {m["id"] for m in modelos}
     texto = [m for m in modelos if not any(p in m["id"].lower() for p in NAO_TEXTO)]
     escolhidos = {}
+    aviso("  catálogo: " + ", ".join(sorted(m["id"] for m in texto)))
     for agente, preferidos in PREFERENCIAS.items():
         pedido = (os.environ.get(VARIAVEIS[agente]) or "").strip()
         achado = pedido or next((p for p in preferidos if p in ids), None)
         if not achado:
             empresa_acusacao = escolhidos.get("acusacao", "").split("/")[0]
             candidatos = [m["id"] for m in texto if agente != "defesa" or m["id"].split("/")[0] != empresa_acusacao]
+            candidatos.sort(key=_preferencia)
             achado = candidatos[0] if candidatos else None
         if not achado:
             raise ErroModelo("nenhum modelo de texto disponível no Groq para esta chave")
@@ -94,16 +99,21 @@ class AgenteGroq:
         self.formatos = [
             {"type": "json_schema", "json_schema": {"name": "parecer", "schema": ESQUEMA_PARECER, "strict": True}},
             {"type": "json_object"},
+            None,
         ]
 
     def _chamar(self, sistema, conteudo):
         formato = self.formatos[0]
-        if formato["type"] != "json_schema":
+        if formato is None or formato["type"] != "json_schema":
             sistema += ("\n\nResponda só com um objeto JSON neste esquema, sem texto antes ou depois:\n"
                         + json.dumps(ESQUEMA_PARECER, ensure_ascii=False))
-        return _pedir("/chat/completions", {
-            "model": self.modelo, "temperature": 0.2, "response_format": formato,
-            "messages": [{"role": "system", "content": sistema}, {"role": "user", "content": conteudo}]})
+        corpo = {"model": self.modelo, "temperature": 0.2,
+                 "messages": [{"role": "system", "content": sistema}, {"role": "user", "content": conteudo}]}
+        if formato:
+            corpo["response_format"] = formato
+        if "qwen3" in self.modelo or "deepseek-r1" in self.modelo:
+            corpo["reasoning_format"] = "hidden"  # sem o raciocínio misturado ao JSON da resposta
+        return _pedir("/chat/completions", corpo)
 
     def parecer(self, sistema, conteudo):
         time.sleep(PAUSA_ENTRE_CHAMADAS)
@@ -144,6 +154,14 @@ class AgenteGroq:
             return _extrair_json(mensagem.get("content")), f"{r.get('model') or self.modelo} · Groq"
         except json.JSONDecodeError as e:
             raise ErroModelo(f"{self.modelo} devolveu um parecer fora do formato") from e
+
+
+def _preferencia(modelo):
+    """Ordem dos modelos fora da lista: família conhecida primeiro, depois o maior (pelo "70b", "120b"…)."""
+    nome = modelo.lower()
+    familia = next((i for i, f in enumerate(FAMILIAS) if f in nome), len(FAMILIAS))
+    tamanho = max([int(n) for n in re.findall(r"(\d+)b", nome)] or [0])
+    return (familia, -tamanho)
 
 
 def _segundos(texto):
